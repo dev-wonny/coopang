@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 데이터베이스
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    networks:
+      - coopang
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  redis-stack:
+    image: redis/redis-stack
+    container_name: redis-stack-compose
+    restart: always
+    environment:
+      REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"  # 환경변수 사용
+    ports:
+      - "6379:6379"
+      - "8001:8001"  # RedisInsight GUI를 위한 포트
+    networks:
+      - coopang
+  # 게이트웨이 서버
+  gateway:
+    image: image-gateway
+    container_name: gateway_service
+    ports:
+      - "98080:98080"
+    depends_on:
+      - auth-service
+    networks:
+      - coopang
+
+  # 인증 서버
+  auth-service:
+    image: image-auth
+    container_name: auth_service
+    ports:
+      - "98081:98081"
+    depends_on:
+      - postgres
+    networks:
+      - coopang
+
+  # 모노리틱 서버
+  monolithic-service:
+    image: image-mono
+    container_name: monolithic_service
+    ports:
+      - "98082:98082"
+    depends_on:
+      - postgres
+    networks:
+      - coopang
+
+networks:
+  default:
+    driver: bridge
+
+volumes:
+  db_data:

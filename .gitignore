@@ -1,0 +1,99 @@
+# Java 관련
+*.class
+*.jar
+*.war
+*.ear
+
+# 로그 파일
+*.log
+
+# 컴파일된 바이트코드
+/bin/
+/target/
+/build/
+
+# Lombok 관련
+*.lombok
+
+# 디렉토리 기반의 환경 변수 파일
+.env
+**/.env
+
+# Maven 관련
+.mvn/
+!.mvn/wrapper/maven-wrapper.jar
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Gradle 관련
+#.gradle/
+#**/gradle/
+#/build/
+#!gradle/wrapper/gradle-wrapper.jar
+#!**/gradle/wrapper/gradle-wrapper.jar
+#!**/src/main/**/build/
+#!**/src/test/**/build/
+#gradle-app.setting
+#**/gradle-app.setting
+#**/gradle/wrapper/gradle-wrapper.properties
+
+# STS (Spring Tool Suite) 관련
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+# IntelliJ IDEA 관련
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+*.idea/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+# VS Code 관련
+.vscode/
+.history/
+*.code-workspace
+
+# NetBeans 관련
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# 기타 IDE 설정 파일들
+*.swp
+*.swo
+*.swn
+.DS_Store
+Thumbs.db
+*.bak
+*.tmp
+
+# Operating system 관련
+.DS_Store
+Thumbs.db
+
+# Docker 관련
+docker-compose.override.yml
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+docker-compose-local.yml
+
+# dev 관련
+**/application-dev.yml
