@@ -1,6 +1,6 @@
-# 🍱 Coopang 🍱
+# 📦 Coopang 📦
 물류 관리 및 배송 시스템을 위한 MSA, 스프링 부트 기반 프로젝트 입니다.
-![스크린샷]()
+![Logo]()
 
 ## 🗓️ 개발 기간
 * 2024.09.05 ~ 2024.09.19
@@ -45,7 +45,7 @@
 * [Coopang - 서버 설계 - Notion](https://antique-ease-afd.notion.site/3a35eef966b34e08b1c455f537f92874?pvs=4)
 
 ## 📙 5. API 명세서
-* API 명세서에 설계에 따라 개발을 하였고, 첫 설계와 다른점이 있다고 생각하면 [🛠️ [API 명세서] 수정사항 #8](https://github.com/dev-wonny/coopang/issues/8)에 기록하였습니다.
+* API 명세서에 설계에 따라 개발을 하였고, 첫 설계와 다른점이 있다고 생각하면 [🛠️ [API 명세서] 수정 사항 #8](https://github.com/dev-wonny/coopang/issues/8)에 기록하였습니다.
 * 아래 Notion 링크를 통해서 확인 가능합니다.
 * [Coopang - API 명세서 - Notion](https://antique-ease-afd.notion.site/1e40c3559a184e4cbd41dbbda31fe395?v=0f1972d04af54c1e800b767fa6f69ca1&pvs=4)
 
