@@ -38,21 +38,21 @@
 * [📘 Wiki - 요구사항 명세서 링크](https://antique-ease-afd.notion.site/7f70de7531674898b18a204d5bc824c6?pvs=4)
 
 ## 🛠️ 3. 인프라 설계도
-* ![인프라설계도](./쿠팡.drawio.png)
+![인프라설계도](./IMG/쿠팡.drawio.png)
 
 ## 🛠️ 4. 서버 설계
 * 아래 Notion 링크를 통해서 확인 가능합니다.
 * [Coopang - 서버 설계 - Notion](https://antique-ease-afd.notion.site/3a35eef966b34e08b1c455f537f92874?pvs=4)
 
 ## 📙 5. API 명세서
-* API 명세서에 설계에 따라 개발을 하였고, 첫 설계와 다른점이 있다고 생각하면 [🛠️ [수정사항] API 명세서 수정사항 #90](https://github.com/jiminchur/Project_FoodToGoWeb/issues/90)에 기록하였습니다.
+* API 명세서에 설계에 따라 개발을 하였고, 첫 설계와 다른점이 있다고 생각하면 [🛠️ [API 명세서] 수정사항 #8](https://github.com/dev-wonny/coopang/issues/8)에 기록하였습니다.
 * 아래 Notion 링크를 통해서 확인 가능합니다.
-* [Coopang - API 명세서 - Notion](https://antique-ease-afd.notion.site/1e40c3559a184e4cbd41dbbda31fe395?v=0f1972d04af54c1e800b767fa6f69ca1&pvs=4)
+* [Coopang - API 명세서 - Notion](https://antique-ease-afd.notion.site/1e40c3559a184e4cbd41dbbda31fe395?v=0f1972d04af54c1e800b767fa6f69ca1&pvs=4)
 
 ## 📄 6. 테이블 설계서
 * 요구사항 명세서의 **데이터 베이스 설계**의 규칙에 따라 작성하였습니다.
 * 아래 Notion 링크를 통해서 확인 가능합니다.
-* [Coopang - 테이블 설계서 - Notion](https://mire-plastic-701.notion.site/7f5926ee36a84122ab90c34951d68f39?pvs=4)
+* [Coopang - 테이블 설계서 - Notion](https://antique-ease-afd.notion.site/down-grade-a8766e06208e4857b113aa6cfb114422?pvs=4)
 
 ## 📋 7. ERD
 ![ERD](./IMG/erd.png)
@@ -99,14 +99,13 @@
 
 ## 🎥 10. 시연영상
 * [ ▶ 시연영상 YouTube 링크]()
-* 로그인 부터 주문,가게 등록, 등등 저희가 작업했던 내용들을 Http test를 통해 시연한 영상입니다.
 
 ## 🤓 11. 4L 회고
 * 4L 이란??
   > Liked : 좋았던 것/잘 한 것, Lacked : 아쉬웠던 것/부족했던 것, Learned : 배운 것, Longed for : 바라는 것/개선을 위해 시도해볼 것을 작성해보면서 프로젝트를 회고하는 방법입니다.
 
 <details>
-    <summary><h2>👩🏻‍💻 한정원</h2></summary>
+    <summary><h2>4L</h2></summary>
 
 ### 1. Liked : 좋았던 것/잘 한 것
 
