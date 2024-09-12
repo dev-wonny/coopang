@@ -1,0 +1,2 @@
+rootProject.name = 'coopang'
+include 'eureka', 'gateway', 'user'

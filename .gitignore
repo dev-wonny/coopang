@@ -29,16 +29,17 @@ pom.xml.next
 release.properties
 
 # Gradle 관련
-#.gradle/
-#**/gradle/
-#/build/
-#!gradle/wrapper/gradle-wrapper.jar
-#!**/gradle/wrapper/gradle-wrapper.jar
-#!**/src/main/**/build/
-#!**/src/test/**/build/
-#gradle-app.setting
-#**/gradle-app.setting
-#**/gradle/wrapper/gradle-wrapper.properties
+.gradle/
+**/gradle/
+/build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+gradle-app.setting
+**/gradle-app.setting
+**/gradle/wrapper/gradle-wrapper.properties
+*.bat
 
 # STS (Spring Tool Suite) 관련
 .apt_generated
@@ -95,5 +96,12 @@ docker-compose.override.yml
 .env.production.local
 docker-compose-local.yml
 
-# dev 관련
-**/application-dev.yml
+# Application 설정 파일
+**/application-*.yml
+**/application-*.properties
+
+# 프로젝트 관련
+/eureka/build/
+/gateway/build/
+/user/build/
+/.idea/
