@@ -47,7 +47,7 @@
 ## 📙 5. API 명세서
 * API 명세서에 설계에 따라 개발을 하였고, 첫 설계와 다른점이 있다고 생각하면 [🛠️ [API 명세서] 수정 사항 #8](https://github.com/dev-wonny/coopang/issues/8)에 기록하였습니다.
 * 아래 Notion 링크를 통해서 확인 가능합니다.
-* [Coopang - API 명세서 - Notion](https://antique-ease-afd.notion.site/1e40c3559a184e4cbd41dbbda31fe395?v=0f1972d04af54c1e800b767fa6f69ca1&pvs=4)
+* [Coopang - API 명세서 - Notion](https://antique-ease-afd.notion.site/9897539e2e254f6b8d5ce2528ec2e373?pvs=4)
 
 ## 📄 6. 테이블 설계서
 * 요구사항 명세서의 **데이터 베이스 설계**의 규칙에 따라 작성하였습니다.
@@ -106,6 +106,7 @@
 
 <details>
     <summary><h2>4L</h2></summary>
+
 ### 1. Liked : 좋았던 것/잘 한 것
 
 ### 2. Lacked : 아쉬웠던 것/부족했던 것
