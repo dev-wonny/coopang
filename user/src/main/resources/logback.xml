@@ -1,0 +1,17 @@
+<configuration>
+	<appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+		<http>
+			<url>http://localhost:3100/loki/api/v1/push</url>
+		</http>
+		<format>
+			<label>
+				<pattern>app=my-app,host=${HOSTNAME}</pattern>
+			</label>
+			<message class="com.github.loki4j.logback.JsonLayout" />
+		</format>
+	</appender>
+
+	<root level="DEBUG">
+		<appender-ref ref="LOKI" />
+	</root>
+</configuration>
