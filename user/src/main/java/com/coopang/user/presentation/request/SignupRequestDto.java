@@ -1,4 +1,4 @@
-package com.coopang.user.presentation.dtos;
+package com.coopang.user.presentation.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

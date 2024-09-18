@@ -1,4 +1,4 @@
-package com.coopang.user.presentation.dtos;
+package com.coopang.user.presentation.request;
 
 import com.coopang.user.application.enums.UserRoleEnum;
 import jakarta.validation.constraints.NotBlank;
