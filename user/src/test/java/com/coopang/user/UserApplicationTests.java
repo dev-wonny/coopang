@@ -1,6 +1,6 @@
 package com.coopang.user;
 
-import static com.coopang.user.application.enums.Authority.MASTER;
+import static com.coopang.user.application.enums.UserRoleEnum.Authority.MASTER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.coopang.user.application.enums.UserRoleEnum;
@@ -28,7 +28,7 @@ class UserApplicationTests {
     void contextLoads() {
 
         SignupRequestDto dto = new SignupRequestDto();
-		dto.setEmail("email@naver.com");
+        dto.setEmail("email@naver.com");
         dto.setUsername("name");
         dto.setPhoneNumber("010-2222-2222");
         dto.setSlackId("slackId");

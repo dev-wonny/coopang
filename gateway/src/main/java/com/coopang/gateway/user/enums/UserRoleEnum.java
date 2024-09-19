@@ -1,6 +1,5 @@
-package com.coopang.user.application.enums;
+package com.coopang.gateway.user.enums;
 
-import com.coopang.user.application.error.AccessDeniedException;
 import lombok.Getter;
 
 @Getter
@@ -54,7 +53,7 @@ public enum UserRoleEnum {
      */
     public static void validateMaster(String role) {
         if (!isMaster(role)) {
-            throw new AccessDeniedException("Access denied. User role is not MANAGER or MASTER.");
+//            throw new CustomAccessDeniedException("Access denied. User role is not MANAGER or MASTER.");
         }
     }
 }

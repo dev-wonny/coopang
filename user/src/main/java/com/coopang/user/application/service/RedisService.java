@@ -1,11 +1,13 @@
 package com.coopang.user.application.service;
 
 import com.coopang.user.application.enums.UserRoleEnum;
+import com.coopang.user.application.response.UserResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j(topic = "RedisService")
@@ -40,10 +42,10 @@ public class RedisService {
             log.info("Role not found in Redis for user_id: {}. Fetching from DB.", userId);
 
             // DB 조회
-            roleString = userService.findRoleByUserId(userId);
+            UserResponseDto user = userService.getUserInfoById(UUID.fromString(userId));
 
             // Redis에 캐싱
-            redisTemplate.opsForValue().set(redisKey, roleString, 1, TimeUnit.HOURS);
+            redisTemplate.opsForValue().set(redisKey, user.getRole().getAuthority(), 1, TimeUnit.HOURS);
         }
 
         // Redis에서 가져온 문자열을 UserRoleEnum으로 변환
