@@ -1,6 +1,6 @@
 package com.coopang.user;
 
-import static com.coopang.user.application.enums.Authority.MASTER;
+import static com.coopang.user.application.enums.UserRoleEnum.Authority.MASTER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import com.coopang.user.application.enums.UserRoleEnum;

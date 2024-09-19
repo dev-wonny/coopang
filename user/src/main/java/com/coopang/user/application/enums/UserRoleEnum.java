@@ -1,5 +1,6 @@
 package com.coopang.user.application.enums;
 
+import com.coopang.user.application.error.AccessDeniedException;
 import lombok.Getter;
 
 @Getter
@@ -15,6 +16,14 @@ public enum UserRoleEnum {
 
     UserRoleEnum(String authority) {
         this.authority = authority;
+    }
+
+    public static class Authority {
+        public static final String MASTER = "ROLE_MASTER";
+        public static final String HUB_MANAGER = "ROLE_HUB_MANAGER";
+        public static final String COMPANY = "ROLE_COMPANY";
+        public static final String SHIPPER_HUB = "ROLE_SHIPPER_HUB";
+        public static final String SHIPPER_COMPANY = "ROLE_SHIPPER_COMPANY";
     }
 
 
@@ -45,7 +54,7 @@ public enum UserRoleEnum {
      */
     public static void validateMaster(String role) {
         if (!isMaster(role)) {
-//            throw new CustomAccessDeniedException("Access denied. User role is not MANAGER or MASTER.");
+            throw new AccessDeniedException("Access denied. User role is not MANAGER or MASTER.");
         }
     }
 }
