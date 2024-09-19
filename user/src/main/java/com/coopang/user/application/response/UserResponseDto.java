@@ -5,9 +5,12 @@ import com.coopang.user.domain.entity.user.UserEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Getter
 @NoArgsConstructor
 public class UserResponseDto {
+    private UUID userId;
     private String email;
     private String username;
     private String phoneNumber;
@@ -15,7 +18,10 @@ public class UserResponseDto {
     private Boolean isBlock;
 
     // private 생성자, 외부에서 객체 생성을 막음
-    private UserResponseDto(String email, String username, String phoneNumber, UserRoleEnum role, Boolean isBlock) {
+
+
+    private UserResponseDto(UUID userId, String email, String username, String phoneNumber, UserRoleEnum role, Boolean isBlock) {
+        this.userId = userId;
         this.email = email;
         this.username = username;
         this.phoneNumber = phoneNumber;
@@ -31,6 +37,7 @@ public class UserResponseDto {
      */
     public static UserResponseDto fromUser(UserEntity user) {
         return new UserResponseDto(
+                user.getUserId(),
                 user.getEmail(),
                 user.getUsername(),
                 user.getPhoneNumber(),

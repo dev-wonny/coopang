@@ -1,91 +1,124 @@
 package com.coopang.user.application.service;
 
 import com.coopang.user.application.enums.UserRoleEnum;
+import com.coopang.user.application.error.UserNotFoundException;
 import com.coopang.user.application.response.UserResponseDto;
 import com.coopang.user.domain.entity.user.UserEntity;
+import com.coopang.user.domain.repository.UserRepository;
 import com.coopang.user.domain.service.UserDomainService;
 import com.coopang.user.presentation.request.ChangePasswordRequestDto;
+import com.coopang.user.presentation.request.SearchRequestDto;
 import com.coopang.user.presentation.request.SignupRequestDto;
 import com.coopang.user.presentation.request.UpdateRequestDto;
 import com.coopang.user.presentation.request.UserSearchCondition;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
-@Service
+@Slf4j(topic = "UserService")
 @Transactional
+@Service
 public class UserService {
-
-    /*
-    이 계층에서는 비즈니스 로직을 처리하고 외부 애플리케이션에서 호출되는 서비스 역할을 합니다.
-    이 서비스는 데이터베이스나 인프라와 직접 상호작용하는 대신,
-    도메인 계층을 통해 간접적으로 접근하는 것이 이상적입니다.
-     */
-
-
+    private final UserRepository userRepository;
     private final UserDomainService userDomainService;
 
-    public UserService(UserDomainService userDomainService) {
+    public UserService(UserRepository userRepository, UserDomainService userDomainService) {
+        this.userRepository = userRepository;
         this.userDomainService = userDomainService;
     }
 
-    /**
-     * 회원 생성 요청 처리
-     */
-    public UserResponseDto join(SignupRequestDto dto) {
-        return UserResponseDto.fromUser(userDomainService.createUser(dto, UserRoleEnum.getRoleEnum(dto.getRole())));
+    public UserResponseDto join(SignupRequestDto request) {
+        // email 중복 확인
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+        return UserResponseDto.fromUser(userDomainService.createUser(request, UserRoleEnum.valueOf(request.getRole())));
     }
 
-    /**
-     * 회원 조회
-     */
-    public UserResponseDto getUserInfo(UUID userId) {
-        return UserResponseDto.fromUser(userDomainService.getUserInfo(userId).get());
+    public UserResponseDto loginByEmail(String email, String password) {
+        UserEntity user = getUserInfoByEmail(email);
+        checkPassword(user, password);
+        return UserResponseDto.fromUser(user);
     }
 
-    /**
-     * 사용자 정보 수정 요청 처리
-     */
-    public UserResponseDto updateUserInfo(UUID userId, UpdateRequestDto dto) {
-        return UserResponseDto.fromUser(userDomainService.updateUser(userId, dto));
+    // 조회
+    public UserResponseDto getUserInfoById(UUID userId) {
+        UserEntity user = findById(userId);
+        return UserResponseDto.fromUser(user);
     }
 
-
-    // 회원 삭제
-    public void deleteUser(UUID deleteUserId) {
-        userDomainService.deleteUser(deleteUserId);
+    public UserEntity getUserInfoByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
     }
 
-    /**
-     * 비밀번호 변경 요청 처리
-     */
-    public void changePassword(UUID userId, String newPassword) {
-        userDomainService.changeUserPassword(userId, newPassword);
+    public Page<UserResponseDto> searchUsers(UserSearchCondition condition, SearchRequestDto searchRequestDto) {
+        PageRequest pageRequest = PageRequest.of(
+                searchRequestDto.getValidatedPage(),
+                searchRequestDto.getValidatedSize(),
+                Sort.by(searchRequestDto.getValidatedSortBy())
+        );
+
+        Page<UserEntity> users = userRepository.search(condition, pageRequest);
+        return users.map(UserResponseDto::fromUser);
     }
 
-    public void changePasswordWithCheckPastPassword(UUID loginUserId, ChangePasswordRequestDto requestDto) {
-        userDomainService.changePasswordWithCheckPastPassword(requestDto, loginUserId);
+    // 수정
+    public void updateUser(UUID userId, UpdateRequestDto request) {
+        UserEntity user = findById(userId);
+        userDomainService.updateUser(user, request);
+        log.debug("updateUser userId:{}", userId);
     }
 
-    public Page<UserResponseDto> searchUsers(UserSearchCondition condition) {
-        List<UserEntity> userList = userDomainService.searchUsers(condition);
-        return null;
+    public void changePassword(ChangePasswordRequestDto request) {
+        UUID userId = request.getUserId();
+        UserEntity user = findById(userId);
+
+        // 비밀번호 확인
+        checkPassword(user, request.getCurrentPassword());
+        userDomainService.changePassword(user, request);
+        log.debug("changePassword userId:{}", userId);
     }
 
-    public Page<UserResponseDto> getAllUsers(int page, int size, String sortBy) {
-        Page<UserEntity> userPage = userDomainService.getAllUsers(page, size, sortBy);
-        return userPage.map(UserResponseDto::fromUser);
+    public void blockUser(UUID userId) {
+        UserEntity user = findById(userId);
+        userDomainService.blockUser(user);
+        log.debug("blockUser userId:{}", userId);
     }
 
-    public String findRoleByUserId(String userId) {
-        return userDomainService.findRoleByUserId(UUID.fromString(userId))
-                .map(user -> user.getRole().name())
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
+    // 삭제
+    public void deleteUser(UUID userId) {
+        UserEntity user = findById(userId);
+        userDomainService.deleteUser(user);
+        log.debug("deleteUser userId:{}", userId);
+
     }
 
+    public Page<UserResponseDto> getAllUsers(SearchRequestDto searchRequestDto) {
+        UserSearchCondition condition = new UserSearchCondition();
+        condition.setUserName(searchRequestDto.getKeyword());
 
+        Pageable pageable = PageRequest.of(searchRequestDto.getValidatedPage(), searchRequestDto.getValidatedSize(), Sort.by(searchRequestDto.getValidatedSortBy()));
+        Page<UserEntity> users = userRepository.search(condition, pageable);
+
+        return users.map(UserResponseDto::fromUser);
+    }
+
+    private UserEntity findById(UUID userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId.toString()));
+    }
+
+    public void checkPassword(UserEntity user, String currentPassword) {
+        try {
+            userDomainService.checkPassword(user, currentPassword);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.", e);
+        }
+    }
 }

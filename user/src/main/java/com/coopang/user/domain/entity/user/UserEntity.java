@@ -92,4 +92,8 @@ public class UserEntity extends BaseEntity {
         this.password = password;
     }
 
+
+    public void setBlocked() {
+        this.isBlock = true;
+    }
 }
