@@ -50,13 +50,13 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String createToken(String userId, UserRoleEnum role) {
+    public String createToken(String userId, String email) {
 
         return bearerPrefix +
                 Jwts.builder()
+                        .setId(email)
                         .setSubject(userId)
-                        .setIssuer("auth-service")
-                        .claim(ROLE_KEY, role.name())
+                        .setIssuer("user-service")
                         .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                         .setIssuedAt(new Date(System.currentTimeMillis())) // 발급일
                         .signWith(key, signatureAlgorithm)
@@ -72,15 +72,13 @@ public class JwtUtil {
                 .getSubject();
     }
 
-    public UserRoleEnum getRole(String token) {
-        return UserRoleEnum
-                .getRoleEnum(
-                        Jwts.parserBuilder()
-                                .setSigningKey(key)
-                                .build()
-                                .parseClaimsJws(token)
-                                .getBody()
-                                .get(ROLE_KEY, String.class));
+    public String getEmail(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getId();
     }
 
     public boolean isTokenExpired(String token) {
@@ -111,10 +109,10 @@ public class JwtUtil {
     }
 
     // JWT 토큰 substring
-    public String extractTokenFromBearer(String tokenValue) {
-        tokenValue = URLDecoder.decode(tokenValue, StandardCharsets.UTF_8);
-        if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(bearerPrefix)) {
-            return tokenValue.substring(7);
+    public String extractTokenFromBearer(String bearerJwtToken) {
+        bearerJwtToken = URLDecoder.decode(bearerJwtToken, StandardCharsets.UTF_8);
+        if (StringUtils.hasText(bearerJwtToken) && bearerJwtToken.startsWith(bearerPrefix)) {
+            return bearerJwtToken.substring(7);
         }
         log.error("Not Found Token");
         throw new NullPointerException("Not Found Token");
