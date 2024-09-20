@@ -12,6 +12,8 @@ import com.coopang.user.presentation.request.SignupRequestDto;
 import com.coopang.user.presentation.request.UpdateRequestDto;
 import com.coopang.user.presentation.request.UserSearchCondition;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,6 +50,7 @@ public class UserService {
     }
 
     // 조회
+    @Cacheable(value = "users", key = "#userId")
     public UserResponseDto getUserInfoById(UUID userId) {
         UserEntity user = findById(userId);
         return UserResponseDto.fromUser(user);
@@ -57,6 +60,7 @@ public class UserService {
         return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
     }
 
+    @Cacheable(value = "allUsers", key = "#condition")
     public Page<UserResponseDto> searchUsers(UserSearchCondition condition, SearchRequestDto searchRequestDto) {
         PageRequest pageRequest = PageRequest.of(
                 searchRequestDto.getValidatedPage(),
@@ -69,6 +73,7 @@ public class UserService {
     }
 
     // 수정
+    @CacheEvict(value = "users", key = "#userId")
     public void updateUser(UUID userId, UpdateRequestDto request) {
         UserEntity user = findById(userId);
         userDomainService.updateUser(user, request);
@@ -92,6 +97,7 @@ public class UserService {
     }
 
     // 삭제
+    @CacheEvict(value = "users", key = "#userId")
     public void deleteUser(UUID userId) {
         UserEntity user = findById(userId);
         userDomainService.deleteUser(user);
@@ -99,6 +105,7 @@ public class UserService {
 
     }
 
+    @Cacheable(value = "allUsers", key = "#searchRequestDto")
     public Page<UserResponseDto> getAllUsers(SearchRequestDto searchRequestDto) {
         UserSearchCondition condition = new UserSearchCondition();
         condition.setUserName(searchRequestDto.getKeyword());
@@ -109,7 +116,8 @@ public class UserService {
         return users.map(UserResponseDto::fromUser);
     }
 
-    private UserEntity findById(UUID userId) {
+    @Cacheable(value = "users", key = "#userId")
+    public UserEntity findById(UUID userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId.toString()));
     }

@@ -6,20 +6,27 @@ import com.coopang.user.infrastructure.jwt.JwtUtil;
 import com.coopang.user.presentation.request.LoginRequestDto;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Slf4j(topic = "AuthService")
 @Service
 public class AuthService {
 
     private final UserService userService;
+    private final RedisService redisService;
     private final JwtUtil jwtUtil;
 
-    public AuthService(UserService userService, JwtUtil jwtUtil) {
+    public AuthService(UserService userService, RedisService redisService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.redisService = redisService;
         this.jwtUtil = jwtUtil;
     }
 
+    @Cacheable(value = "users", key = "#requestDto.email")
     public LoginResponseDto login(LoginRequestDto requestDto, HttpServletResponse res) {
 
         final UserResponseDto userResponseDto = userService.loginByEmail(requestDto.getEmail(), requestDto.getPassword());
@@ -35,5 +42,11 @@ public class AuthService {
                 .userId(userResponseDto.getUserId())
                 .role(userResponseDto.getRole())
                 .build();
+    }
+
+    @CacheEvict(value = "users", key = "#userId")
+    public void logout(UUID userId, String extractedToken) {
+        redisService.addBlackToken(extractedToken);
+        log.debug("logout extractedToken:{}", extractedToken);
     }
 }

@@ -4,7 +4,6 @@ import com.coopang.user.application.error.AccessDeniedException;
 import com.coopang.user.application.response.LoginResponseDto;
 import com.coopang.user.application.response.UserResponseDto;
 import com.coopang.user.application.service.AuthService;
-import com.coopang.user.application.service.RedisService;
 import com.coopang.user.domain.entity.user.UserEntity;
 import com.coopang.user.infrastructure.security.UserDetailsImpl;
 import com.coopang.user.presentation.request.LoginRequestDto;
@@ -26,22 +25,19 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/auth/v1")
 public class AuthController {
-
-    private final RedisService redisService;
     private final AuthService authService;
 
-    public AuthController(RedisService redisService, AuthService authService) {
-        this.redisService = redisService;
+    public AuthController(AuthService authService) {
         this.authService = authService;
     }
 
     /*
-        jwt 토큰이 없는 상태
-            로그인 요청
-            - email과 비밀번호가 일치하는지 확인
-            - 일치하면 토큰을 발행한다
-            - 토큰을 쿠키에 담는다, 게이트웨이 서버로 보낸다, 게이트웨이 서버는 유저에게 jwt 토큰을 준다
-    */
+            jwt 토큰이 없는 상태
+                로그인 요청
+                - email과 비밀번호가 일치하는지 확인
+                - 일치하면 토큰을 발행한다
+                - 토큰을 쿠키에 담는다, 게이트웨이 서버로 보낸다, 게이트웨이 서버는 유저에게 jwt 토큰을 준다
+        */
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto requestDto, HttpServletResponse res) {
         final LoginResponseDto responseDto = authService.login(requestDto, res);
@@ -76,10 +72,11 @@ public class AuthController {
         - 클라이언트에서 jwt 토큰 쿠키 삭제
      */
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@RequestHeader(value = "X-Token", required = true) String extractedToken) {
-        // 토큰을 블랙리스트에 추가
-        redisService.addBlackToken(extractedToken);
-        log.debug("logout extractedToken:{}", extractedToken);
+    public ResponseEntity<Void> logout(
+            @RequestHeader(value = "X-User-Id", required = true) UUID userId,
+            @RequestHeader(value = "X-Token", required = true) String extractedToken
+    ) {
+        authService.logout(userId, extractedToken);
         return ResponseEntity.ok().build();
     }
 }
