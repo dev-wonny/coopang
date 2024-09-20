@@ -1,68 +1,102 @@
-version: '3.8'
-
 services:
-  # PostgreSQL 데이터베이스
-  postgres:
-    image: postgres:latest
-    container_name: postgres
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "5432:5432"
-    networks:
-      - coopang
-    volumes:
-      - db_data:/var/lib/postgresql/data
+    postgres:
+        image: postgres:latest
+        container_name: postgres
+        environment:
+            POSTGRES_DB: ${POSTGRES_DB}
+            POSTGRES_USER: ${DB_USERNAME}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+        ports:
+            - "5432:5432"
+        networks:
+            - coopang
+        volumes:
+            - db_data:/var/lib/postgresql/data
+            - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # init 스크립트를 마운트
 
-  redis-stack:
-    image: redis/redis-stack
-    container_name: redis-stack-compose
-    restart: always
-    environment:
-      REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"  # 환경변수 사용
-    ports:
-      - "6379:6379"
-      - "8001:8001"  # RedisInsight GUI를 위한 포트
-    networks:
-      - coopang
-  # 게이트웨이 서버
-  gateway:
-    image: image-gateway
-    container_name: gateway_service
-    ports:
-      - "98080:98080"
-    depends_on:
-      - auth-service
-    networks:
-      - coopang
+    redis-stack:
+        image: redis/redis-stack
+        container_name: redis-stack-compose
+        restart: always
+        environment:
+            REDIS_ARGS: "--requirepass ${REDIS_PASSWORD}"
+        ports:
+            - "6379:6379"
+            - "8001:8001"
+        networks:
+            - coopang
 
-  # 인증 서버
-  auth-service:
-    image: image-auth
-    container_name: auth_service
-    ports:
-      - "98081:98081"
-    depends_on:
-      - postgres
-    networks:
-      - coopang
+    prometheus:
+        image: prom/prometheus
+        container_name: prometheus
+        volumes:
+            - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml  # Prometheus 설정 파일 마운트
+        ports:
+            - "9090:9090"
+        networks:
+            - coopang
 
-  # 모노리틱 서버
-  monolithic-service:
-    image: image-mono
-    container_name: monolithic_service
-    ports:
-      - "98082:98082"
-    depends_on:
-      - postgres
-    networks:
-      - coopang
+    grafana:
+        image: grafana/grafana
+        container_name: grafana
+        ports:
+            - "3000:3000"
+        networks:
+            - coopang
+
+    loki:
+        image: grafana/loki:3.0.0
+        container_name: loki
+        ports:
+            - "3100:3100"
+        networks:
+            - coopang
+        volumes:
+            - ./loki/loki-config.yml:/mnt/config/loki-config.yml  # Loki 설정 파일 마운트
+        command: -config.file=/mnt/config/loki-config.yml
+
+    eureka:
+        image: image-eureka
+        container_name: eureka
+        ports:
+            - "19090:19090"
+        networks:
+            - coopang
+
+    gateway:
+        image: image-gateway
+        container_name: gateway
+        ports:
+            - "19091:19091"
+        depends_on:
+            - eureka
+        networks:
+            - coopang
+
+    user:
+        image: image-user
+        container_name: user
+        ports:
+            - "19092:19092"
+        depends_on:
+            - eureka
+            - postgres
+        networks:
+            - coopang
+
+    hub:
+        image: image-hub
+        container_name: hub
+        ports:
+            - "19093:19093"
+        depends_on:
+            - eureka
+            - postgres
+        networks:
+            - coopang
 
 networks:
-  default:
-    driver: bridge
-
+    coopang:
+        external: true  # 이미 생성된 네트워크를 사용
 volumes:
-  db_data:
+    db_data:
