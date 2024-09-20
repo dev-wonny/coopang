@@ -1,66 +1,64 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.3.3'
-	id 'io.spring.dependency-management' version '1.1.6'
+    id 'java'
+    id 'org.springframework.boot' version '3.3.3'
+    id 'io.spring.dependency-management' version '1.1.6'
 }
 
 allprojects {
 
-	group = 'com.coopang'
-	version = '0.0.1-SNAPSHOT'
+    group = 'com.coopang'
+    version = '0.0.1-SNAPSHOT'
 
-	java {
-		toolchain {
-			languageVersion = JavaLanguageVersion.of(17)
-		}
-	}
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+    }
 
-	repositories {
-		mavenCentral()
-	}
+    repositories {
+        mavenCentral()
+    }
 
-	ext {
-		set('springCloudVersion', "2023.0.3")
-	}
+    ext {
+        set('springCloudVersion', "2023.0.3")
+    }
 }
 
 subprojects {
-	// 공통 설정
-	apply plugin: 'java'
-	apply plugin: 'io.spring.dependency-management'
+    // 공통 설정
+    apply plugin: 'java'
+    apply plugin: 'io.spring.dependency-management'
 
-	dependencyManagement {
-		imports {
-			mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-		}
-	}
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
+    }
 
-	dependencies {
-		implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-		// validation
-		implementation 'org.springframework.boot:spring-boot-starter-validation'
+        // validation
+        implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-		// Lombok
-		compileOnly 'org.projectlombok:lombok'
-		annotationProcessor 'org.projectlombok:lombok'
+        // Lombok
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+        testAnnotationProcessor 'org.projectlombok:lombok'
+        testImplementation 'org.projectlombok:lombok'
 
-		// Prometheus for metrics monitoring
-		implementation 'io.micrometer:micrometer-registry-prometheus'
+        // Prometheus for metrics monitoring
+        implementation 'io.micrometer:micrometer-registry-prometheus'
 
-		// Loki Logback Appender for logging to Loki
-		implementation 'com.github.loki4j:loki-logback-appender:1.5.1'
+        // Loki Logback Appender for logging to Loki
+        implementation 'com.github.loki4j:loki-logback-appender:1.5.1'
 
-		// Swagger for API documentation
-		implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+        // Swagger for API documentation
+        implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 
-		// Testing dependencies
-		testAnnotationProcessor 'org.projectlombok:lombok'
-		testImplementation 'org.projectlombok:lombok'
-	}
+    }
 
-	test {
-		useJUnitPlatform()
-	}
-
+    test {
+        useJUnitPlatform()
+    }
 }
