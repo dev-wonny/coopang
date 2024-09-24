@@ -1,17 +1,20 @@
 package com.coopang.user.presentation.controller;
 
 import com.coopang.user.application.enums.UserRoleEnum;
+import com.coopang.user.application.request.UserDto;
 import com.coopang.user.application.response.UserResponseDto;
 import com.coopang.user.application.service.UserService;
 import com.coopang.user.presentation.request.ChangePasswordRequestDto;
-import com.coopang.user.presentation.request.SearchRequestDto;
 import com.coopang.user.presentation.request.SignupRequestDto;
 import com.coopang.user.presentation.request.UpdateRequestDto;
 import com.coopang.user.presentation.request.UserSearchCondition;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -33,15 +36,20 @@ import java.util.UUID;
 @RequestMapping("/users/v1")
 public class UserController {
     private final UserService userService;
+    private final ModelMapper mapper;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, ModelMapper mapper) {
         this.userService = userService;
+        this.mapper = mapper;
     }
 
     // 회원 가입
     @PostMapping("/join")
     public ResponseEntity<String> signupUser(@Valid @RequestBody SignupRequestDto signupRequestDto) {
-        final UserResponseDto user = userService.join(signupRequestDto);
+        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        UserDto userDto = mapper.map(signupRequestDto, UserDto.class);
+
+        final UserResponseDto user = userService.join(userDto);
         return new ResponseEntity<>(user.getEmail(), HttpStatus.OK);
     }
 
@@ -56,7 +64,10 @@ public class UserController {
     @Secured(UserRoleEnum.Authority.MASTER)
     @PutMapping("/user/{userId}")
     public ResponseEntity<UserResponseDto> updateUserInfo(@PathVariable("userId") UUID userId, @RequestBody UpdateRequestDto updateRequestDto) {
-        userService.updateUser(userId, updateRequestDto);
+        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        UserDto userDto = mapper.map(updateRequestDto, UserDto.class);
+
+        userService.updateUser(userId, userDto);
         final UserResponseDto userInfo = userService.getUserInfoById(userId);
         return new ResponseEntity<>(userInfo, HttpStatus.OK);
     }
@@ -69,21 +80,19 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-
     // 회원 목록 조회 엔드포인트
     @Secured(UserRoleEnum.Authority.MASTER)
     @GetMapping("/user")
-    public ResponseEntity<Page<UserResponseDto>> getAllUsers(SearchRequestDto searchRequestDto) {
-        Page<UserResponseDto> users = userService.getAllUsers(searchRequestDto);
+    public ResponseEntity<Page<UserResponseDto>> getAllUsers(Pageable pageable) {
+        Page<UserResponseDto> users = userService.getAllUsers(pageable);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
-
 
     // 회원 검색 엔드포인트
     @Secured(UserRoleEnum.Authority.MASTER)
     @GetMapping("/user/search")
-    public ResponseEntity<Page<UserResponseDto>> searchUsers(UserSearchCondition userSearchCondition, SearchRequestDto searchRequestDto) {
-        Page<UserResponseDto> users = userService.searchUsers(userSearchCondition, searchRequestDto);
+    public ResponseEntity<Page<UserResponseDto>> searchUsers(UserSearchCondition userSearchCondition, Pageable pageable) {
+        Page<UserResponseDto> users = userService.searchUsers(userSearchCondition, pageable);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 

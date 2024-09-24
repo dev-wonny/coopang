@@ -7,5 +7,4 @@ public class UserSearchCondition {
     private String userName;
     private String userRole;
     private String email;
-
 }

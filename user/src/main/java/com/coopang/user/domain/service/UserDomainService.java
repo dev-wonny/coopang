@@ -1,11 +1,9 @@
 package com.coopang.user.domain.service;
 
-import com.coopang.user.application.enums.UserRoleEnum;
+import com.coopang.user.application.request.UserDto;
 import com.coopang.user.domain.entity.user.UserEntity;
 import com.coopang.user.infrastructure.repository.UserJpaRepository;
 import com.coopang.user.presentation.request.ChangePasswordRequestDto;
-import com.coopang.user.presentation.request.SignupRequestDto;
-import com.coopang.user.presentation.request.UpdateRequestDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,19 +20,13 @@ public class UserDomainService {
     }
 
     // 생성
-    public UserEntity createUser(SignupRequestDto dto, UserRoleEnum role) {
+    public UserEntity createUser(UserDto userDto) {
         // 비밀번호 암호화
-        final String encodedPassword = passwordEncoder.encode(dto.getPassword());
+        final String encodedPassword = passwordEncoder.encode(userDto.getPassword());
 
         // 회원 등록
-        UserEntity newUser = UserEntity.create(dto, encodedPassword, role);
+        UserEntity newUser = UserEntity.create(userDto, encodedPassword);
         return userJpaRepository.save(newUser);
-    }
-
-    // 수정
-    public void updateUser(UserEntity user, UpdateRequestDto dto) {
-        user.updateUserInfo(dto);
-        userJpaRepository.save(user);
     }
 
     public void changePassword(UserEntity user, ChangePasswordRequestDto dto) {
@@ -48,16 +40,5 @@ public class UserDomainService {
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             throw new IllegalArgumentException();
         }
-    }
-
-    public void blockUser(UserEntity user) {
-        user.setBlocked();
-        userJpaRepository.save(user);
-    }
-
-    // 삭제
-    public void deleteUser(UserEntity user) {
-        user.setDeleted(true);
-        userJpaRepository.save(user);
     }
 }

@@ -4,9 +4,9 @@ import static com.coopang.user.application.enums.UserRoleEnum.Authority.MASTER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import com.coopang.user.application.enums.UserRoleEnum;
+import com.coopang.user.application.request.UserDto;
 import com.coopang.user.domain.entity.user.QUserEntity;
 import com.coopang.user.domain.entity.user.UserEntity;
-import com.coopang.user.presentation.request.SignupRequestDto;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -35,35 +35,39 @@ class QuerydslBasicTest {
         UserRoleEnum role = UserRoleEnum.getRoleEnum(MASTER);
 
 
-        SignupRequestDto dto = new SignupRequestDto();
+        UserDto dto = new UserDto();
         dto.setEmail("email@naver.com");
         dto.setUsername("name");
         dto.setPhoneNumber("010-2222-2222");
         dto.setSlackId("slackId");
+        dto.setRole(role.getAuthority());
 
-        SignupRequestDto dto1 = new SignupRequestDto();
+        UserDto dto1 = new UserDto();
         dto1.setEmail("email1@naver.com");
         dto1.setUsername("name1");
         dto1.setPhoneNumber("010-2222-2222");
         dto1.setSlackId("slackId1");
+        dto1.setRole(role.getAuthority());
 
-        SignupRequestDto dto2 = new SignupRequestDto();
+        UserDto dto2 = new UserDto();
         dto2.setEmail("email2@naver.com");
         dto2.setUsername("name2");
         dto2.setPhoneNumber("010-2222-2222");
         dto2.setSlackId("slackId2");
+        dto2.setRole(role.getAuthority());
 
 
-        SignupRequestDto dto3 = new SignupRequestDto();
+        UserDto dto3 = new UserDto();
         dto3.setEmail("email3@naver.com");
         dto3.setUsername("name3");
         dto3.setPhoneNumber("010-2222-2222");
         dto3.setSlackId("slackId3");
+        dto3.setRole(role.getAuthority());
 
-        UserEntity insertUser = UserEntity.create(dto, passwordEncode, role);
-        UserEntity insertUser1 = UserEntity.create(dto1, passwordEncode, role);
-        UserEntity insertUser2 = UserEntity.create(dto2, passwordEncode, role);
-        UserEntity insertUser3 = UserEntity.create(dto3, passwordEncode, role);
+        UserEntity insertUser = UserEntity.create(dto, passwordEncode);
+        UserEntity insertUser1 = UserEntity.create(dto1, passwordEncode);
+        UserEntity insertUser2 = UserEntity.create(dto2, passwordEncode);
+        UserEntity insertUser3 = UserEntity.create(dto3, passwordEncode);
 
 
         em.persist(insertUser);

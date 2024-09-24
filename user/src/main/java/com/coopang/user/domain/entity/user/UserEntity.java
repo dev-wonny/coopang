@@ -1,9 +1,8 @@
 package com.coopang.user.domain.entity.user;
 
 import com.coopang.user.application.enums.UserRoleEnum;
+import com.coopang.user.application.request.UserDto;
 import com.coopang.user.domain.entity.base.BaseEntity;
-import com.coopang.user.presentation.request.SignupRequestDto;
-import com.coopang.user.presentation.request.UpdateRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -69,23 +68,23 @@ public class UserEntity extends BaseEntity {
         this.role = role;
     }
 
-    public static UserEntity create(SignupRequestDto dto, String passwordEncode, UserRoleEnum role) {
+    public static UserEntity create(UserDto dto, String passwordEncode) {
         return UserEntity.builder()
                 .email(dto.getEmail())
                 .password(passwordEncode)
                 .username(dto.getUsername())
                 .phoneNumber(dto.getPhoneNumber())
                 .slackId(dto.getSlackId())
-                .role(role)
+                .role(UserRoleEnum.valueOf(dto.getRole()))
                 .build();
 
     }
 
-    public void updateUserInfo(UpdateRequestDto requestDto) {
-        this.username = requestDto.getUsername();
-        this.phoneNumber = requestDto.getPhoneNumber();
-        this.slackId = requestDto.getSlackId();
-        this.role = requestDto.getRole();
+    public void updateUserInfo(UserDto dto) {
+        this.username = dto.getUsername();
+        this.phoneNumber = dto.getPhoneNumber();
+        this.slackId = dto.getSlackId();
+        this.role = UserRoleEnum.valueOf(dto.getRole());
     }
 
     public void changePassword(String password) {
