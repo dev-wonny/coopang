@@ -3,7 +3,8 @@
 ![Logo](./image/coopangLogo.png)
 
 ## 🗓️ 개발 기간
-* 2024.09.05 ~ 2024.09.19
+* 2024.09.24 ~ 2024.10.25
+* [일정 링크](https://github.com/dev-wonny/coopang/wiki/%EC%9D%BC%EC%A0%95)
 * [Github Projects Todo 링크](https://github.com/users/dev-wonny/projects/1)
   
 ## 📚 목차
@@ -83,19 +84,6 @@
 
 * Git Commit 전략
     * 자세한 내용은 [📘 Wiki - GitCommit 전략 링크](https://github.com/dev-wonny/coopang/wiki/Commit-%EC%A0%84%EB%9E%B5) 에서 확인 가능합니다.
-
-|머리말|내용|
-|-----|-----|
-|Init|시작|
-|Fix|버그 수정|
-|Add|새로운 기능 추가|
-|Update|기존 기능 업데이트|
-|Remove|불필요한 코드 제거|
-|Refactor|코드 리팩토링|
-|Improve|성능 개선|
-|Document|문서화|
-|Style|스타일 변경 (예: 코드 포맷팅)|
-|Test|테스트 추가 또는 수정|
 
 ## 🎥 10. 시연영상
 * [ ▶ 시연영상 YouTube 링크]()
