@@ -1,8 +1,13 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.3.3'
+    id 'org.springframework.boot' version '3.3.4'
     id 'io.spring.dependency-management' version '1.1.6'
 }
+
+// bootJar 작업은 실행 가능한 jar을 생성하려고 시도하기 때문에 이를 위해서는 main() 메서드가 필요합니다.
+// Root 프로젝트는 main 없이 라이브러리의 역할을 하는 모듈이기 때문에 false로 비활성화해줍니다.
+bootJar.enabled = false
+jar.enabled = true
 
 allprojects {
 

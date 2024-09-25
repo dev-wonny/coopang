@@ -1,0 +1,12 @@
+spring:
+    application:
+        name: api-config
+
+security:
+    filter:
+        excluded-paths:
+            - /users/v1/join
+            - /auth/v1/login
+            - /swagger-ui
+            - /v3/api-docs
+            - /actuator
