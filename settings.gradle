@@ -1,2 +1,3 @@
 rootProject.name = 'coopang'
-include 'eureka', 'gateway', 'user'
+include 'eureka', 'gateway', 'user', 'hub'
+include 'api-data', 'api-config'
