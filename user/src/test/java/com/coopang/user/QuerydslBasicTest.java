@@ -1,10 +1,10 @@
 package com.coopang.user;
 
-import static com.coopang.user.application.enums.UserRoleEnum.Authority.MASTER;
+import static com.coopang.apidata.domain.user.enums.UserRoleEnum.Authority.MASTER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import com.coopang.user.application.enums.UserRoleEnum;
-import com.coopang.user.application.request.UserDto;
+import com.coopang.apidata.domain.user.enums.UserRoleEnum;
+import com.coopang.apidata.domain.user.request.UserDto;
 import com.coopang.user.domain.entity.user.QUserEntity;
 import com.coopang.user.domain.entity.user.UserEntity;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -33,7 +33,6 @@ class QuerydslBasicTest {
 
         String passwordEncode = "password";
         UserRoleEnum role = UserRoleEnum.getRoleEnum(MASTER);
-
 
         UserDto dto = new UserDto();
         dto.setEmail("email@naver.com");
@@ -64,10 +63,11 @@ class QuerydslBasicTest {
         dto3.setSlackId("slackId3");
         dto3.setRole(role.getAuthority());
 
-        UserEntity insertUser = UserEntity.create(dto, passwordEncode);
-        UserEntity insertUser1 = UserEntity.create(dto1, passwordEncode);
-        UserEntity insertUser2 = UserEntity.create(dto2, passwordEncode);
-        UserEntity insertUser3 = UserEntity.create(dto3, passwordEncode);
+
+        UserEntity insertUser = UserEntity.create(dto.getEmail(), passwordEncode, dto.getUsername(), dto.getPhoneNumber(), dto.getSlackId(), dto.getRole());
+        UserEntity insertUser1 = UserEntity.create(dto1.getEmail(), passwordEncode, dto1.getUsername(), dto1.getPhoneNumber(), dto1.getSlackId(), dto1.getRole());
+        UserEntity insertUser2 = UserEntity.create(dto2.getEmail(), passwordEncode, dto2.getUsername(), dto2.getPhoneNumber(), dto2.getSlackId(), dto2.getRole());
+        UserEntity insertUser3 = UserEntity.create(dto3.getEmail(), passwordEncode, dto3.getUsername(), dto3.getPhoneNumber(), dto3.getSlackId(), dto3.getRole());
 
 
         em.persist(insertUser);
@@ -77,7 +77,6 @@ class QuerydslBasicTest {
 
         qUser = QUserEntity.userEntity;
     }
-
 
     @Test
     public void startJPQL() {
@@ -89,7 +88,6 @@ class QuerydslBasicTest {
                 .getSingleResult();
         assertThat(findMember.getUsername()).isEqualTo("name");
     }
-
 
     @Test
     public void startQuerydsl() {

@@ -1,6 +1,6 @@
 package com.coopang.user.presentation.controller;
 
-import com.coopang.user.application.error.AccessDeniedException;
+import com.coopang.apiconfig.error.AccessDeniedException;
 import com.coopang.user.application.response.LoginResponseDto;
 import com.coopang.user.application.response.UserResponseDto;
 import com.coopang.user.application.service.AuthService;

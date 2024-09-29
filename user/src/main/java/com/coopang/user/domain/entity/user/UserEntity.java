@@ -1,9 +1,10 @@
 package com.coopang.user.domain.entity.user;
 
-import com.coopang.user.application.enums.UserRoleEnum;
-import com.coopang.user.application.request.UserDto;
-import com.coopang.user.domain.entity.base.BaseEntity;
+import com.coopang.apidata.domain.user.enums.UserRoleEnum;
+import com.coopang.apidata.jpa.entity.address.Address;
+import com.coopang.apidata.jpa.entity.base.BaseEntity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
@@ -54,6 +55,9 @@ public class UserEntity extends BaseEntity {
     @Column(name = "role", nullable = false)
     private UserRoleEnum role;
 
+    @Embedded
+    private Address address;
+
     @Column(name = "is_block", nullable = false)
     private boolean isBlock = false;
 
@@ -68,23 +72,23 @@ public class UserEntity extends BaseEntity {
         this.role = role;
     }
 
-    public static UserEntity create(UserDto dto, String passwordEncode) {
+    public static UserEntity create(String email, String passwordEncode, String username, String phoneNumber, String slackId, String role) {
         return UserEntity.builder()
-                .email(dto.getEmail())
+                .email(email)
                 .password(passwordEncode)
-                .username(dto.getUsername())
-                .phoneNumber(dto.getPhoneNumber())
-                .slackId(dto.getSlackId())
-                .role(UserRoleEnum.valueOf(dto.getRole()))
+                .username(username)
+                .phoneNumber(phoneNumber)
+                .slackId(slackId)
+                .role(UserRoleEnum.valueOf(role))
                 .build();
 
     }
 
-    public void updateUserInfo(UserDto dto) {
-        this.username = dto.getUsername();
-        this.phoneNumber = dto.getPhoneNumber();
-        this.slackId = dto.getSlackId();
-        this.role = UserRoleEnum.valueOf(dto.getRole());
+    public void updateUserInfo(String username, String phoneNumber, String slackId, String role) {
+        this.username = username;
+        this.phoneNumber = phoneNumber;
+        this.slackId = slackId;
+        this.role = UserRoleEnum.valueOf(role);
     }
 
     public void changePassword(String password) {

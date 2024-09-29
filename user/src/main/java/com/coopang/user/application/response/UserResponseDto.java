@@ -1,6 +1,6 @@
 package com.coopang.user.application.response;
 
-import com.coopang.user.application.enums.UserRoleEnum;
+import com.coopang.apidata.domain.user.enums.UserRoleEnum;
 import com.coopang.user.domain.entity.user.UserEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,17 +14,19 @@ public class UserResponseDto {
     private String email;
     private String username;
     private String phoneNumber;
+    private String slackId;
     private UserRoleEnum role;
     private Boolean isBlock;
 
     // private 생성자, 외부에서 객체 생성을 막음
 
 
-    private UserResponseDto(UUID userId, String email, String username, String phoneNumber, UserRoleEnum role, Boolean isBlock) {
+    private UserResponseDto(UUID userId, String email, String username, String phoneNumber, String slackId, UserRoleEnum role, Boolean isBlock) {
         this.userId = userId;
         this.email = email;
         this.username = username;
         this.phoneNumber = phoneNumber;
+        this.slackId = slackId;
         this.role = role;
         this.isBlock = isBlock;
     }
@@ -41,6 +43,7 @@ public class UserResponseDto {
                 user.getEmail(),
                 user.getUsername(),
                 user.getPhoneNumber(),
+                user.getSlackId(),
                 user.getRole(),
                 user.isBlock()
         );

@@ -1,6 +1,6 @@
 package com.coopang.user.application.response;
 
-import com.coopang.user.application.enums.UserRoleEnum;
+import com.coopang.apidata.domain.user.enums.UserRoleEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
