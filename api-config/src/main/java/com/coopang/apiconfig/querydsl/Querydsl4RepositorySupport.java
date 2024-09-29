@@ -1,4 +1,4 @@
-package com.coopang.user.infrastructure.repository;
+package com.coopang.apiconfig.querydsl;
 
 import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Expression;
@@ -27,7 +27,6 @@ public abstract class Querydsl4RepositorySupport {
     private Querydsl querydsl;
     private EntityManager entityManager;
     private JPAQueryFactory queryFactory;
-
 
     public Querydsl4RepositorySupport(Class<?> domainClass) {
         Assert.notNull(domainClass, "Domain class must not be null!");
