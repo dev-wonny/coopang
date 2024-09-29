@@ -1,10 +1,10 @@
 package com.coopang.user;
 
-import static com.coopang.user.application.enums.UserRoleEnum.Authority.MASTER;
+import static com.coopang.apidata.domain.user.enums.UserRoleEnum.Authority.MASTER;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.coopang.user.application.enums.UserRoleEnum;
-import com.coopang.user.application.request.UserDto;
+import com.coopang.apidata.domain.user.enums.UserRoleEnum;
+import com.coopang.apidata.domain.user.request.UserDto;
 import com.coopang.user.domain.entity.user.QUserEntity;
 import com.coopang.user.domain.entity.user.UserEntity;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -23,10 +23,8 @@ class UserApplicationTests {
     @Autowired
     EntityManager entityManager;
 
-
     @Test
     void contextLoads() {
-
         UserDto dto = new UserDto();
         dto.setEmail("email@naver.com");
         dto.setUsername("name");
@@ -36,9 +34,8 @@ class UserApplicationTests {
         UserRoleEnum role = UserRoleEnum.getRoleEnum(MASTER);
         dto.setRole(role.getAuthority());
 
-        UserEntity insertUser = UserEntity.create(dto, passwordEncode);
+        UserEntity insertUser = UserEntity.create(dto.getEmail(), passwordEncode, dto.getUsername(), dto.getPhoneNumber(), dto.getSlackId(), dto.getRole());
         entityManager.persist(insertUser);
-
 
         JPAQueryFactory query = new JPAQueryFactory(entityManager);
         QUserEntity qUser = QUserEntity.userEntity;

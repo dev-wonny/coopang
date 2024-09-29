@@ -1,4 +1,4 @@
-package com.coopang.user.infrastructure.repository;
+package com.coopang.apiconfig.querydsl;
 
 import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Expression;
@@ -8,6 +8,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
@@ -22,19 +23,19 @@ import java.util.List;
 import java.util.function.Function;
 
 @Repository
+@ConditionalOnBean(EntityManager.class)
 public abstract class Querydsl4RepositorySupport {
     private final Class domainClass;
     private Querydsl querydsl;
     private EntityManager entityManager;
     private JPAQueryFactory queryFactory;
 
-
     public Querydsl4RepositorySupport(Class<?> domainClass) {
         Assert.notNull(domainClass, "Domain class must not be null!");
         this.domainClass = domainClass;
     }
 
-    @Autowired
+    @Autowired(required = false)
     public void setEntityManager(EntityManager entityManager) {
         Assert.notNull(entityManager, "EntityManager must not be null!");
         JpaEntityInformation entityInformation = JpaEntityInformationSupport.getEntityInformation(domainClass, entityManager);

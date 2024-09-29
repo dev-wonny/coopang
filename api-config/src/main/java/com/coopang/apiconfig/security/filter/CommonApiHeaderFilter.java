@@ -8,24 +8,25 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 @Slf4j(topic = "CommonApiHeaderFilter")
-@Component
 public class CommonApiHeaderFilter extends OncePerRequestFilter {
     private static final String USER_ID_HEADER = "X-User-Id";
     private static final String USER_ROLE_HEADER = "X-User-Role";
     private final List<String> excludedPaths;
 
     public CommonApiHeaderFilter(List<String> excludedPaths) {
-        this.excludedPaths = excludedPaths;
+        this.excludedPaths = excludedPaths != null ? excludedPaths : new ArrayList<>();
+
     }
+
 
     /**
      * @param request
@@ -42,7 +43,7 @@ public class CommonApiHeaderFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(userId)) {
 
             final UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(request.getUserPrincipal(), userId,
-                    Collections.singleton(new SimpleGrantedAuthority("ROLE_" +role)));
+                    Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role)));
 
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             log.info("Authentication set for user: " + userId);
@@ -63,7 +64,6 @@ public class CommonApiHeaderFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        // 설정 파일에서 받은 excludedPaths 리스트를 확인
         return excludedPaths.stream().anyMatch(path::startsWith);
     }
 }

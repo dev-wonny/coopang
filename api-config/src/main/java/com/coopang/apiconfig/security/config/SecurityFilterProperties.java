@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@ConfigurationProperties(prefix = "security.filter")
+@ConfigurationProperties(prefix = "common.api.filter")
 public class SecurityFilterProperties {
 
     private List<String> paths;

@@ -1,6 +1,6 @@
 package com.coopang.user.domain.service;
 
-import com.coopang.user.application.request.UserDto;
+import com.coopang.apidata.domain.user.request.UserDto;
 import com.coopang.user.domain.entity.user.UserEntity;
 import com.coopang.user.infrastructure.repository.UserJpaRepository;
 import com.coopang.user.presentation.request.ChangePasswordRequestDto;
@@ -25,7 +25,7 @@ public class UserDomainService {
         final String encodedPassword = passwordEncoder.encode(userDto.getPassword());
 
         // 회원 등록
-        UserEntity newUser = UserEntity.create(userDto, encodedPassword);
+        UserEntity newUser = UserEntity.create(userDto.getEmail(), encodedPassword, userDto.getUsername(), userDto.getPhoneNumber(), userDto.getSlackId(), userDto.getRole());
         return userJpaRepository.save(newUser);
     }
 

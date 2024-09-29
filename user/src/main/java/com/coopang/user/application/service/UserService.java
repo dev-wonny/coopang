@@ -1,7 +1,8 @@
 package com.coopang.user.application.service;
 
-import com.coopang.user.application.error.UserNotFoundException;
-import com.coopang.user.application.request.UserDto;
+
+import com.coopang.apiconfig.error.UserNotFoundException;
+import com.coopang.apidata.domain.user.request.UserDto;
 import com.coopang.user.application.response.UserResponseDto;
 import com.coopang.user.domain.entity.user.UserEntity;
 import com.coopang.user.domain.repository.UserRepository;
@@ -57,7 +58,7 @@ public class UserService {
 
     @Cacheable(value = "allUsers", key = "#pageable")
     public Page<UserResponseDto> getAllUsers(Pageable pageable) {
-        Page<UserEntity> users = userRepository.findAll(pageable);
+        Page<UserEntity> users = userRepository.findAllByIsDeletedFalse(pageable);
         return users.map(UserResponseDto::fromUser);
     }
 
@@ -71,7 +72,7 @@ public class UserService {
     @CacheEvict(value = "users", key = "#userId")
     public void updateUser(UUID userId, UserDto dto) {
         UserEntity user = findById(userId);
-        user.updateUserInfo(dto);
+        user.updateUserInfo(dto.getUsername(), dto.getPhoneNumber(), dto.getSlackId(), dto.getRole());
         log.debug("updateUser userId:{}", userId);
     }
 

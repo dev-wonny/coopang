@@ -1,7 +1,9 @@
 package com.coopang.user.presentation.controller;
 
-import com.coopang.user.application.enums.UserRoleEnum;
-import com.coopang.user.application.request.UserDto;
+
+import com.coopang.apiconfig.mapper.ModelMapperConfig;
+import com.coopang.apidata.domain.user.enums.UserRoleEnum;
+import com.coopang.apidata.domain.user.request.UserDto;
 import com.coopang.user.application.response.UserResponseDto;
 import com.coopang.user.application.service.UserService;
 import com.coopang.user.presentation.request.ChangePasswordRequestDto;
@@ -11,8 +13,6 @@ import com.coopang.user.presentation.request.UserSearchCondition;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -36,18 +36,17 @@ import java.util.UUID;
 @RequestMapping("/users/v1")
 public class UserController {
     private final UserService userService;
-    private final ModelMapper mapper;
+    private final ModelMapperConfig mapperConfig;
 
-    public UserController(UserService userService, ModelMapper mapper) {
+    public UserController(UserService userService, ModelMapperConfig mapperConfig) {
         this.userService = userService;
-        this.mapper = mapper;
+        this.mapperConfig = mapperConfig;
     }
 
     // 회원 가입
     @PostMapping("/join")
     public ResponseEntity<String> signupUser(@Valid @RequestBody SignupRequestDto signupRequestDto) {
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        UserDto userDto = mapper.map(signupRequestDto, UserDto.class);
+        UserDto userDto = mapperConfig.strictMapper().map(signupRequestDto, UserDto.class);
 
         final UserResponseDto user = userService.join(userDto);
         return new ResponseEntity<>(user.getEmail(), HttpStatus.OK);
@@ -64,8 +63,7 @@ public class UserController {
     @Secured(UserRoleEnum.Authority.MASTER)
     @PutMapping("/user/{userId}")
     public ResponseEntity<UserResponseDto> updateUserInfo(@PathVariable("userId") UUID userId, @RequestBody UpdateRequestDto updateRequestDto) {
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        UserDto userDto = mapper.map(updateRequestDto, UserDto.class);
+        UserDto userDto = mapperConfig.strictMapper().map(updateRequestDto, UserDto.class);
 
         userService.updateUser(userId, userDto);
         final UserResponseDto userInfo = userService.getUserInfoById(userId);

@@ -18,4 +18,6 @@ public interface UserRepository {
     Page<UserEntity> search(UserSearchCondition condition, Pageable pageable);
 
     Page<UserEntity> findAll(Pageable pageable);
+
+    Page<UserEntity> findAllByIsDeletedFalse(Pageable pageable);
 }

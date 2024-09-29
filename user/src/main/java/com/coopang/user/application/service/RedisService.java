@@ -1,6 +1,6 @@
 package com.coopang.user.application.service;
 
-import com.coopang.user.application.enums.UserRoleEnum;
+import com.coopang.apidata.domain.user.enums.UserRoleEnum;
 import com.coopang.user.application.response.UserResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;

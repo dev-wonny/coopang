@@ -1,6 +1,5 @@
 package com.coopang.user.infrastructure.jwt;
 
-import com.coopang.user.application.enums.UserRoleEnum;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

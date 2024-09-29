@@ -3,7 +3,8 @@ package com.coopang.user.infrastructure.repository;
 
 import static com.coopang.user.domain.entity.user.QUserEntity.userEntity;
 
-import com.coopang.user.application.enums.UserRoleEnum;
+import com.coopang.apiconfig.querydsl.Querydsl4RepositorySupport;
+import com.coopang.apidata.domain.user.enums.UserRoleEnum;
 import com.coopang.user.domain.entity.user.UserEntity;
 import com.coopang.user.presentation.request.UserSearchCondition;
 import com.querydsl.core.types.Predicate;
@@ -44,6 +45,6 @@ public class UserRepositoryCustomImpl extends Querydsl4RepositorySupport impleme
     }
 
     private Predicate roleEq(String userRole) {
-        return StringUtils.hasText(userRole) ? userEntity.role.eq(UserRoleEnum.valueOf(userRole)) : null;
+        return StringUtils.hasText(userRole) ? userEntity.role.eq(UserRoleEnum.getRoleEnum(userRole)) : null;
     }
 }
