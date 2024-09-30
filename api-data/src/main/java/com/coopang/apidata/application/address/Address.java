@@ -1,23 +1,14 @@
-package com.coopang.apidata.jpa.entity.address;
+package com.coopang.apidata.application.address;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Embeddable
 @Getter
+@NoArgsConstructor
 public class Address {
-    @Column(name = "zip_code")
     private String zipCode;
-
-    @Column(name = "address1")
     private String address1;
-
-    @Column(name = "address2")
     private String address2;
-
-    public Address() {
-    }
 
     public Address(String zipCode, String address1, String address2) {
         this.zipCode = zipCode;

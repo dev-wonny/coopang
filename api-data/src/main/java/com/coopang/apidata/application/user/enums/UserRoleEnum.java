@@ -1,4 +1,4 @@
-package com.coopang.apidata.domain.user.enums;
+package com.coopang.apidata.application.user.enums;
 
 import com.coopang.apiconfig.error.AccessDeniedException;
 import lombok.Getter;
