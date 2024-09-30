@@ -1,8 +1,8 @@
 package com.coopang.user.application.service;
 
-
 import com.coopang.apiconfig.error.UserNotFoundException;
-import com.coopang.apidata.domain.user.request.UserDto;
+import com.coopang.user.application.request.AddressDto;
+import com.coopang.user.application.request.UserDto;
 import com.coopang.user.application.response.UserResponseDto;
 import com.coopang.user.domain.entity.user.UserEntity;
 import com.coopang.user.domain.repository.UserRepository;
@@ -113,5 +113,11 @@ public class UserService {
         } catch (Exception e) {
             throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.", e);
         }
+    }
+
+    public void updateAddress(UUID userId, AddressDto addressDto) {
+        UserEntity user = findById(userId);
+        user.updateAddress(addressDto.getZipCode(), addressDto.getAddress1(), addressDto.getAddress2());
+        log.debug("updateAddress userId:{}", userId);
     }
 }

@@ -1,4 +1,4 @@
-package com.coopang.apidata.domain.user.request;
+package com.coopang.user.application.request;
 
 import lombok.Data;
 
@@ -8,6 +8,10 @@ public class UserDto {
     private String password;
     private String username;
     private String phoneNumber;
-    private String slackId;
     private String role;
+    private String slackId;
+
+    private String zipCode;
+    private String address1;
+    private String address2;
 }

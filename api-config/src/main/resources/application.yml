@@ -11,8 +11,6 @@ common:
         filter:
             enabled: false
             paths:
-                - /users/v1/join
-                - /auth/v1/login
                 - /swagger-ui
                 - /v3/api-docs
                 - /actuator
