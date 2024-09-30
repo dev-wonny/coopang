@@ -1,7 +1,7 @@
 package com.coopang.user.domain.entity.user;
 
-import com.coopang.apidata.domain.user.enums.UserRoleEnum;
-import com.coopang.apidata.jpa.entity.address.Address;
+import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.apidata.jpa.entity.address.AddressEntity;
 import com.coopang.apidata.jpa.entity.base.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -48,40 +48,46 @@ public class UserEntity extends BaseEntity {
     @Column(name = "user_phone_number", length = 20)
     private String phoneNumber;
 
-    @Column(name = "slack_id", length = 50)
-    private String slackId;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private UserRoleEnum role;
 
+    @Column(name = "slack_id", length = 50)
+    private String slackId;
+
     @Embedded
-    private Address address;
+    private AddressEntity addressEntity;
+
+    private UUID near_hub_id;
 
     @Column(name = "is_block", nullable = false)
     private boolean isBlock = false;
 
 
     @Builder
-    private UserEntity(String email, String password, String username, String phoneNumber, String slackId, UserRoleEnum role) {
+    public UserEntity(String email, String password, String username, String phoneNumber, UserRoleEnum role, String slackId, AddressEntity addressEntity, UUID near_hub_id, boolean isBlock) {
         this.email = email;
         this.password = password;
         this.username = username;
         this.phoneNumber = phoneNumber;
-        this.slackId = slackId;
         this.role = role;
+        this.slackId = slackId;
+        this.addressEntity = addressEntity;
+        this.near_hub_id = near_hub_id;
+        this.isBlock = isBlock;
     }
 
-    public static UserEntity create(String email, String passwordEncode, String username, String phoneNumber, String slackId, String role) {
+
+    public static UserEntity create(String email, String passwordEncode, String username, String phoneNumber, String role, String slackId, String zipCode, String address1, String address2) {
         return UserEntity.builder()
                 .email(email)
                 .password(passwordEncode)
                 .username(username)
                 .phoneNumber(phoneNumber)
-                .slackId(slackId)
                 .role(UserRoleEnum.valueOf(role))
+                .slackId(slackId)
+                .addressEntity(AddressEntity.create(zipCode, address1, address2))
                 .build();
-
     }
 
     public void updateUserInfo(String username, String phoneNumber, String slackId, String role) {
@@ -98,5 +104,9 @@ public class UserEntity extends BaseEntity {
 
     public void setBlocked() {
         this.isBlock = true;
+    }
+
+    public void updateAddress(String zipCode, String address1, String address2) {
+        this.addressEntity.updateAddress(zipCode, address1, address2);
     }
 }

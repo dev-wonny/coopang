@@ -1,6 +1,6 @@
 package com.coopang.user.presentation.request;
 
-import com.coopang.apidata.domain.user.enums.UserRoleEnum;
+import com.coopang.apidata.application.user.enums.UserRoleEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;

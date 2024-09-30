@@ -1,6 +1,6 @@
 package com.coopang.user.infrastructure.security;
 
-import com.coopang.apidata.domain.user.enums.UserRoleEnum;
+import com.coopang.apidata.application.user.enums.UserRoleEnum;
 import com.coopang.user.domain.entity.user.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

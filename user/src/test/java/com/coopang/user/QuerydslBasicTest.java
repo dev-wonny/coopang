@@ -1,10 +1,10 @@
 package com.coopang.user;
 
-import static com.coopang.apidata.domain.user.enums.UserRoleEnum.Authority.MASTER;
+import static com.coopang.apidata.application.user.enums.UserRoleEnum.Authority.MASTER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import com.coopang.apidata.domain.user.enums.UserRoleEnum;
-import com.coopang.apidata.domain.user.request.UserDto;
+import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.user.application.request.UserDto;
 import com.coopang.user.domain.entity.user.QUserEntity;
 import com.coopang.user.domain.entity.user.UserEntity;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -31,8 +31,12 @@ class QuerydslBasicTest {
     public void before() {
         queryFactory = new JPAQueryFactory(em);
 
-        String passwordEncode = "password";
+        final String passwordEncode = "password";
         UserRoleEnum role = UserRoleEnum.getRoleEnum(MASTER);
+
+        final String zipCode = "05510";
+        final String address1 = "서울 송파구 송파대로 570";
+        final String address2 = "8~26층 ";
 
         UserDto dto = new UserDto();
         dto.setEmail("email@naver.com");
@@ -64,10 +68,10 @@ class QuerydslBasicTest {
         dto3.setRole(role.getAuthority());
 
 
-        UserEntity insertUser = UserEntity.create(dto.getEmail(), passwordEncode, dto.getUsername(), dto.getPhoneNumber(), dto.getSlackId(), dto.getRole());
-        UserEntity insertUser1 = UserEntity.create(dto1.getEmail(), passwordEncode, dto1.getUsername(), dto1.getPhoneNumber(), dto1.getSlackId(), dto1.getRole());
-        UserEntity insertUser2 = UserEntity.create(dto2.getEmail(), passwordEncode, dto2.getUsername(), dto2.getPhoneNumber(), dto2.getSlackId(), dto2.getRole());
-        UserEntity insertUser3 = UserEntity.create(dto3.getEmail(), passwordEncode, dto3.getUsername(), dto3.getPhoneNumber(), dto3.getSlackId(), dto3.getRole());
+        UserEntity insertUser = UserEntity.create(dto.getEmail(), passwordEncode, dto.getUsername(), dto.getPhoneNumber(), dto.getSlackId(), dto.getRole(), zipCode, address1, address2);
+        UserEntity insertUser1 = UserEntity.create(dto1.getEmail(), passwordEncode, dto1.getUsername(), dto1.getPhoneNumber(), dto1.getSlackId(), dto1.getRole(), zipCode, address1, address2);
+        UserEntity insertUser2 = UserEntity.create(dto2.getEmail(), passwordEncode, dto2.getUsername(), dto2.getPhoneNumber(), dto2.getSlackId(), dto2.getRole(), zipCode, address1, address2);
+        UserEntity insertUser3 = UserEntity.create(dto3.getEmail(), passwordEncode, dto3.getUsername(), dto3.getPhoneNumber(), dto3.getSlackId(), dto3.getRole(), zipCode, address1, address2);
 
 
         em.persist(insertUser);

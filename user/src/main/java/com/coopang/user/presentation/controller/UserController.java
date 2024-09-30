@@ -2,12 +2,14 @@ package com.coopang.user.presentation.controller;
 
 
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
-import com.coopang.apidata.domain.user.enums.UserRoleEnum;
-import com.coopang.apidata.domain.user.request.UserDto;
+import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.user.application.request.AddressDto;
+import com.coopang.user.application.request.UserDto;
 import com.coopang.user.application.response.UserResponseDto;
 import com.coopang.user.application.service.UserService;
 import com.coopang.user.presentation.request.ChangePasswordRequestDto;
 import com.coopang.user.presentation.request.SignupRequestDto;
+import com.coopang.user.presentation.request.UpdateAddressRequestDto;
 import com.coopang.user.presentation.request.UpdateRequestDto;
 import com.coopang.user.presentation.request.UserSearchCondition;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
 @Tag(name = "UserController API", description = "UserController API")
-@Slf4j
+@Slf4j(topic = "UserController")
 @RestController
 @RequestMapping("/users/v1")
 public class UserController {
@@ -92,6 +94,16 @@ public class UserController {
     public ResponseEntity<Page<UserResponseDto>> searchUsers(UserSearchCondition userSearchCondition, Pageable pageable) {
         Page<UserResponseDto> users = userService.searchUsers(userSearchCondition, pageable);
         return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @Secured(UserRoleEnum.Authority.MASTER)
+    @PatchMapping("/user/change-address/{userId}")
+    public ResponseEntity<UserResponseDto> updateAddress(@PathVariable("userId") UUID userId, @RequestBody UpdateAddressRequestDto updateAddressRequestDto) {
+        AddressDto addressDto = mapperConfig.strictMapper().map(updateAddressRequestDto, AddressDto.class);
+
+        userService.updateAddress(userId, addressDto);
+        final UserResponseDto userInfo = userService.getUserInfoById(userId);
+        return new ResponseEntity<>(userInfo, HttpStatus.OK);
     }
 
     @PatchMapping("/user/change-password")

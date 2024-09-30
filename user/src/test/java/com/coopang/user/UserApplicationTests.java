@@ -1,10 +1,10 @@
 package com.coopang.user;
 
-import static com.coopang.apidata.domain.user.enums.UserRoleEnum.Authority.MASTER;
+import static com.coopang.apidata.application.user.enums.UserRoleEnum.Authority.MASTER;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.coopang.apidata.domain.user.enums.UserRoleEnum;
-import com.coopang.apidata.domain.user.request.UserDto;
+import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.user.application.request.UserDto;
 import com.coopang.user.domain.entity.user.QUserEntity;
 import com.coopang.user.domain.entity.user.UserEntity;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -25,6 +25,10 @@ class UserApplicationTests {
 
     @Test
     void contextLoads() {
+        final String zipCode = "05510";
+        final String address1 = "서울 송파구 송파대로 570";
+        final String address2 = "8~26층 ";
+
         UserDto dto = new UserDto();
         dto.setEmail("email@naver.com");
         dto.setUsername("name");
@@ -34,7 +38,7 @@ class UserApplicationTests {
         UserRoleEnum role = UserRoleEnum.getRoleEnum(MASTER);
         dto.setRole(role.getAuthority());
 
-        UserEntity insertUser = UserEntity.create(dto.getEmail(), passwordEncode, dto.getUsername(), dto.getPhoneNumber(), dto.getSlackId(), dto.getRole());
+        UserEntity insertUser = UserEntity.create(dto.getEmail(), passwordEncode, dto.getUsername(), dto.getPhoneNumber(), dto.getSlackId(), dto.getRole(), zipCode, address1, address2);
         entityManager.persist(insertUser);
 
         JPAQueryFactory query = new JPAQueryFactory(entityManager);
