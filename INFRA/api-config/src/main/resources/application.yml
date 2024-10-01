@@ -1,0 +1,15 @@
+spring:
+    application:
+        name: api-config
+    autoconfigure:
+        exclude:
+            - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+
+common:
+    api:
+        filter:
+            enabled: false
+            paths:
+                - /swagger-ui
+                - /v3/api-docs
+                - /actuator
