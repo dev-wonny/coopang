@@ -40,29 +40,6 @@ subprojects {
         }
     }
 
-    dependencies {
-        implementation 'org.springframework.boot:spring-boot-starter-actuator'
-
-        // validation
-        implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-        // Lombok
-        compileOnly 'org.projectlombok:lombok'
-        annotationProcessor 'org.projectlombok:lombok'
-        testAnnotationProcessor 'org.projectlombok:lombok'
-        testImplementation 'org.projectlombok:lombok'
-
-        // Prometheus for metrics monitoring
-        implementation 'io.micrometer:micrometer-registry-prometheus'
-
-        // Loki Logback Appender for logging to Loki
-        implementation 'com.github.loki4j:loki-logback-appender:1.5.1'
-
-        // Swagger for API documentation
-        implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
-
-    }
-
     test {
         useJUnitPlatform()
     }
