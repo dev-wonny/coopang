@@ -1,3 +1,14 @@
 rootProject.name = 'coopang'
-include 'eureka', 'gateway', 'user', 'hub'
-include 'api-data', 'api-config', 'api-communication'
+
+// CLOUD (System)
+include 'CLOUD:eureka'
+
+// DATA (Domain)
+include 'DATA:api-data'
+
+// INFRA (Integration)
+include 'INFRA:api-config'
+include 'INFRA:api-communication'
+
+// BOOT (Server)
+include 'BOOT:gateway', 'BOOT:user', 'BOOT:hub'
