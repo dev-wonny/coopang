@@ -8,11 +8,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
-@EnableFeignClients
+@EnableFeignClients(basePackages = {"com.coopang.apiconfig.feignClient", "com.coopang.api_communication.feignClient"})
 @EnableCaching
 @EnableJpaAuditing
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.coopang.hub", "com.coopang.apiconfig"})
+@ComponentScan(basePackages = {"com.coopang.hub", "com.coopang.apiconfig", "com.coopang.api_communication"})
 @EnableMethodSecurity(securedEnabled = true)
 public class HubApplication {
 
