@@ -26,6 +26,7 @@ dependencies {
 	// library
 	implementation project(':api-data')
 	implementation project(':api-config')
+	implementation project(':api-communication')
 
 	// for web
 	implementation 'org.springframework.boot:spring-boot-starter-web'

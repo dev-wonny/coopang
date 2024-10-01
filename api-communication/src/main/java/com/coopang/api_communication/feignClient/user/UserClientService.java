@@ -1,4 +1,4 @@
-package com.coopang.hub.application.service;
+package com.coopang.api_communication.feignClient.user;
 
 import com.coopang.apidata.application.user.enums.UserRoleEnum;
 import com.coopang.apidata.application.user.response.UserResponse;
@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-public class UserService {
+public class UserClientService {
     private final UserClient userClient;
 
-    public UserService(UserClient userClient) {
+    public UserClientService(UserClient userClient) {
         this.userClient = userClient;
     }
 

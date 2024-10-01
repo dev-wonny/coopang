@@ -1,11 +1,11 @@
 package com.coopang.hub.presentation.controller;
 
+import com.coopang.api_communication.feignClient.user.UserClientService;
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.apidata.application.user.response.UserResponse;
 import com.coopang.hub.application.request.HubDto;
 import com.coopang.hub.application.response.HubResponseDto;
 import com.coopang.hub.application.service.HubService;
-import com.coopang.hub.application.service.UserService;
 import com.coopang.hub.presentation.request.HubRequestDto;
 import com.coopang.hub.presentation.request.HubSearchCondition;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,12 +34,12 @@ import java.util.UUID;
 public class HubController {
 
     private final HubService hubService;
-    private final UserService userService;
+    private final UserClientService userClientService;
     private final ModelMapperConfig mapperConfig;
 
-    public HubController(HubService hubService, UserService userService, ModelMapperConfig mapperConfig) {
+    public HubController(HubService hubService, UserClientService userClientService, ModelMapperConfig mapperConfig) {
         this.hubService = hubService;
-        this.userService = userService;
+        this.userClientService = userClientService;
         this.mapperConfig = mapperConfig;
     }
 
@@ -90,6 +90,6 @@ public class HubController {
 
     @GetMapping("/test/{userId}")
     public ResponseEntity<UserResponse> test(@PathVariable UUID userId) {
-        return new ResponseEntity<>(userService.getUserInfo(userId), HttpStatus.OK);
+        return new ResponseEntity<>(userClientService.getUserInfo(userId), HttpStatus.OK);
     }
 }

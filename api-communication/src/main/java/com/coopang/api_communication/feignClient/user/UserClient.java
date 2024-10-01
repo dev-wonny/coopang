@@ -1,4 +1,4 @@
-package com.coopang.hub.application.service;
+package com.coopang.api_communication.feignClient.user;
 
 import com.coopang.apiconfig.feignClient.FeignConfig;
 import com.coopang.apidata.application.user.response.UserResponse;
