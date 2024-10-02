@@ -1,10 +1,12 @@
 package com.coopang.product.domain.entitiy;
 
-import com.coopang.product.domain.entitiy.vo.Stock;
+import com.coopang.apidata.jpa.entity.base.BaseEntity;
+import com.coopang.product.domain.entitiy.vo.ProductStock;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -15,17 +17,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @Entity
-@Table(name = "p_product")
+@Table(name = "p_product_stocks")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(value = {AuditingEntityListener.class})
 @SQLRestriction("is_deleted = false")
-public class ProductStockEntity {
+public class ProductStockEntity extends BaseEntity {
 
     @Id
     @UuidGenerator
@@ -37,12 +42,26 @@ public class ProductStockEntity {
     private ProductEntity productEntity;
 
     @Embedded
-    private Stock productStock;
+    private ProductStock productStock;
 
-    @Column(name = "is_deleted")
-    private boolean isDeleted = false;
-
-    @OneToMany(mappedBy = "productStock", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "productStockEntity", cascade = CascadeType.ALL)
     private List<ProductStockHistoryEntity> productStockHistories = new ArrayList<>();
 
+    public void addStockHistory(ProductStockHistoryEntity stockHistory) {
+        this.productStockHistories.add(stockHistory);
+        stockHistory.addProductStockEntity(this);
+    }
+
+    @Builder(access = AccessLevel.PRIVATE)
+    public ProductStockEntity(ProductEntity productEntity, ProductStock productStock) {
+        this.productEntity = productEntity;
+        this.productStock = productStock;
+    }
+
+    public static ProductStockEntity create(ProductEntity productEntity, ProductStock productStock) {
+        return ProductStockEntity.builder()
+            .productEntity(productEntity)
+            .productStock(productStock)
+            .build();
+    }
 }

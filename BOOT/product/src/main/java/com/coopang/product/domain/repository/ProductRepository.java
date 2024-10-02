@@ -2,10 +2,11 @@ package com.coopang.product.domain.repository;
 
 import com.coopang.product.domain.entitiy.ProductEntity;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface ProductRepository {
 
-    Optional<ProductEntity> findById(String id);
+    Optional<ProductEntity> findById(UUID productId);
 
-    Optional<ProductEntity> save(ProductEntity productEntity);
+    ProductEntity save(ProductEntity productEntity);
 }
