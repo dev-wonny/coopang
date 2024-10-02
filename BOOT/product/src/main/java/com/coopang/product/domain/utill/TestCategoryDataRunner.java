@@ -1,4 +1,4 @@
-package com.coopang.product.infrastructure.utill;
+package com.coopang.product.domain.utill;
 
 import com.coopang.product.domain.entitiy.CategoryEntity;
 import com.coopang.product.infrastructure.repository.CategoryJpaRepository;
