@@ -1,11 +1,14 @@
 package com.coopang.product.domain.entitiy;
 
 import com.coopang.apidata.jpa.entity.base.BaseEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,6 +30,9 @@ public class CategoryEntity extends BaseEntity {
 
     @Column(nullable = false,name = "category_name")
     private String categoryName;
+
+    @OneToMany(mappedBy = "categoryEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductEntity> products;
 
     public CategoryEntity(String categoryName) {
         this.categoryName = categoryName;
