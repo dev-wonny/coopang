@@ -1,15 +1,24 @@
 package com.coopang.product.domain.entitiy;
 
+import com.coopang.apidata.jpa.entity.base.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.util.UUID;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Getter
-public class CategoryEntity {
+@Table(name = "p_categories")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(value = {AuditingEntityListener.class})
+public class CategoryEntity extends BaseEntity {
 
     @Id
     @UuidGenerator
@@ -19,6 +28,4 @@ public class CategoryEntity {
     @Column(nullable = false,name = "category_name")
     private String categoryName;
 
-    @Column(nullable = false,name = "is_deleted")
-    private boolean isDeleted = false;
 }
