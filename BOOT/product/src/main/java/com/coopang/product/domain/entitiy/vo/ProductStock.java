@@ -13,12 +13,12 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Stock {
+public class ProductStock {
 
     @Column(nullable = false,name = "product_stock_current_quantity")
     private int value;
 
-    public Stock(int value) {
+    public ProductStock(int value) {
         if(value < 0) {
             throw new IllegalArgumentException("재고의 수량은 음수가 될 수 없습니다.");
         }

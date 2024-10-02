@@ -6,7 +6,9 @@ import com.coopang.product.application.service.ProductService;
 import com.coopang.product.presentation.request.CreateProductRequestDto;
 import com.coopang.product.presentation.request.ProductSearchCondition;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +21,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "ProductController API", description = "ProductController API")
 @RestController
 @RequestMapping("/products/v1")
+@Slf4j(topic = "ProductController")
 public class ProductController {
 
     private final ModelMapperConfig mapperConfig;
@@ -39,11 +41,10 @@ public class ProductController {
 
     @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @PostMapping("/product")
-    public ResponseEntity<?> createProduct(@RequestBody CreateProductRequestDto createProductRequestDto) {
+    public ResponseEntity<?> createProduct(@Valid @RequestBody CreateProductRequestDto createProductRequestDto) {
         ProductDto productDto = mapperConfig.strictMapper().map(createProductRequestDto, ProductDto.class);
 
-        productService.createProduct(productDto);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(productService.createProduct(productDto),HttpStatus.CREATED);
     }
 
     @PutMapping("/product/{productId}")
