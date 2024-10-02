@@ -28,4 +28,7 @@ public class CategoryEntity extends BaseEntity {
     @Column(nullable = false,name = "category_name")
     private String categoryName;
 
+    public CategoryEntity(String categoryName) {
+        this.categoryName = categoryName;
+    }
 }
