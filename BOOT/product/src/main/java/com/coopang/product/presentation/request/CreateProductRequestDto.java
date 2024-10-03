@@ -3,6 +3,7 @@ package com.coopang.product.presentation.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,6 @@ public class CreateProductRequestDto{
     private UUID categoryId;
     @Positive(message = "product Price must be positive")
     private double productPrice;
-    @Positive(message = "product Stock must be positive")
+    @PositiveOrZero(message = "product Stock must be positive")
     private int productStock;
 }
