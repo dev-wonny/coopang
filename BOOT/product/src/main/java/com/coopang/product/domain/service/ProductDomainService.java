@@ -28,12 +28,11 @@ public class ProductDomainService {
         ProductEntity productEntity = productDtoToProductEntity(productDto);
 
         //2. 재고엔티티 생성
-        int stock = productDto.getProductStock();
-
+        ProductStock stock = new ProductStock(productDto.getProductStock());
         ProductStockEntity productStockEntity = productDtoToProductStockEntity(productEntity,stock);
 
         //3. 재고 기록엔티티 생성
-        ProductStockHistoryEntity productStockHistoryEntity = makeProductStockHistory(productStockEntity,stock);
+        ProductStockHistoryEntity productStockHistoryEntity = makeProductStockHistory(productStockEntity,stock.getValue());
 
         //4. 연관관계 설정
         productEntity.addProductStockEntity(productStockEntity);
@@ -41,6 +40,7 @@ public class ProductDomainService {
 
         return productRepository.save(productEntity);
     }
+
 
     private ProductEntity productDtoToProductEntity(ProductDto productDto) {
 
@@ -58,11 +58,11 @@ public class ProductDomainService {
         );
     }
 
-    private ProductStockEntity productDtoToProductStockEntity(ProductEntity productEntity,int  stock) {
+    private ProductStockEntity productDtoToProductStockEntity(ProductEntity productEntity,ProductStock  stock) {
 
         return ProductStockEntity.create(
             productEntity,
-            new ProductStock(stock)
+            stock
         );
     }
 
