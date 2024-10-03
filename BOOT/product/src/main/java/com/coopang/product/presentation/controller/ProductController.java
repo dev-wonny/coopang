@@ -5,6 +5,7 @@ import com.coopang.product.application.request.ProductDto;
 import com.coopang.product.application.service.ProductService;
 import com.coopang.product.presentation.request.CreateProductRequestDto;
 import com.coopang.product.presentation.request.ProductSearchCondition;
+import com.coopang.product.presentation.request.UpdateProductRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.UUID;
@@ -15,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,7 +48,8 @@ public class ProductController {
     }
 
     @PutMapping("/product/{productId}")
-    public ResponseEntity<?> updateProduct(@PathVariable UUID productId) {
+    public ResponseEntity<?> updateProduct(@Valid @RequestBody UpdateProductRequest updateProductRequest,@PathVariable UUID productId) {
+        ProductDto productDto = mapperConfig.strictMapper().map(updateProductRequest, ProductDto.class);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -72,14 +73,13 @@ public class ProductController {
     }
 
     @GetMapping("/product")
-    public ResponseEntity<?> getAllProducts(@ModelAttribute ProductSearchCondition searchCondition,
-        Pageable pageable) {
+    public ResponseEntity<?> getAllProducts(Pageable pageable) {
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(productService.getAllProducts(pageable),HttpStatus.OK);
     }
 
     @GetMapping("/product/search")
-    public ResponseEntity<?> searchProduct(@ModelAttribute ProductSearchCondition searchCondition,Pageable pageable) {
+    public ResponseEntity<?> searchProduct(ProductSearchCondition searchCondition,Pageable pageable) {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -87,12 +87,12 @@ public class ProductController {
     @GetMapping("/product/{productId}")
     public ResponseEntity<?> getProductById(@PathVariable UUID productId) {
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(productService.getProductById(productId),HttpStatus.OK);
     }
 
     @GetMapping("/category/{categoryId}/product")
     public ResponseEntity<?> getProductWithCategory(@PathVariable UUID categoryId,Pageable pageable) {
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(productService.getProductWithCategory(categoryId,pageable),HttpStatus.OK);
     }
 }

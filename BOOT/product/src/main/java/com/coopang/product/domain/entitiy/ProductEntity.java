@@ -53,7 +53,7 @@ public class ProductEntity extends BaseEntity {
     private boolean isHidden = false;
 
     @Column(nullable = false,name = "is_sale")
-    private boolean isSale = false;
+    private boolean isSale = true;
 
     public void addProductStockEntity(ProductStockEntity productStockEntity) {
         this.productStockEntity = productStockEntity;

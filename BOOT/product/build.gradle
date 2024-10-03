@@ -4,7 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.6'
 }
 
-group = 'com.sparta.ordersystem'
+group = 'com.coopang'
 version = '0.0.1-SNAPSHOT'
 
 java {
@@ -86,6 +86,17 @@ dependencies {
     implementation 'org.modelmapper:modelmapper:3.1.0'
 }
 
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+def querydslSrcDir = 'src/main/generated'
+clean {
+    delete file(querydslSrcDir)
 }
