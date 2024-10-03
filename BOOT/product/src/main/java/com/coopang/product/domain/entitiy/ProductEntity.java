@@ -82,4 +82,31 @@ public class ProductEntity extends BaseEntity {
             .isSale(isSale)
             .build();
     }
+
+    public void updateProduct(
+         String productName, UUID companyId, CategoryEntity categoryEntity, double productPrice
+    ){
+        this.productName = productName;
+        this.companyId = companyId;
+        this.categoryEntity = categoryEntity;
+        this.productPrice = productPrice;
+    }
+
+    public void activateHidden(){
+        this.isHidden = true;
+    }
+
+    public void deactivateHidden(){
+        this.isHidden = false;
+    }
+
+    public void activateSale(){
+        this.isSale = true;
+        this.isHidden = false;
+    }
+
+    public void deactivateSale(){
+        this.isSale = false;
+        this.isHidden = true;
+    }
 }

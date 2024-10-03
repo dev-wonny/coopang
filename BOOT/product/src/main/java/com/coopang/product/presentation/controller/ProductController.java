@@ -2,10 +2,13 @@ package com.coopang.product.presentation.controller;
 
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.product.application.request.ProductDto;
+import com.coopang.product.application.request.ProductHiddenAndSaleDto;
 import com.coopang.product.application.service.ProductService;
 import com.coopang.product.presentation.request.CreateProductRequestDto;
 import com.coopang.product.presentation.request.ProductSearchCondition;
+import com.coopang.product.presentation.request.UpdateProductHiddenRequest;
 import com.coopang.product.presentation.request.UpdateProductRequest;
+import com.coopang.product.presentation.request.UpdateProductSaleRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.UUID;
@@ -47,29 +50,37 @@ public class ProductController {
         return new ResponseEntity<>(productService.createProduct(productDto),HttpStatus.CREATED);
     }
 
+    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @PutMapping("/product/{productId}")
     public ResponseEntity<?> updateProduct(@Valid @RequestBody UpdateProductRequest updateProductRequest,@PathVariable UUID productId) {
         ProductDto productDto = mapperConfig.strictMapper().map(updateProductRequest, ProductDto.class);
+        productService.updateProduct(productDto,productId);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
     }
 
+    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @PatchMapping("/product/{productId}/hidden")
-    public ResponseEntity<?> updateHiddenProduct(@PathVariable UUID productId) {
+    public ResponseEntity<?> updateProductHidden(@Valid @RequestBody UpdateProductHiddenRequest request,@PathVariable UUID productId) {
+        ProductHiddenAndSaleDto productHiddenAndSaleDto = mapperConfig.strictMapper().map(request, ProductHiddenAndSaleDto.class);
+        productService.updateProductHidden(productHiddenAndSaleDto,productId);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @PatchMapping("/product/{productId}/sale")
-    public ResponseEntity<?> updateSaleProduct(@PathVariable UUID productId) {
-
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<?> updateProductSale(@Valid @RequestBody UpdateProductSaleRequest request, @PathVariable UUID productId) {
+        ProductHiddenAndSaleDto productHiddenAndSaleDto = mapperConfig.strictMapper().map(request, ProductHiddenAndSaleDto.class);
+        productService.updateProductSale(productHiddenAndSaleDto,productId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("/product/{productId}/sale")
+    @DeleteMapping("/product/{productId}")
     public ResponseEntity<?> deleteProduct(@PathVariable UUID productId) {
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        productService.deleteProductById(productId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/product")

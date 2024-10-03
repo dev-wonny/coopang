@@ -1,7 +1,9 @@
 package com.coopang.product.application.service;
 
 import com.coopang.product.application.request.ProductDto;
+import com.coopang.product.application.request.ProductHiddenAndSaleDto;
 import com.coopang.product.application.response.ProductResponseDto;
+import com.coopang.product.domain.entitiy.CategoryEntity;
 import com.coopang.product.domain.entitiy.ProductEntity;
 import com.coopang.product.domain.repository.CategoryRepository;
 import com.coopang.product.domain.repository.ProductRepository;
@@ -33,8 +35,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public ProductResponseDto getProductById(UUID productId) {
 
-        ProductEntity productEntity = productRepository.findById(productId).orElseThrow(
-            () -> new IllegalArgumentException("존재하지 않는 상품입니다."));
+        ProductEntity productEntity = findByProductId(productId);
 
         return ProductResponseDto.of(productEntity);
     }
@@ -49,10 +50,75 @@ public class ProductService {
 
     public Page<ProductResponseDto> getProductWithCategory(UUID categoryId, Pageable pageable) {
 
-        categoryRepository.findById(categoryId).orElseThrow(
-            () -> new IllegalArgumentException("존재하지 않는 카테고리입니다.")
-        );
+        findByCategoryId(categoryId);
 
         return null;
     }
+
+    @Transactional
+    public void updateProduct(ProductDto productDto, UUID productId) {
+
+        ProductEntity productEntity = findByProductId(productId);
+
+        CategoryEntity categoryEntity = findByCategoryId(productDto.getCategoryId());
+
+        productEntity.updateProduct(productDto.getProductName(),productDto.getCompanyId(),categoryEntity,productDto.getProductPrice());
+
+    }
+
+    @Transactional
+    public void updateProductHidden(ProductHiddenAndSaleDto productHiddenAndSaleDto, UUID productId) {
+
+        ProductEntity productEntity = findByProductId(productId);
+
+        boolean isHidden = productHiddenAndSaleDto.getIsHidden();
+
+        if(isHidden == true)
+        {
+            productEntity.activateHidden();
+        }else{
+            productEntity.deactivateHidden();
+        }
+
+    }
+
+    @Transactional
+    public void updateProductSale(ProductHiddenAndSaleDto productHiddenAndSaleDto, UUID productId) {
+
+        ProductEntity productEntity = findByProductId(productId);
+
+        boolean isSale = productHiddenAndSaleDto.getIsSale();
+
+        if(isSale == true)
+        {
+            productEntity.activateSale();
+        }else
+        {
+            productEntity.deactivateSale();
+        }
+
+    }
+
+    @Transactional
+    public void deleteProductById(UUID productId) {
+
+        ProductEntity productEntity = findByProductId(productId);
+
+        productEntity.setDeleted(true);
+
+        productEntity.deactivateSale();
+
+    }
+
+    private ProductEntity findByProductId(UUID productId){
+        return productRepository.findById(productId).orElseThrow(
+            () -> new IllegalArgumentException("존재하지 않는 상품입니다."));
+    }
+
+    private CategoryEntity findByCategoryId(UUID categoryId){
+        return categoryRepository.findById(categoryId).orElseThrow
+            (() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
+    }
+
+
 }
