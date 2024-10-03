@@ -6,23 +6,26 @@ import lombok.AccessLevel;
 import lombok.Builder;
 
 @Builder(access = AccessLevel.PRIVATE)
-public record productResponseDto(
+public record ProductResponseDto(
     UUID productId,
+    UUID categoryId,
     String categoryName,
     UUID companyId,
-    String ProductName,
+    String productName,
     double productPrice,
     int productStock
 ) {
 
-    public static productResponseDto of(ProductEntity product) {
-        return productResponseDto.builder()
+    public static ProductResponseDto of(ProductEntity product) {
+        return ProductResponseDto.builder()
             .productId(product.getProductId())
+            .categoryId(product.getCategoryEntity().getCategoryId())
             .categoryName(product.getCategoryEntity().getCategoryName())
             .companyId(product.getCompanyId())
-            .ProductName(product.getProductName())
+            .productName(product.getProductName())
             .productPrice(product.getProductPrice())
             .productStock(product.getProductStockEntity().getProductStock().getValue())
             .build();
     }
 }
+
