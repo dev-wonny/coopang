@@ -24,12 +24,12 @@ public class UserRepositoryCustomImpl extends Querydsl4RepositorySupport impleme
     public Page<UserEntity> search(UserSearchCondition condition, Pageable pageable) {
         return applyPagination(pageable, contentQuery -> contentQuery
                         .selectFrom(userEntity)
-                        .where(usernameEq(condition.getUserName()),
+                        .where(userNameEq(condition.getUserName()),
                                 emailEq(condition.getEmail()),
                                 roleEq(condition.getUserRole())),
                 countQuery -> countQuery
                         .selectFrom(userEntity)
-                        .where(usernameEq(condition.getUserName()),
+                        .where(userNameEq(condition.getUserName()),
                                 emailEq(condition.getEmail()),
                                 roleEq(condition.getUserRole()))
         );
@@ -40,8 +40,8 @@ public class UserRepositoryCustomImpl extends Querydsl4RepositorySupport impleme
         return StringUtils.hasText(email) ? userEntity.email.eq(email) : null;
     }
 
-    private Predicate usernameEq(String userName) {
-        return StringUtils.hasText(userName) ? userEntity.username.eq(userName) : null;
+    private Predicate userNameEq(String userName) {
+        return StringUtils.hasText(userName) ? userEntity.userName.eq(userName) : null;
     }
 
     private Predicate roleEq(String userRole) {

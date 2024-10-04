@@ -1,6 +1,5 @@
 package com.coopang.user.infrastructure.security.filter;
 
-import com.coopang.user.infrastructure.security.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,10 +21,7 @@ public class HeaderFilter extends OncePerRequestFilter {
     private static final String USER_ID_HEADER = "X-User-Id";
     private static final String USER_ROLE_HEADER = "X-User-Role";
 
-    private final UserDetailsServiceImpl userDetailsService;
-
-    public HeaderFilter(UserDetailsServiceImpl userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    public HeaderFilter() {
     }
 
     /**
@@ -40,26 +36,22 @@ public class HeaderFilter extends OncePerRequestFilter {
         final String userId = request.getHeader(USER_ID_HEADER);
         final String role = request.getHeader(USER_ROLE_HEADER);
 
-        if (StringUtils.hasText(userId)) {
-
-//            final UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
-            final UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(request.getUserPrincipal(), userId,
-                    Collections.singleton(new SimpleGrantedAuthority("ROLE_" +role)));
-
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            log.info("Authentication set for user: " + userId);
-
-        } else {
-            SecurityContextHolder.getContext().setAuthentication(null);
-            log.info("No authentication set due to missing headers");
+        if (!StringUtils.hasText(userId) || !StringUtils.hasText(role)) {
+            log.warn("Missing headers: X-User-Id or X-User-Role");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing authentication headers");
+            return;
         }
 
-        try {
-            filterChain.doFilter(request, response);
-        } catch (Exception e) {
-            log.error("Exception during filter chain", e);
-            throw e;
-        }
+        final UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                request.getUserPrincipal(),
+                userId,
+                Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role))
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        log.info("Authentication set for user: " + userId + " with role: " + role);
+
+        filterChain.doFilter(request, response);
     }
 
     @Override
