@@ -1,5 +1,7 @@
 HELP.md
-.gradle
+# Gradle 관련
+.gradle/
+**/gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
@@ -35,3 +37,14 @@ out/
 
 ### VS Code ###
 .vscode/
+# Docker 관련
+docker-compose.override.yml
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+docker-compose-*.yml
+
+# Application 설정 파일
+**/application-*.yml
+**/application-*.properties
