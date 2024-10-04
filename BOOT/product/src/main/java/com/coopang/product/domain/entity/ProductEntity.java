@@ -1,4 +1,4 @@
-package com.coopang.product.infrastructure.entity;
+package com.coopang.product.domain.entity;
 
 import com.coopang.apidata.jpa.entity.base.BaseEntity;
 import jakarta.persistence.CascadeType;
@@ -24,7 +24,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(name = "p_products")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(value = {AuditingEntityListener.class})
-@SQLRestriction("is_hidden = false AND is_sale = true AND is_deleted = false")
 public class ProductEntity extends BaseEntity {
 
     @Id

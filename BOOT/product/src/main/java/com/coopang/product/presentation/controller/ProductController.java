@@ -4,6 +4,7 @@ import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.product.application.request.ProductDto;
 import com.coopang.product.application.request.ProductHiddenAndSaleDto;
 import com.coopang.product.application.service.ProductService;
+import com.coopang.product.presentation.request.BaseSearchCondition;
 import com.coopang.product.presentation.request.CreateProductRequestDto;
 import com.coopang.product.presentation.request.ProductSearchCondition;
 import com.coopang.product.presentation.request.UpdateProductHiddenRequest;
@@ -91,8 +92,16 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+
     @GetMapping("/product")
-    public ResponseEntity<?> getAllProducts(Pageable pageable) {
+    public ResponseEntity<?> getAllProducts(BaseSearchCondition condition,Pageable pageable) {
+
+        return new ResponseEntity<>(productService.getAllProducts(pageable),HttpStatus.OK);
+    }
+
+    @Secured({"ROLE_MASTER"})
+    @GetMapping("/product")
+    public ResponseEntity<?> getAllProductsMaster(Pageable pageable) {
 
         return new ResponseEntity<>(productService.getAllProducts(pageable),HttpStatus.OK);
     }

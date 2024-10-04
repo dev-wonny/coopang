@@ -1,7 +1,7 @@
 package com.coopang.product.infrastructure.configuration;
 
 import com.coopang.product.application.request.ProductDto;
-import com.coopang.product.infrastructure.entity.CategoryEntity;
+import com.coopang.product.domain.entity.CategoryEntity;
 import com.coopang.product.domain.service.ProductDomainService;
 import com.coopang.product.infrastructure.repository.CategoryJpaRepository;
 import java.util.ArrayList;
