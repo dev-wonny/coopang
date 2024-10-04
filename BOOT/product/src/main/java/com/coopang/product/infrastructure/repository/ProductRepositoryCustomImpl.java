@@ -88,6 +88,10 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
             return null;
         }
 
+        if (startDate == null) {
+            return productEntity.createdAt.before(endDate);
+        }
+
         if(endDate==null) {
 
             return productEntity.createdAt.after(startDate);
