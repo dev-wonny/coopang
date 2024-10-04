@@ -1,11 +1,11 @@
 package com.coopang.product.infrastructure.repository;
 
-import static com.coopang.product.domain.entitiy.QProductEntity.productEntity;
-import static com.coopang.product.domain.entitiy.QCategoryEntity.categoryEntity;
-import static com.coopang.product.domain.entitiy.QProductStockEntity.productStockEntity;
+import static com.coopang.product.domain.entity.QProductEntity.productEntity;
+import static com.coopang.product.domain.entity.QCategoryEntity.categoryEntity;
+import static com.coopang.product.domain.entity.QProductStockEntity.productStockEntity;
 
 import com.coopang.apiconfig.querydsl.Querydsl4RepositorySupport;
-import com.coopang.product.domain.entitiy.ProductEntity;
+import com.coopang.product.infrastructure.entity.ProductEntity;
 import com.coopang.product.presentation.request.ProductSearchCondition;
 import com.querydsl.core.types.Predicate;
 import java.time.LocalDateTime;

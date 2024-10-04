@@ -1,6 +1,6 @@
 package com.coopang.product.application.response;
 
-import com.coopang.product.domain.entitiy.ProductEntity;
+import com.coopang.product.infrastructure.entity.ProductEntity;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;

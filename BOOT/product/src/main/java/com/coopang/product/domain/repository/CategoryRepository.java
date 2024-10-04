@@ -1,7 +1,6 @@
 package com.coopang.product.domain.repository;
 
-import com.coopang.product.domain.entitiy.CategoryEntity;
-import java.util.List;
+import com.coopang.product.infrastructure.entity.CategoryEntity;
 import java.util.Optional;
 import java.util.UUID;
 
