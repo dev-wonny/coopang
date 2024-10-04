@@ -45,6 +45,7 @@ public class ProductController {
     @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @PostMapping("/product")
     public ResponseEntity<?> createProduct(@Valid @RequestBody CreateProductRequestDto createProductRequestDto) {
+
         ProductDto productDto = mapperConfig.strictMapper().map(createProductRequestDto, ProductDto.class);
 
         return new ResponseEntity<>(productService.createProduct(productDto),HttpStatus.CREATED);
@@ -53,6 +54,7 @@ public class ProductController {
     @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @PutMapping("/product/{productId}")
     public ResponseEntity<?> updateProduct(@Valid @RequestBody UpdateProductRequest updateProductRequest,@PathVariable UUID productId) {
+
         ProductDto productDto = mapperConfig.strictMapper().map(updateProductRequest, ProductDto.class);
         productService.updateProduct(productDto,productId);
 
@@ -63,6 +65,7 @@ public class ProductController {
     @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @PatchMapping("/product/{productId}/hidden")
     public ResponseEntity<?> updateProductHidden(@Valid @RequestBody UpdateProductHiddenRequest request,@PathVariable UUID productId) {
+
         ProductHiddenAndSaleDto productHiddenAndSaleDto = mapperConfig.strictMapper().map(request, ProductHiddenAndSaleDto.class);
         productService.updateProductHidden(productHiddenAndSaleDto,productId);
 
@@ -72,14 +75,18 @@ public class ProductController {
     @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @PatchMapping("/product/{productId}/sale")
     public ResponseEntity<?> updateProductSale(@Valid @RequestBody UpdateProductSaleRequest request, @PathVariable UUID productId) {
+
         ProductHiddenAndSaleDto productHiddenAndSaleDto = mapperConfig.strictMapper().map(request, ProductHiddenAndSaleDto.class);
         productService.updateProductSale(productHiddenAndSaleDto,productId);
+
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/product/{productId}")
     public ResponseEntity<?> deleteProduct(@PathVariable UUID productId) {
+
         productService.deleteProductById(productId);
+
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -92,7 +99,7 @@ public class ProductController {
     @GetMapping("/product/search")
     public ResponseEntity<?> searchProduct(ProductSearchCondition searchCondition,Pageable pageable) {
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(productService.searchProduct(searchCondition,pageable),HttpStatus.OK);
     }
 
     @GetMapping("/product/{productId}")

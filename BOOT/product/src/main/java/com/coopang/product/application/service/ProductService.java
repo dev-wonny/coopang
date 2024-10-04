@@ -8,6 +8,7 @@ import com.coopang.product.domain.entitiy.ProductEntity;
 import com.coopang.product.domain.repository.CategoryRepository;
 import com.coopang.product.domain.repository.ProductRepository;
 import com.coopang.product.domain.service.ProductDomainService;
+import com.coopang.product.presentation.request.ProductSearchCondition;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +44,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public Page<ProductResponseDto> getAllProducts(Pageable pageable) {
 
-        Page<ProductEntity> productEntities = productRepository.findAll(pageable);
+        Page<ProductEntity> productEntities = productRepository.findAllWithStockAndCategory(pageable);
 
         return productEntities.map(ProductResponseDto::of);
     }
@@ -51,17 +52,16 @@ public class ProductService {
     public Page<ProductResponseDto> getProductWithCategory(UUID categoryId, Pageable pageable) {
 
         findByCategoryId(categoryId);
+        Page<ProductEntity> productEntities = productRepository.findAllWithStockAndCategoryByCategoryId(categoryId, pageable);
 
-        return null;
+        return productEntities.map(ProductResponseDto::of);
     }
 
     @Transactional
     public void updateProduct(ProductDto productDto, UUID productId) {
 
         ProductEntity productEntity = findByProductId(productId);
-
         CategoryEntity categoryEntity = findByCategoryId(productDto.getCategoryId());
-
         productEntity.updateProduct(productDto.getProductName(),productDto.getCompanyId(),categoryEntity,productDto.getProductPrice());
 
     }
@@ -120,5 +120,11 @@ public class ProductService {
             (() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
     }
 
+    @Transactional(readOnly = true)
+    public Page<ProductResponseDto> searchProduct(ProductSearchCondition searchCondition, Pageable pageable) {
 
+        Page <ProductEntity> productEntities = productRepository.search(searchCondition, pageable);
+
+        return productEntities.map(ProductResponseDto::of);
+    }
 }
