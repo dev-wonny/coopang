@@ -32,3 +32,26 @@ rule_files:
                 -   targets: [ 'host.docker.internal:19093' ]  # docker Hub 애플리케이션
 #                -   targets: [ 'localhost:19093' ]  # local Hub 애플리케이션
 
+        -   job_name: 'product'
+            metrics_path: '/actuator/prometheus'
+            static_configs:
+                -   targets: [ 'host.docker.internal:19094' ]  # docker Product 애플리케이션
+#                -   targets: [ 'localhost:19094' ]  # local Product 애플리케이션
+
+        -   job_name: 'order'
+            metrics_path: '/actuator/prometheus'
+            static_configs:
+                -   targets: [ 'host.docker.internal:19095' ]  # docker Order 애플리케이션
+#                -   targets: [ 'localhost:19095' ]  # local Order 애플리케이션
+
+        -   job_name: 'delivery'
+            metrics_path: '/actuator/prometheus'
+            static_configs:
+                -   targets: [ 'host.docker.internal:19096' ]  # docker Delivery 애플리케이션
+#                -   targets: [ 'localhost:19096' ]  # local Delivery 애플리케이션
+
+        -   job_name: 'ainoti '
+            metrics_path: '/actuator/prometheus'
+            static_configs:
+                -   targets: [ 'host.docker.internal:19097' ]  # docker Ai-Noti 애플리케이션
+#                -   targets: [ 'localhost:19097' ]  # local Ai-Noti 애플리케이션
