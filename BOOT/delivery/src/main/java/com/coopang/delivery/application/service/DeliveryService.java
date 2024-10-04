@@ -1,5 +1,6 @@
 package com.coopang.delivery.application.service;
 
+import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
 import com.coopang.delivery.application.request.DeliveryDto;
 import com.coopang.delivery.application.response.DeliveryResponseDto;
 import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;
@@ -50,8 +51,8 @@ public class DeliveryService {
         return DeliveryResponseDto.fromDelivery(deliveryEntity);
     }
     // 특정 배송 조회 - hubId
-    public DeliveryResponseDto getDeliveryByIdWithHubId(UUID deliveryId, UUID hubId){
-        DeliveryEntity deliveryEntity = deliveryRepository.findByIdHubId(deliveryId,hubId)
+    public DeliveryResponseDto getDeliveryByIdWithHubId(UUID deliveryId, UUID departureHubId){
+        DeliveryEntity deliveryEntity = deliveryRepository.findByDeliveryIdAndDepartureHubId(deliveryId,departureHubId)
                 .orElseThrow(() -> new IllegalArgumentException("Delivery not found. deliveryId=" + deliveryId));
         return DeliveryResponseDto.fromDelivery(deliveryEntity);
     }
@@ -64,8 +65,8 @@ public class DeliveryService {
     }
 
     // 특정 배송 조회 (주문 아이디로) - hubId
-    public DeliveryResponseDto getDeliveryByOrderIdWithHubId(UUID orderId,UUID hubId) {
-        DeliveryEntity deliveryEntity = deliveryRepository.findByOrderIdHubId(orderId,hubId)
+    public DeliveryResponseDto getDeliveryByOrderIdWithHubId(UUID orderId,UUID departureHubId) {
+        DeliveryEntity deliveryEntity = deliveryRepository.findByOrderIdAndDepartureHubId(orderId,departureHubId)
                 .orElseThrow(() -> new IllegalArgumentException("Delivery not found. orderId=" + orderId));
         return DeliveryResponseDto.fromDelivery(deliveryEntity);
     }
@@ -77,8 +78,8 @@ public class DeliveryService {
     }
 
     // 배송 전체 조회 (페이징 및 정렬 지원)
-    public Page<DeliveryResponseDto> getAllDeliveriesWithHubId(Pageable pageable,UUID hubId){
-        Page<DeliveryEntity> deliveries = deliveryRepository.findAllHubId(pageable,hubId);
+    public Page<DeliveryResponseDto> getAllDeliveriesWithHubId(Pageable pageable,UUID departureHubId){
+        Page<DeliveryEntity> deliveries = deliveryRepository.findAllByDepartureHubId(pageable,departureHubId);
         return deliveries.map(DeliveryResponseDto::fromDelivery);
     }
 
@@ -105,20 +106,45 @@ public class DeliveryService {
         deliveryDomainService.arrivedDelivery(deliveryEntity);
     }
     // 스케줄링 - 허브 배송 준비 : 16시
+    @Scheduled(cron = "0 0 16 * * *")
+    public void readyDelivery(){
+        List<DeliveryEntity> deliveries = findByDeliveryStatus(DeliveryStatusEnum.PENDING);
+        deliveryDomainService.readyDelivery(deliveries);
+    }
+
     // 스케줄링 - 허브 배송 물건 상차 및 주문 상태값 변경, slack 메세지 발송 : 20시
+    @Scheduled(cron = "0 0 20 * * *")
+    public void sendToSlackHubDelivery(){
+        // 허브쪽에서 허브정보들 가져오기
+        // 허브들마다 정보 전달하기
+        List<DeliveryEntity> deliveries = findByDeliveryStatus(DeliveryStatusEnum.HUB_DELIVERY_ASSIGNMENT_IN_PROGRESS);
+        deliveryDomainService.sendToSlackHubDelivery(deliveries);
+        // api쪽으로 해당 정보 전달하기
+    }
+
     // 스케줄링 - 허브 배송 출발 : 21시
-//    @Scheduled(cron = "0 0 21 * * *")
-//    public void hubDeliveryStart(){
-//        List<DeliveryEntity> deliveries = findByDeliveryStatus(DeliveryStatusEnum.HUB_DELIVERY_ASSIGNMENT_COMPLETED);
-//        deliveryDomainService.hubDeliveryStart(deliveries);
-//    }
-//    // 스케줄링 - 고객 배송 물건 상차 및 slack 메세지 발송 : 06시
-//    // 스케줄링 - 고객 배송 출발 : 08시
-//    @Scheduled(cron = "0 0 8 * * *")
-//    public void userDeliveryStart(){
-//        List<DeliveryEntity> deliveries = findByDeliveryStatus(DeliveryStatusEnum.CUSTOMER_DELIVERY_ASSIGNMENT_COMPLETED);
-//        deliveryDomainService.hubDeliveryStart(deliveries);
-//    }
+    @Scheduled(cron = "0 0 21 * * *")
+    public void hubDeliveryStart(){
+        List<DeliveryEntity> deliveries = findByDeliveryStatus(DeliveryStatusEnum.HUB_DELIVERY_ASSIGNMENT_COMPLETED);
+        deliveryDomainService.hubDeliveryStart(deliveries);
+    }
+
+    // 스케줄링 - 고객 배송 물건 상차 및 slack 메세지 발송 : 06시
+    @Scheduled(cron = "0 0 6 * * *")
+    public void sendToSlackCustomerDelivery(){
+        //
+        // 허브들마다 정보 전달하기
+        List<DeliveryEntity> deliveries = findByDeliveryStatus(DeliveryStatusEnum.CUSTOMER_DELIVERY_ASSIGNMENT_IN_PROGRESS);
+        deliveryDomainService.sendToSlackCustomerDelivery(deliveries);
+        // api쪽으로 해당 정보 전달하기
+    }
+
+    // 스케줄링 - 고객 배송 출발 : 08시
+    @Scheduled(cron = "0 0 8 * * *")
+    public void userDeliveryStart(){
+        List<DeliveryEntity> deliveries = findByDeliveryStatus(DeliveryStatusEnum.CUSTOMER_DELIVERY_ASSIGNMENT_COMPLETED);
+        deliveryDomainService.userDeliveryStart(deliveries);
+    }
 
     // 삭제 //
 
@@ -134,14 +160,11 @@ public class DeliveryService {
     // 배달ID로 값 찾기
     private DeliveryEntity findByDeliveryId(UUID deliveryId){
         return deliveryRepository.findById(deliveryId)
-//                .filter(o-> !o.getIsDeleted) // 삭제가 되지 않은 값만 불러오기 위함인데 왜 getter가 안되죵??
                 .orElseThrow(() -> new IllegalArgumentException("Delivery not found. deliveryId=" + deliveryId));
     }
 
-//    // 배송 상태값으로 찾기
-//    private DeliveryEntity findByDeliveryStatus(DeliveryStatusEnum deliveryStatus){
-//        return deliveryRepository.findAllByDeliveryStatus(DeliveryStatusEnum.CUSTOMER_DELIVERY_ASSIGNMENT_COMPLETED);
-//
-//    }
-
+    // 배송 상태값으로 찾기
+    private List<DeliveryEntity> findByDeliveryStatus(DeliveryStatusEnum deliveryStatus){
+        return deliveryRepository.findAllByDeliveryStatus(deliveryStatus);
+    }
 }

@@ -1,6 +1,7 @@
 package com.coopang.delivery.domain.entity.delivery;
 
 
+import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
 import com.coopang.apidata.jpa.entity.address.AddressEntity;
 import com.coopang.apidata.jpa.entity.base.BaseEntity;
 import jakarta.persistence.*;
@@ -21,7 +22,6 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(value = {AuditingEntityListener.class})
-@SQLRestriction("is_deleted = false")
 public class DeliveryEntity extends BaseEntity {
 
     @Id
@@ -47,10 +47,9 @@ public class DeliveryEntity extends BaseEntity {
     @Column(name = "user_shipper_id", columnDefinition = "UUID")
     private UUID userShipperId;
 
-//    현재는 Delivery쪽에서 작업중이라 나중에 api-data쪽으로 가서 추가한 뒤 주석을 풀겠습니다.
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "delivery_status", nullable = false)
-//    private DeliveryStatusEnum deliveryStatus;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "delivery_status", nullable = false)
+    private DeliveryStatusEnum deliveryStatus;
 
     @Builder
     private DeliveryEntity(
@@ -59,8 +58,8 @@ public class DeliveryEntity extends BaseEntity {
             UUID destinationHubId,
             AddressEntity addressEntity,
             UUID hubShipperId,
-            UUID userShipperId
-//            DeliveryStatusEnum deliveryStatus
+            UUID userShipperId,
+            DeliveryStatusEnum deliveryStatus
     ){
         this.orderId = orderId;
         this.departureHubId = departureHubId;
@@ -68,7 +67,7 @@ public class DeliveryEntity extends BaseEntity {
         this.addressEntity = addressEntity;
         this.hubShipperId = hubShipperId;
         this.userShipperId = userShipperId;
-//        this.deliveryStatus = deliveryStatus;
+        this.deliveryStatus = deliveryStatus;
     }
 
     public static DeliveryEntity create(
@@ -79,7 +78,6 @@ public class DeliveryEntity extends BaseEntity {
             String address1,
             String address2,
             UUID hubShipperId
-//            DeliveryStatusEnum deliveryStatus
     ){
         return DeliveryEntity.builder()
                 .orderId(orderId)
@@ -87,7 +85,11 @@ public class DeliveryEntity extends BaseEntity {
                 .destinationHubId(destinationHubId)
                 .addressEntity(AddressEntity.create(zipCode,address1,address2))
                 .hubShipperId(hubShipperId)
-//                .deliveryStatus(DeliveryStatusEnum.PENDING)
+                .deliveryStatus(DeliveryStatusEnum.PENDING)
                 .build();
+    }
+
+    public void setDeliveryStatus(DeliveryStatusEnum deliveryStatus) {
+        this.deliveryStatus = deliveryStatus;
     }
 }

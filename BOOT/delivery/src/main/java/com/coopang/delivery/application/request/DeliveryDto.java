@@ -1,10 +1,12 @@
 package com.coopang.delivery.application.request;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
 @Getter
+@Setter
 public class DeliveryDto {
     private UUID orderId;
     private UUID departureHubId;

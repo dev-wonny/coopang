@@ -44,16 +44,16 @@ public class DeliveryController {
     }
 
     // 배송 단건 조회
-    @Secured("ROLE_MASTER")
+//    @Secured("ROLE_MASTER")
     @GetMapping("/delivery/{deliveryId}")
     public ResponseEntity<DeliveryResponseDto> getDeliveryById(
             @PathVariable UUID deliveryId,
-            @RequestParam(required = false) UUID hubId
+            @RequestParam(required = false) UUID departureHubId
     ){
         final DeliveryResponseDto deliveryInfo;
 
-        if (hubId != null) {
-            deliveryInfo = deliveryService.getDeliveryByIdWithHubId(deliveryId,hubId);
+        if (departureHubId != null) {
+            deliveryInfo = deliveryService.getDeliveryByIdWithHubId(deliveryId,departureHubId);
         } else {
             deliveryInfo = deliveryService.getDeliveryById(deliveryId);
         }
@@ -66,12 +66,12 @@ public class DeliveryController {
     @GetMapping("/delivery")
     public ResponseEntity<Page<DeliveryResponseDto>> getAllDeliveries(
             Pageable pageable,
-            @RequestParam(required = false) UUID hubId
+            @RequestParam(required = false) UUID departureHubId
     ){
         final Page<DeliveryResponseDto> deliveries;
 
-        if (hubId != null) {
-            deliveries = deliveryService.getAllDeliveriesWithHubId(pageable,hubId);
+        if (departureHubId != null) {
+            deliveries = deliveryService.getAllDeliveriesWithHubId(pageable,departureHubId);
         } else {
             deliveries = deliveryService.getAllDeliveries(pageable);
         }

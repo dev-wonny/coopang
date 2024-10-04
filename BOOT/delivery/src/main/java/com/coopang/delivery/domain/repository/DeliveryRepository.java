@@ -1,5 +1,6 @@
 package com.coopang.delivery.domain.repository;
 
+import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
 import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;
 import com.coopang.delivery.presentation.request.DeliverySearchCondition;
 import org.springframework.data.domain.Page;
@@ -14,17 +15,17 @@ public interface DeliveryRepository {
 
     Optional<DeliveryEntity> findByOrderId(UUID orderId);
 
-    Optional<DeliveryEntity> findByIdHubId(UUID deliveryId, UUID hubId);
+    Optional<DeliveryEntity> findByDeliveryIdAndDepartureHubId(UUID deliveryId, UUID departureHubId);
 
-    Optional<DeliveryEntity> findByOrderIdHubId(UUID orderId, UUID hubId);
+    Optional<DeliveryEntity> findByOrderIdAndDepartureHubId(UUID orderId, UUID departureHubId);
 
     Page<DeliveryEntity> findAll(Pageable pageable);
 
-    Page<DeliveryEntity> findAllHubId(Pageable pageable,UUID hubId);
+    Page<DeliveryEntity> findAllByDepartureHubId(Pageable pageable,UUID departureHubId);
 
     Page<DeliveryEntity> search(DeliverySearchCondition condition, Pageable pageable);
 
     List<DeliveryEntity> findAllByDestinationHubIdAndHubShipperId(UUID destinationHubId, UUID hubSipperId);
 
-//    List<DeliveryEntity> findAllByDeliveryStatus(DeliveryStatusEnum deliveryStatus);
+    List<DeliveryEntity> findAllByDeliveryStatus(DeliveryStatusEnum deliveryStatus);
 }

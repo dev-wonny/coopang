@@ -1,6 +1,7 @@
 package com.coopang.delivery.application.response;
 
 import com.coopang.apidata.application.address.Address;
+import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
 import com.coopang.apidata.jpa.entity.address.AddressEntity;
 import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;
 import lombok.Getter;
@@ -18,8 +19,7 @@ public class DeliveryResponseDto {
     private Address address;
     private UUID hubShipperId;
     private UUID userShipperId;
-//    현재는 Delivery쪽에서 작업중이라 나중에 api-data쪽으로 가서 추가한 뒤 주석을 풀겠습니다.
-//    private DeliveryStatusEnum deliveryStatus;
+    private DeliveryStatusEnum deliveryStatus;
     private boolean isDeleted;
 
     private DeliveryResponseDto(
@@ -30,7 +30,7 @@ public class DeliveryResponseDto {
             Address address,
             UUID hubShipperId,
             UUID userShipperId,
-//            DeliveryStatusEnum deliveryStatus
+            DeliveryStatusEnum deliveryStatus,
             boolean isDeleted
     ){
         this.deliveryId = deliveryId;
@@ -40,7 +40,7 @@ public class DeliveryResponseDto {
         this.address = address;
         this.hubShipperId = hubShipperId;
         this.userShipperId = userShipperId;
-//        this.deliveryStatus = deliveryStatus;
+        this.deliveryStatus = deliveryStatus;
         this.isDeleted = isDeleted;
     }
 
@@ -53,7 +53,7 @@ public class DeliveryResponseDto {
                 new Address(delivery.getAddressEntity().getZipCode(),delivery.getAddressEntity().getAddress1(), delivery.getAddressEntity().getAddress2()),
                 delivery.getHubShipperId(),
                 delivery.getUserShipperId(),
-//                delivery.getDeliveryStatus(),
+                delivery.getDeliveryStatus(),
                 delivery.isDeleted()
         );
     }

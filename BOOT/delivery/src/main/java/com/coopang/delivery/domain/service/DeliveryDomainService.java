@@ -1,6 +1,9 @@
 package com.coopang.delivery.domain.service;
 
+import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
 import com.coopang.delivery.application.request.DeliveryDto;
+import com.coopang.delivery.application.service.DeliveryHubHistoryService;
+import com.coopang.delivery.application.service.DeliveryUserHistoryService;
 import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;
 import com.coopang.delivery.infrastructure.repository.DeliveryJpaRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -15,11 +18,17 @@ import java.util.List;
 public class DeliveryDomainService {
 
     private final DeliveryJpaRepository deliveryJpaRepository;
+    private final DeliveryHubHistoryService deliveryHubHistoryService;
+    private final DeliveryUserHistoryService deliveryUserHistoryService;
 
     public DeliveryDomainService(
-            DeliveryJpaRepository deliveryJpaRepository
+            DeliveryJpaRepository deliveryJpaRepository,
+            DeliveryHubHistoryService deliveryHubHistoryService,
+            DeliveryUserHistoryService deliveryUserHistoryService
     ) {
         this.deliveryJpaRepository = deliveryJpaRepository;
+        this.deliveryHubHistoryService = deliveryHubHistoryService;
+        this.deliveryUserHistoryService = deliveryUserHistoryService;
     }
 
     public DeliveryEntity createDelivery(
@@ -48,31 +57,84 @@ public class DeliveryDomainService {
     // 배송 상태 변경 - 목적지 허브 도착 : 허브 배송 기사님 용
     public void arrivedHub(List<DeliveryEntity> deliveries) {
         for (DeliveryEntity deliveryEntity : deliveries) {
-//            deliveries.setDeliveryStatus(DeliveryStatusEnum.ARRIVED AT DESTINTION HUB);
+            deliveryEntity.setDeliveryStatus(DeliveryStatusEnum.ARRIVED_AT_DESTINATION_HUB);
+
+            deliveryHubHistoryService.createHubHistory(
+                    deliveryEntity.getDeliveryId(),
+                    deliveryEntity.getDepartureHubId(),
+                    deliveryEntity.getDestinationHubId(),
+                    deliveryEntity.getHubShipperId(),
+                    DeliveryStatusEnum.ARRIVED_AT_DESTINATION_HUB
+            );
         }
         deliveryJpaRepository.saveAll(deliveries);
     }
     // 배송 상태 변경 - 목적지 도착 : 고객 배송 기사님 용
     public void arrivedDelivery(DeliveryEntity deliveryEntity) {
-//        deliveryEntity.setDeliveryStatus(DeliveryStatusEnum.DELIVERY COMPLETED TO CUSTOMER);
+        deliveryEntity.setDeliveryStatus(DeliveryStatusEnum.DELIVERY_COMPLETED_TO_CUSTOMER);
         deliveryJpaRepository.save(deliveryEntity);
+
+        deliveryUserHistoryService.createUserHistory(
+                deliveryEntity.getDeliveryId(),
+                deliveryEntity.getDepartureHubId(),
+                deliveryEntity.getAddressEntity().getZipCode(),
+                deliveryEntity.getAddressEntity().getAddress1(),
+                deliveryEntity.getAddressEntity().getAddress2(),
+                deliveryEntity.getUserShipperId(),
+                DeliveryStatusEnum.DELIVERY_COMPLETED_TO_CUSTOMER
+        );
     }
 
-//    // 스케줄링 - 허브 배송 출발
-//    public void hubDeliveryStart(List<DeliveryEntity> deliveries){
-//        updateStatus(deliveries, DeliveryStatusEnum.MOVING_TO_HUB );
-//    }
-//
-//    // 스케줄링 - 고객 배송 출발
-//    public void userDeliveryStart(List<DeliveryEntity> deliveries){
-//        updateStatus(deliveries, DeliveryStatusEnum.MOVING_TO_CUSTOMER );
-//    }
-//
-//    // 스케줄링 공통 메서드
-//    private void updateStatus(List<DeliveryEntity> deliveries, DeliveryStatusEnum deliveryStatus) {
-//        for (DeliveryEntity deliveryEntity : deliveries) {
-////            deliveryEntity.setDeliveryStatus(deliveryStatus);
-//        }
-//        deliveryJpaRepository.saveAll(deliveries);
-//    }
+    // 스케줄링 - 허브 배송 준비 : 16시
+    public void readyDelivery(List<DeliveryEntity> deliveries){
+        updateStatusDeliveryHub(deliveries, DeliveryStatusEnum.HUB_DELIVERY_ASSIGNMENT_IN_PROGRESS );
+    }
+    // 스케줄링 - 허브 배송 물건 상차 및 주문 상태값 변경, slack 메세지 발송 : 20시
+    public void sendToSlackHubDelivery(List<DeliveryEntity> deliveries){
+        updateStatusDeliveryHub(deliveries, DeliveryStatusEnum.HUB_DELIVERY_ASSIGNMENT_COMPLETED );
+    }
+    // 스케줄링 - 허브 배송 출발 : 21시
+    public void hubDeliveryStart(List<DeliveryEntity> deliveries){
+        updateStatusDeliveryHub(deliveries, DeliveryStatusEnum.MOVING_TO_HUB );
+    }
+    // 스케줄링 - 고객 배송 물건 상차 및 slack 메세지 발송 : 06시
+    public void sendToSlackCustomerDelivery(List<DeliveryEntity> deliveries){
+        updateStatusDeliveryUser(deliveries, DeliveryStatusEnum.CUSTOMER_DELIVERY_ASSIGNMENT_COMPLETED );
+    }
+    // 스케줄링 - 고객 배송 출발
+    public void userDeliveryStart(List<DeliveryEntity> deliveries){
+        updateStatusDeliveryUser(deliveries, DeliveryStatusEnum.MOVING_TO_CUSTOMER );
+    }
+
+
+    // 스케줄링 공통 메서드
+    private void updateStatusDeliveryHub(List<DeliveryEntity> deliveries, DeliveryStatusEnum deliveryStatus) {
+        for (DeliveryEntity deliveryEntity : deliveries) {
+            deliveryEntity.setDeliveryStatus(deliveryStatus);
+            deliveryHubHistoryService.createHubHistory(
+                    deliveryEntity.getDeliveryId(),
+                    deliveryEntity.getDepartureHubId(),
+                    deliveryEntity.getDestinationHubId(),
+                    deliveryEntity.getHubShipperId(),
+                    deliveryStatus
+            );
+        }
+        deliveryJpaRepository.saveAll(deliveries);
+    }
+
+    private void updateStatusDeliveryUser(List<DeliveryEntity> deliveries, DeliveryStatusEnum deliveryStatus) {
+        for (DeliveryEntity deliveryEntity : deliveries) {
+            deliveryEntity.setDeliveryStatus(deliveryStatus);
+            deliveryUserHistoryService.createUserHistory(
+                    deliveryEntity.getDeliveryId(),
+                    deliveryEntity.getDepartureHubId(),
+                    deliveryEntity.getAddressEntity().getZipCode(),
+                    deliveryEntity.getAddressEntity().getAddress1(),
+                    deliveryEntity.getAddressEntity().getAddress2(),
+                    deliveryEntity.getUserShipperId(),
+                    deliveryStatus
+            );
+        }
+        deliveryJpaRepository.saveAll(deliveries);
+    }
 }
