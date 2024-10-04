@@ -43,7 +43,7 @@ public class WebSecurityConfig {
 
     @Bean
     public HeaderFilter headerFilter() {
-        return new HeaderFilter(userDetailsService);
+        return new HeaderFilter();
     }
 
     @Bean
