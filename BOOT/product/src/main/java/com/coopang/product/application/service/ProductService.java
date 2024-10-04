@@ -3,8 +3,8 @@ package com.coopang.product.application.service;
 import com.coopang.product.application.request.ProductDto;
 import com.coopang.product.application.request.ProductHiddenAndSaleDto;
 import com.coopang.product.application.response.ProductResponseDto;
-import com.coopang.product.infrastructure.entity.CategoryEntity;
-import com.coopang.product.infrastructure.entity.ProductEntity;
+import com.coopang.product.domain.entity.CategoryEntity;
+import com.coopang.product.domain.entity.ProductEntity;
 import com.coopang.product.domain.repository.CategoryRepository;
 import com.coopang.product.domain.repository.ProductRepository;
 import com.coopang.product.domain.service.ProductDomainService;
@@ -111,7 +111,7 @@ public class ProductService {
     }
 
     private ProductEntity findByProductId(UUID productId){
-        return productRepository.findById(productId).orElseThrow(
+        return productRepository.getOneByProductId(productId).orElseThrow(
             () -> new IllegalArgumentException("존재하지 않는 상품입니다."));
     }
 
