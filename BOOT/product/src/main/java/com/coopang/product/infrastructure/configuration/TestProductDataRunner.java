@@ -1,11 +1,9 @@
-package com.coopang.product.domain.utill;
+package com.coopang.product.infrastructure.configuration;
 
 import com.coopang.product.application.request.ProductDto;
-import com.coopang.product.domain.entitiy.CategoryEntity;
-import com.coopang.product.domain.entitiy.ProductEntity;
+import com.coopang.product.infrastructure.entity.CategoryEntity;
 import com.coopang.product.domain.service.ProductDomainService;
 import com.coopang.product.infrastructure.repository.CategoryJpaRepository;
-import com.coopang.product.infrastructure.repository.ProductJpaRepository;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,36 +24,21 @@ class TestProductDataRunner implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) throws Exception {
-        List<CategoryEntity> categories = Arrays.asList(
-            new CategoryEntity("식품"),
-            new CategoryEntity("음료"),
-            new CategoryEntity("식자재"),
-            new CategoryEntity("가공식품"),
-            new CategoryEntity("의류"),
-            new CategoryEntity("패션잡화"),
-            new CategoryEntity("신발"),
-            new CategoryEntity("생활용품"),
-            new CategoryEntity("가전제품"),
-            new CategoryEntity("디지털 기기"),
-            new CategoryEntity("화장품/뷰티"),
-            new CategoryEntity("유아용품"),
-            new CategoryEntity("건강/의료"),
-            new CategoryEntity("스포츠"),
-            new CategoryEntity("가구"),
-            new CategoryEntity("자동차용품"),
-            new CategoryEntity("펫용품"),
-            new CategoryEntity("취미/완구"),
-            new CategoryEntity("공구"),
-            new CategoryEntity("도서")
-        );
+        List<CategoryEntity> savedCategories = createCategories();
 
-        List<CategoryEntity> savedCategories = categoryRepository.saveAll(categories);
+        List<ProductDto> productDtos = createProductTestDto(
+            savedCategories);
 
+        // 상품, 재고, 재고기록 등록
+        productDtos.forEach(productDto -> {
+            productDomainService.create(productDto);
+        });
+    }
 
-        // 2. 테스트 상품 데이터 리스트 생성
+    private List<ProductDto> createProductTestDto(List<CategoryEntity> savedCategories) {
+
         List<ProductDto> productDtos = new ArrayList<>();
 
-        // 상품 데이터 설정 (setter 메서드 사용)
         ProductDto product1 = new ProductDto();
         product1.setProductName("바나나");
         product1.setCompanyId(UUID.randomUUID());
@@ -136,11 +119,35 @@ class TestProductDataRunner implements ApplicationRunner {
         product10.setProductPrice(1500000.0);
         product10.setProductStock(0);
         productDtos.add(product10);
+        return productDtos;
+    }
 
-        // 상품 저장
-        productDtos.forEach(productDto -> {
-            productDomainService.create(productDto);
-        });
+    private List<CategoryEntity> createCategories() {
+        List<CategoryEntity> categories = Arrays.asList(
+            new CategoryEntity("식품"),
+            new CategoryEntity("음료"),
+            new CategoryEntity("식자재"),
+            new CategoryEntity("가공식품"),
+            new CategoryEntity("의류"),
+            new CategoryEntity("패션잡화"),
+            new CategoryEntity("신발"),
+            new CategoryEntity("생활용품"),
+            new CategoryEntity("가전제품"),
+            new CategoryEntity("디지털 기기"),
+            new CategoryEntity("화장품/뷰티"),
+            new CategoryEntity("유아용품"),
+            new CategoryEntity("건강/의료"),
+            new CategoryEntity("스포츠"),
+            new CategoryEntity("가구"),
+            new CategoryEntity("자동차용품"),
+            new CategoryEntity("펫용품"),
+            new CategoryEntity("취미/완구"),
+            new CategoryEntity("공구"),
+            new CategoryEntity("도서")
+        );
+
+        List<CategoryEntity> savedCategories = categoryRepository.saveAll(categories);
+        return savedCategories;
     }
 
     // 카테고리 이름으로 카테고리를 찾는 메서드

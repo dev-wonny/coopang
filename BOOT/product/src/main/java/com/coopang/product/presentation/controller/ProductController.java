@@ -82,6 +82,7 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @DeleteMapping("/product/{productId}")
     public ResponseEntity<?> deleteProduct(@PathVariable UUID productId) {
 

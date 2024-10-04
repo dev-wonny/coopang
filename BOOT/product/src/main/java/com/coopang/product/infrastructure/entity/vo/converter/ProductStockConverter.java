@@ -1,4 +1,4 @@
-package com.coopang.product.domain.entitiy.vo.converter;
+package com.coopang.product.infrastructure.entity.vo.converter;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
