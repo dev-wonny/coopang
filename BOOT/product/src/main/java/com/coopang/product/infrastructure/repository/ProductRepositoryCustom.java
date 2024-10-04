@@ -1,6 +1,6 @@
 package com.coopang.product.infrastructure.repository;
 
-import com.coopang.product.domain.entitiy.ProductEntity;
+import com.coopang.product.infrastructure.entity.ProductEntity;
 import com.coopang.product.presentation.request.ProductSearchCondition;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

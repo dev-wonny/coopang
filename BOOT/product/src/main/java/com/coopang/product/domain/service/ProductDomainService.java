@@ -2,12 +2,12 @@ package com.coopang.product.domain.service;
 
 
 import com.coopang.product.application.request.ProductDto;
-import com.coopang.product.domain.entitiy.CategoryEntity;
-import com.coopang.product.domain.entitiy.ProductEntity;
-import com.coopang.product.domain.entitiy.ProductStockEntity;
-import com.coopang.product.domain.entitiy.ProductStockHistoryChangeType;
-import com.coopang.product.domain.entitiy.ProductStockHistoryEntity;
-import com.coopang.product.domain.entitiy.vo.ProductStock;
+import com.coopang.product.infrastructure.entity.CategoryEntity;
+import com.coopang.product.infrastructure.entity.ProductEntity;
+import com.coopang.product.infrastructure.entity.ProductStockEntity;
+import com.coopang.product.infrastructure.entity.ProductStockHistoryChangeType;
+import com.coopang.product.infrastructure.entity.ProductStockHistoryEntity;
+import com.coopang.product.infrastructure.entity.vo.ProductStock;
 import com.coopang.product.domain.repository.CategoryRepository;
 import com.coopang.product.domain.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;

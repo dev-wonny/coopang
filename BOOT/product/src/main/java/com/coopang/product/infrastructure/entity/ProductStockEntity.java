@@ -1,7 +1,7 @@
-package com.coopang.product.domain.entitiy;
+package com.coopang.product.infrastructure.entity;
 
 import com.coopang.apidata.jpa.entity.base.BaseEntity;
-import com.coopang.product.domain.entitiy.vo.ProductStock;
+import com.coopang.product.infrastructure.entity.vo.ProductStock;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;

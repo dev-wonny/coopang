@@ -1,6 +1,6 @@
 package com.coopang.product.domain.repository;
 
-import com.coopang.product.domain.entitiy.ProductEntity;
+import com.coopang.product.infrastructure.entity.ProductEntity;
 import com.coopang.product.presentation.request.ProductSearchCondition;
 import java.util.Optional;
 import java.util.UUID;

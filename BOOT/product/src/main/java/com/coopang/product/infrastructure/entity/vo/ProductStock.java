@@ -1,4 +1,4 @@
-package com.coopang.product.domain.entitiy.vo;
+package com.coopang.product.infrastructure.entity.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
