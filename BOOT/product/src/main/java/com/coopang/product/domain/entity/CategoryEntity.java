@@ -1,4 +1,4 @@
-package com.coopang.product.infrastructure.entity;
+package com.coopang.product.domain.entity;
 
 import com.coopang.apidata.jpa.entity.base.BaseEntity;
 import jakarta.persistence.CascadeType;

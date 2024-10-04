@@ -1,4 +1,4 @@
-package com.coopang.product.infrastructure.entity;
+package com.coopang.product.domain.entity;
 
 public enum ProductStockHistoryChangeType {
     INCREASE,  // 재고 증가
