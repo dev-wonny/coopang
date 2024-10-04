@@ -11,7 +11,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 //@EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
 @EnableFeignClients
 @EnableCaching
-@EnableJpaAuditing
+@EnableJpaAuditing(auditorAwareRef = "auditorAwareImpl")
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.coopang.user", "com.coopang.apiconfig"})
 @EnableMethodSecurity(securedEnabled = true)
@@ -20,5 +20,4 @@ public class UserApplication {
     public static void main(String[] args) {
         SpringApplication.run(UserApplication.class, args);
     }
-
 }
