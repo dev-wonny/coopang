@@ -1,5 +1,6 @@
 package com.coopang.product.application.service;
 
+import com.coopang.apidata.application.user.enums.UserRoleEnum;
 import com.coopang.product.application.request.ProductDto;
 import com.coopang.product.application.request.ProductHiddenAndSaleDto;
 import com.coopang.product.application.response.ProductResponseDto;
@@ -8,6 +9,7 @@ import com.coopang.product.domain.entity.ProductEntity;
 import com.coopang.product.domain.repository.CategoryRepository;
 import com.coopang.product.domain.repository.ProductRepository;
 import com.coopang.product.domain.service.ProductDomainService;
+import com.coopang.product.presentation.request.BaseSearchCondition;
 import com.coopang.product.presentation.request.ProductSearchCondition;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class ProductService {
-
+    //TODO : 내부통신 연결해야된다.
     private final ProductRepository productRepository;
     private final ProductDomainService productDomainService;
     private final CategoryRepository categoryRepository;
@@ -42,13 +44,26 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ProductResponseDto> getAllProducts(Pageable pageable) {
+    public Page<ProductResponseDto> getAllProducts(BaseSearchCondition condition,String role,Pageable pageable) {
 
-        Page<ProductEntity> productEntities = productRepository.findAllWithStockAndCategory(pageable);
-
-        return productEntities.map(ProductResponseDto::of);
+        /**
+         * 마스터인 경우 모든 상품들을 봄
+         */
+        if(isMaster(role)){
+            return productRepository.findAll(pageable).map(ProductResponseDto::of);
+        }else if(isHubManager(role)){
+            //허브에 소속된 업체들의 상품 리스트
+            //TODO : 내부통신으로 업체리스트들을 조회
+            return null;
+        }else if(isCompany(role)){
+            //내 업체들의 상품들만 조회
+            return productRepository.findAllWithStockAndCategoryByCompanyId(condition.getCompanyId(), pageable).map(ProductResponseDto::of);
+        }else{
+            return productRepository.findAllWithStockAndCategory(pageable).map(ProductResponseDto::of);
+        }
     }
 
+    @Transactional(readOnly = true)
     public Page<ProductResponseDto> getProductWithCategory(UUID categoryId, Pageable pageable) {
 
         findByCategoryId(categoryId);
@@ -99,8 +114,21 @@ public class ProductService {
 
     }
 
+    /***
+     * 논리적 삭제 시
+     * 상품 숨김, 판매 불가능 처리
+     * @param productId
+     */
     @Transactional
-    public void deleteProductById(UUID productId) {
+    public void deleteProductById(UUID userId, String role, UUID productId) {
+
+        if(isCompany(role))
+        {
+           //TODO : 업체 관리자 조회(company와 통신)
+        }else if(isHubManager(role))
+        {
+            //TODO : 허브 관리자 조회(hub와 통신)
+        }
 
         ProductEntity productEntity = findByProductId(productId);
 
@@ -126,5 +154,17 @@ public class ProductService {
         Page <ProductEntity> productEntities = productRepository.search(searchCondition, pageable);
 
         return productEntities.map(ProductResponseDto::of);
+    }
+
+    private boolean isMaster(String role){
+        return role.equals(UserRoleEnum.MASTER);
+    }
+
+    private boolean isHubManager(String role){
+        return role.equals(UserRoleEnum.HUB_MANAGER);
+    }
+
+    private boolean isCompany(String role){
+        return role.equals(UserRoleEnum.COMPANY);
     }
 }
