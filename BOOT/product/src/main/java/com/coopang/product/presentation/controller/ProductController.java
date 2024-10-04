@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,6 +39,9 @@ public class ProductController {
 
     private final ModelMapperConfig mapperConfig;
     private final ProductService productService;
+
+    private static final String USER_ID_HEADER = "X-User-Id";
+    private static final String USER_ROLE_HEADER = "X-User-Role";
 
     public ProductController(ModelMapperConfig mapperConfig,ProductService productService) {
         this.mapperConfig = mapperConfig;
@@ -61,7 +65,6 @@ public class ProductController {
         productService.updateProduct(productDto,productId);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-
     }
 
     @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
@@ -86,18 +89,22 @@ public class ProductController {
 
     @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @DeleteMapping("/product/{productId}")
-    public ResponseEntity<?> deleteProduct(@PathVariable UUID productId) {
+    public ResponseEntity<?> deleteProduct(@PathVariable UUID productId,
+        @RequestHeader(USER_ID_HEADER) UUID userId,
+        @RequestHeader(USER_ROLE_HEADER) String role){
 
-        productService.deleteProductById(productId);
+        productService.deleteProductById(userId, role, productId);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 
     @GetMapping("/product")
-    public ResponseEntity<?> getAllProducts(BaseSearchCondition condition,Pageable pageable) {
+    public ResponseEntity<?> getAllProducts(@ModelAttribute BaseSearchCondition condition,
+        @RequestHeader(USER_ROLE_HEADER) String role,Pageable pageable) {
 
-        return new ResponseEntity<>(productService.getAllProducts(pageable),HttpStatus.OK);
+        log.info(role);
+        return new ResponseEntity<>(productService.getAllProducts(condition,role,pageable),HttpStatus.OK);
     }
 
     @GetMapping("/product/search")
