@@ -25,7 +25,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(name = "p_products")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(value = {AuditingEntityListener.class})
-@SQLRestriction("is_deleted = false")
+@SQLRestriction("is_hidden = false AND is_sale = true AND is_deleted = false")
 public class ProductEntity extends BaseEntity {
 
     @Id
