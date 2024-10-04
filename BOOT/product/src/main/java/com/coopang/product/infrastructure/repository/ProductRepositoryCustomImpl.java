@@ -5,7 +5,7 @@ import static com.coopang.product.domain.entity.QCategoryEntity.categoryEntity;
 import static com.coopang.product.domain.entity.QProductStockEntity.productStockEntity;
 
 import com.coopang.apiconfig.querydsl.Querydsl4RepositorySupport;
-import com.coopang.product.infrastructure.entity.ProductEntity;
+import com.coopang.product.domain.entity.ProductEntity;
 import com.coopang.product.presentation.request.ProductSearchCondition;
 import com.querydsl.core.types.Predicate;
 import java.time.LocalDateTime;
@@ -23,6 +23,21 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
     }
 
     @Override
+    public Optional<ProductEntity> getOneByProductId(UUID productId) {
+
+        return Optional.ofNullable(selectFrom(productEntity)
+            .leftJoin(productEntity.productStockEntity,productStockEntity)
+            .leftJoin(productEntity.categoryEntity,categoryEntity)
+            .fetchJoin()
+            .where(
+                productEntity.productId.eq(productId),
+                productEntity.isDeleted.eq(false),
+                productEntity.isHidden.eq(false),
+                productEntity.isSale.eq(true)
+            ).fetchOne());
+    }
+
+    @Override
     public Page<ProductEntity> search(ProductSearchCondition productSearchCondition,
         Pageable pageable) {
 
@@ -32,22 +47,29 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
                 .leftJoin(productEntity.categoryEntity,categoryEntity)
                 .fetchJoin()
                 .where(
-                    productNameEq(productSearchCondition.productName()),
-                    companyIdEq(productSearchCondition.companyId()),
-                    betweenStartDateAndEndDate(productSearchCondition.startDate(), productSearchCondition.endDate()),
-                    isProductPriceGreaterThan(productSearchCondition.minProductPrice()),
-                    isProductPricelessThan(productSearchCondition.maxProductPrice())
+                    productNameEq(productSearchCondition.getProductName()),
+                    companyIdEq(productSearchCondition.getCompanyId()),
+                    betweenStartDateAndEndDate(productSearchCondition.getStartDate(), productSearchCondition.getEndDate()),
+                    isProductPriceGreaterThan(productSearchCondition.getMinProductPrice()),
+                    isProductPricelessThan(productSearchCondition.getMaxProductPrice()),
+                    productEntity.isDeleted.eq(false),
+                    productEntity.isHidden.eq(false),
+                    productEntity.isSale.eq(true),
+                    productStockEntity.productStock.value.ne(0)
                 ),
             countQuery -> countQuery.select(
                     productEntity.productId
-
                 ).from(productEntity)
                 .where(
-                    productNameEq(productSearchCondition.productName()),
-                    companyIdEq(productSearchCondition.companyId()),
-                    betweenStartDateAndEndDate(productSearchCondition.startDate(), productSearchCondition.endDate()),
-                    isProductPriceGreaterThan(productSearchCondition.minProductPrice()),
-                    isProductPricelessThan(productSearchCondition.maxProductPrice())
+                    productNameEq(productSearchCondition.getProductName()),
+                    companyIdEq(productSearchCondition.getCompanyId()),
+                    betweenStartDateAndEndDate(productSearchCondition.getStartDate(), productSearchCondition.getEndDate()),
+                    isProductPriceGreaterThan(productSearchCondition.getMinProductPrice()),
+                    isProductPricelessThan(productSearchCondition.getMaxProductPrice()),
+                    productEntity.isDeleted.eq(false),
+                    productEntity.isHidden.eq(false),
+                    productEntity.isSale.eq(true),
+                    productStockEntity.productStock.value.ne(0)
                 )
         );
     }
@@ -67,8 +89,8 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
         }
 
         if(endDate==null) {
-            return productEntity.createdAt.after(startDate);
 
+            return productEntity.createdAt.after(startDate);
         }
 
         return productEntity.createdAt.between(startDate, endDate);
