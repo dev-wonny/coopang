@@ -15,9 +15,9 @@ public interface UserRepository {
 
     Optional<UserEntity> findById(UUID userId);
 
+    Optional<UserEntity> findByUserIdAndIsDeletedFalseAndIsBlockFalse(UUID userId);
+
     Page<UserEntity> search(UserSearchCondition condition, Pageable pageable);
 
     Page<UserEntity> findAll(Pageable pageable);
-
-    Page<UserEntity> findAllByIsDeletedFalse(Pageable pageable);
 }

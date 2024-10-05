@@ -12,23 +12,47 @@ import java.util.UUID;
 public class UserResponseDto {
     private UUID userId;
     private String email;
-    private String username;
+    private String userName;
     private String phoneNumber;
-    private String slackId;
     private UserRoleEnum role;
-    private Boolean isBlock;
+    private String slackId;
+
+    private String zipCode;
+    private String address1;
+    private String address2;
+    private UUID nearHubId;
+
+    private boolean isBlock;
+    private boolean isDeleted;
 
     // private 생성자, 외부에서 객체 생성을 막음
-
-
-    private UserResponseDto(UUID userId, String email, String username, String phoneNumber, String slackId, UserRoleEnum role, Boolean isBlock) {
+    private UserResponseDto(
+            UUID userId,
+            String email,
+            String userName,
+            String phoneNumber,
+            UserRoleEnum role,
+            String slackId,
+            String zipCode,
+            String address1,
+            String address2,
+            UUID nearHubId,
+            boolean isBlock,
+            boolean isDeleted
+    ) {
         this.userId = userId;
         this.email = email;
-        this.username = username;
+        this.userName = userName;
         this.phoneNumber = phoneNumber;
-        this.slackId = slackId;
         this.role = role;
+        this.slackId = slackId;
+        this.zipCode = zipCode;
+        this.address1 = address1;
+        this.address2 = address2;
+        this.nearHubId = nearHubId;
         this.isBlock = isBlock;
+        this.isDeleted = isDeleted;
+
     }
 
     /**
@@ -41,11 +65,16 @@ public class UserResponseDto {
         return new UserResponseDto(
                 user.getUserId(),
                 user.getEmail(),
-                user.getUsername(),
+                user.getUserName(),
                 user.getPhoneNumber(),
-                user.getSlackId(),
                 user.getRole(),
-                user.isBlock()
+                user.getSlackId(),
+                user.getAddressEntity().getZipCode(),
+                user.getAddressEntity().getAddress1(),
+                user.getAddressEntity().getAddress2(),
+                user.getNearHubId(),
+                user.isBlock(),
+                user.isDeleted()
         );
     }
 }

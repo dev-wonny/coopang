@@ -15,6 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @SpringBootTest(properties = "spring.profiles.active=test")
 @Transactional
 @Commit
@@ -31,14 +33,16 @@ class UserApplicationTests {
 
         UserDto dto = new UserDto();
         dto.setEmail("email@naver.com");
-        dto.setUsername("name");
+        dto.setUserName("name");
         dto.setPhoneNumber("010-2222-2222");
         dto.setSlackId("slackId");
         String passwordEncode = "password";
         UserRoleEnum role = UserRoleEnum.getRoleEnum(MASTER);
         dto.setRole(role.getAuthority());
+        dto.setNearHubId(UUID.fromString("121212"));
 
-        UserEntity insertUser = UserEntity.create(dto.getEmail(), passwordEncode, dto.getUsername(), dto.getPhoneNumber(), dto.getSlackId(), dto.getRole(), zipCode, address1, address2);
+        UserEntity insertUser =
+                UserEntity.create(null, dto.getEmail(), passwordEncode, dto.getUserName(), dto.getPhoneNumber(), dto.getSlackId(), dto.getRole(), zipCode, address1, address2, dto.getNearHubId());
         entityManager.persist(insertUser);
 
         JPAQueryFactory query = new JPAQueryFactory(entityManager);
