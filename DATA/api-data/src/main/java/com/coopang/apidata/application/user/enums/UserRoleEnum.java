@@ -3,13 +3,15 @@ package com.coopang.apidata.application.user.enums;
 import com.coopang.apiconfig.error.AccessDeniedException;
 import lombok.Getter;
 
+import java.util.Set;
+
 @Getter
 public enum UserRoleEnum {
     MASTER(Authority.MASTER),
     HUB_MANAGER(Authority.HUB_MANAGER),
     COMPANY(Authority.COMPANY),
-    SHIPPER_HUB(Authority.SHIPPER_HUB),
-    SHIPPER_COMPANY(Authority.SHIPPER_COMPANY);
+    SHIPPER(Authority.SHIPPER),
+    CUSTOMER(Authority.CUSTOMER);
 
 
     private final String authority;
@@ -22,39 +24,52 @@ public enum UserRoleEnum {
         public static final String MASTER = "ROLE_MASTER";
         public static final String HUB_MANAGER = "ROLE_HUB_MANAGER";
         public static final String COMPANY = "ROLE_COMPANY";
-        public static final String SHIPPER_HUB = "ROLE_SHIPPER_HUB";
-        public static final String SHIPPER_COMPANY = "ROLE_SHIPPER_COMPANY";
+        public static final String SHIPPER = "ROLE_SHIPPER";
+        public static final String CUSTOMER = "ROLE_CUSTOMER";
     }
-
 
     public static UserRoleEnum getRoleEnum(String s) {
-        for (UserRoleEnum role : values()) {
-            if (s.equals(role.authority)) {
-                return role;
-            }
+        try {
+            return UserRoleEnum.valueOf(s);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid authority: " + s);
         }
-        throw new IllegalArgumentException("Invalid authority: " + s);
     }
 
-    /**
-     * 주어진 권한이 MASTER인지 확인합니다.
-     *
-     * @param s 권한 문자열
-     * @return true if the authority is MASTER; false otherwise
-     */
-    public static boolean isMaster(String s) {
-        return MASTER.authority.equals(s);
+    public static void validateRole(String role, Set<String> allowedRoles, String errorMessage) {
+        if (!allowedRoles.contains(role)) {
+            throw new AccessDeniedException(errorMessage);
+        }
     }
 
+    public static void validateMasterOrManager(String role) {
+        validateRole(role, Set.of(Authority.MASTER, Authority.HUB_MANAGER),
+                "Access denied. User role is not HUB_MANAGER or MASTER.");
+    }
 
-    /**
-     * MASTER 가 아니면 권한 접근 에외를 발생시킵니다.
-     *
-     * @param role
-     */
-    public static void validateMaster(String role) {
-        if (!isMaster(role)) {
-            throw new AccessDeniedException("Access denied. User role is not MANAGER or MASTER.");
-        }
+    public static void validateMasterOrManagerOrCompany(String role) {
+        validateRole(role, Set.of(Authority.MASTER, Authority.HUB_MANAGER, Authority.COMPANY),
+                "Access denied. User role is not HUB_MANAGER or MASTER or COMPANY.");
+    }
+
+    public static void validateCustomer(String role) {
+        validateRole(role, Set.of(Authority.CUSTOMER),
+                "Access denied. User role is not CUSTOMER.");
+    }
+
+    public static boolean isManagerOrMaster(String role) {
+        return Set.of(Authority.MASTER, Authority.HUB_MANAGER).contains(role);
+    }
+
+    public static boolean isManagerMasterOrCompany(String role) {
+        return Set.of(Authority.MASTER, Authority.HUB_MANAGER, Authority.COMPANY).contains(role);
+    }
+
+    public static boolean isMaster(String role) {
+        return Authority.MASTER.equals(role);
+    }
+
+    public static boolean isCustomer(String role) {
+        return Authority.CUSTOMER.equals(role);
     }
 }
