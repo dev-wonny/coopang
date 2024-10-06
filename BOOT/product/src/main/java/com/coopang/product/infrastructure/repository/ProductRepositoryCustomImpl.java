@@ -48,12 +48,12 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
 
              contentQuery.selectFrom(productStockHistoryEntity)
                 .join(productStockHistoryEntity.productStockEntity)
-                .join(productEntity)
+                .join(productEntity).fetchJoin()
                 .on(productStockHistoryEntity.productStockEntity.productEntity.productId.eq(productEntity.productId))
                 .where(productEntity.productId.eq(productId))
             ,countQuery -> countQuery.selectFrom(productStockHistoryEntity)
                 .join(productStockHistoryEntity.productStockEntity)
-                .join(productEntity)
+                .join(productEntity).fetchJoin()
                 .on(productStockHistoryEntity.productStockEntity.productEntity.productId.eq(productEntity.productId))
                 .where(productEntity.productId.eq(productId))
         );
@@ -67,14 +67,14 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
         return applyPagination(pageable,contentQuery ->
                 contentQuery.selectFrom(productStockHistoryEntity)
                     .join(productStockHistoryEntity.productStockEntity)
-                    .join(productEntity)
+                    .join(productEntity).fetchJoin()
                     .on(productStockHistoryEntity.productStockEntity.productEntity.productId.eq(productEntity.productId))
                     .where(productEntity.productId.eq(productId),
                         isProductStockHistoryType(condition.changeType()),
                         betweenStartDateAndEndDateByProductStockHistory(condition.startDate(),condition.endDate()))
             ,countQuery -> countQuery.selectFrom(productStockHistoryEntity)
                 .join(productStockHistoryEntity.productStockEntity)
-                .join(productEntity)
+                .join(productEntity).fetchJoin()
                 .on(productStockHistoryEntity.productStockEntity.productEntity.productId.eq(productEntity.productId))
                 .where(productEntity.productId.eq(productId),
                     isProductStockHistoryType(condition.changeType()),
