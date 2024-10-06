@@ -30,4 +30,17 @@ public class ProductStock {
 
     }
 
+    public void addStock(int amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("추가할 수량은 음수가 될 수 없습니다.");
+        }
+        this.value += amount;
+    }
+
+    public void reduceStock(int amount) {
+        if (this.value - amount < 0) {
+            throw new IllegalArgumentException("재고 수량이 부족합니다.");
+        }
+        this.value -= amount;
+    }
 }
