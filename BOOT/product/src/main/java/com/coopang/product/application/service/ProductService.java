@@ -4,12 +4,14 @@ import com.coopang.apidata.application.user.enums.UserRoleEnum;
 import com.coopang.product.application.request.ProductDto;
 import com.coopang.product.application.request.ProductHiddenAndSaleDto;
 import com.coopang.product.application.request.ProductStockDto;
+import com.coopang.product.application.request.ProductStockHistoryDto;
 import com.coopang.product.application.response.ProductResponseDto;
 import com.coopang.product.domain.entity.CategoryEntity;
 import com.coopang.product.domain.entity.ProductEntity;
 import com.coopang.product.domain.entity.ProductStockEntity;
 import com.coopang.product.domain.entity.ProductStockHistoryChangeType;
 import com.coopang.product.domain.entity.ProductStockHistoryEntity;
+import com.coopang.product.domain.entity.vo.ProductStock;
 import com.coopang.product.domain.repository.CategoryRepository;
 import com.coopang.product.domain.repository.ProductRepository;
 import com.coopang.product.domain.service.ProductDomainService;
@@ -267,5 +269,43 @@ public class ProductService {
                 }
             }
         }
+    }
+
+    @Transactional
+    public void deleteProductStockHistory(UUID productId, UUID productStockHistoryId, UUID userId, String role) {
+        
+        ProductEntity productEntity = findByProductId(productId);
+
+        ProductStockEntity productStockEntity = productEntity.getProductStockEntity();
+        ProductStockHistoryEntity productStockHistoryEntity = findStockHistoryById(
+            productStockHistoryId, productStockEntity);
+
+        productStockHistoryEntity.setDeleted(true);
+        
+    }
+
+    private static ProductStockHistoryEntity findStockHistoryById(UUID productStockHistoryId,
+        ProductStockEntity productStockEntity) {
+        return productStockEntity.getProductStockHistories().stream().
+            filter(entity -> entity.getProductStockHistoryId().equals(productStockHistoryId))
+            .findFirst().orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품재고기록입니다."));
+    }
+
+    @Transactional
+    public void updateProductStockHistory(ProductStockHistoryDto productStockHistoryDto,UUID productId, UUID productStockHistoryId) {
+
+        ProductEntity productEntity = findByProductId(productId);
+
+        ProductStockEntity productStockEntity = productEntity.getProductStockEntity();
+        ProductStockHistoryEntity productStockHistoryEntity = findStockHistoryById(
+            productStockHistoryId, productStockEntity);
+
+        productStockHistoryEntity.updateProductStockHistory(
+            productStockHistoryDto.getProductStockHistoryChangeQuantity(),
+            productStockHistoryDto.getProductStockHistoryPreviousQuantity(),
+            productStockHistoryDto.getProductStockHistoryCurrentQuantity(),
+            productStockHistoryDto.getProductStockHistoryAdditionalInfo(),
+            productStockHistoryDto.getProductStockHistoryChangeType()
+        );
     }
 }

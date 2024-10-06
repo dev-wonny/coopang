@@ -5,6 +5,7 @@ import com.coopang.product.application.request.ProductStockDto;
 import com.coopang.product.application.service.ProductService;
 import com.coopang.product.presentation.request.AddStockRequest;
 import com.coopang.product.presentation.request.UpdateStockRequest;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.Map;
 import java.util.UUID;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "ProductStockController API", description = "ProductStockController API")
 @RestController
 @RequestMapping("/product-stocks/v1/product")
 @RequiredArgsConstructor
