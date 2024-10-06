@@ -4,6 +4,8 @@ import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.product.application.request.ProductStockDto;
 import com.coopang.product.application.service.ProductService;
 import com.coopang.product.presentation.request.AddStockRequest;
+import com.coopang.product.presentation.request.UpdateStockRequest;
+import jakarta.validation.Valid;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +29,7 @@ public class ProductStockController {
     @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @PatchMapping("/{productId}/restock")
     public ResponseEntity<?> addProductStock(@PathVariable UUID productId,
-        @RequestBody AddStockRequest addStockRequest) {
+        @Valid @RequestBody AddStockRequest addStockRequest) {
 
         ProductStockDto productStockDto = mapperConfig.strictMapper().map(addStockRequest, ProductStockDto.class);
 
@@ -40,11 +42,13 @@ public class ProductStockController {
     @PatchMapping("/{productId}/reduce")
     public ResponseEntity<String> reduceProductStock(
         @PathVariable UUID productId,
-        @PathVariable UUID productStockId,
-        @RequestBody Map<String, Object> stockUpdateRequest) {
+        @Valid @RequestBody UpdateStockRequest updateStockRequest) {
         // 상품 재고 수량 변경 로직
+        ProductStockDto productStockDto = mapperConfig.strictMapper().map(updateStockRequest, ProductStockDto.class);
 
-        return ResponseEntity.ok("Stock updated successfully");
+        productService.reduceProductStock(productId,updateStockRequest);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
