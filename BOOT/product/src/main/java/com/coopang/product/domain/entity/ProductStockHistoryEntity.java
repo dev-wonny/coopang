@@ -89,4 +89,19 @@ public class ProductStockHistoryEntity extends BaseEntity {
             .productStockHistoryAdditionalInfo(productStockHistoryAdditionalInfo)
             .build();
     }
+
+    public void updateProductStockHistory(
+         int productStockHistoryChangeQuantity,
+         int productStockHistoryPreviousQuantity,
+         int productStockHistoryCurrentQuantity,
+         String productStockHistoryAdditionalInfo,
+         ProductStockHistoryChangeType productStockHistoryChangeType
+    )
+    {
+        this.productStockHistoryChangeQuantity = productStockHistoryChangeQuantity;
+        this.productStockHistoryPreviousQuantity = productStockHistoryPreviousQuantity;
+        this.productStockHistoryCurrentQuantity = productStockHistoryCurrentQuantity;
+        this.productStockHistoryAdditionalInfo = productStockHistoryAdditionalInfo;
+        this.productStockHistoryChangeType = productStockHistoryChangeType;
+    }
 }

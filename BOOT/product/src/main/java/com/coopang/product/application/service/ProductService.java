@@ -3,17 +3,28 @@ package com.coopang.product.application.service;
 import com.coopang.apidata.application.user.enums.UserRoleEnum;
 import com.coopang.product.application.request.ProductDto;
 import com.coopang.product.application.request.ProductHiddenAndSaleDto;
+import com.coopang.product.application.request.ProductStockDto;
+import com.coopang.product.application.request.ProductStockHistoryDto;
 import com.coopang.product.application.response.ProductResponseDto;
+import com.coopang.product.application.response.ProductStockHistoryResponseDto;
 import com.coopang.product.domain.entity.CategoryEntity;
 import com.coopang.product.domain.entity.ProductEntity;
+import com.coopang.product.domain.entity.ProductStockEntity;
+import com.coopang.product.domain.entity.ProductStockHistoryChangeType;
+import com.coopang.product.domain.entity.ProductStockHistoryEntity;
+import com.coopang.product.domain.entity.vo.ProductStock;
 import com.coopang.product.domain.repository.CategoryRepository;
 import com.coopang.product.domain.repository.ProductRepository;
 import com.coopang.product.domain.service.ProductDomainService;
 import com.coopang.product.presentation.request.BaseSearchCondition;
 import com.coopang.product.presentation.request.ProductSearchCondition;
+import com.coopang.product.presentation.request.ProductStockHistorySearchCondition;
+import com.coopang.product.presentation.request.UpdateStockRequest;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,6 +38,11 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductDomainService productDomainService;
     private final CategoryRepository categoryRepository;
+
+    @Value("${stock.retry.maxRetryCount:3}")
+    private int maxRetryCount;
+    @Value("${stock.retry.initialDelay:50}")
+    private int initialDelay;
 
     public ProductResponseDto createProduct(ProductDto productDto) {
 
@@ -166,5 +182,122 @@ public class ProductService {
 
     private boolean isCompany(String role){
         return role.equals(UserRoleEnum.COMPANY);
+    }
+
+    @Transactional
+    public void addProductStock(UUID productId, ProductStockDto productStockDto) {
+
+        int amount = productStockDto.getAmount();
+
+        ProductEntity productEntity = findByProductId(productId);
+        ProductStockEntity productStockEntity = productEntity.getProductStockEntity();
+        int previousStock = productStockEntity.getProductStock().getValue();
+
+        retryStockUpdate(() -> {
+            productStockEntity.increaseStock(amount);
+
+            ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(productStockEntity,productStockDto.getOrderId(), ProductStockHistoryChangeType.INCREASE,
+                amount,previousStock,productStockEntity.getProductStock().getValue(),"Increase");
+
+            productStockEntity.addStockHistory(stockHistory);
+        });
+    }
+
+    @Transactional
+    public void reduceProductStock(UUID productId, ProductStockDto productStockDto) {
+        int amount = productStockDto.getAmount();
+
+        ProductEntity productEntity = findByProductId(productId);
+        ProductStockEntity productStockEntity = productEntity.getProductStockEntity();
+        int previousStock = productStockEntity.getProductStock().getValue();
+
+        retryStockUpdate(() -> {
+            productStockEntity.decreaseStock(amount);
+
+            ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(productStockEntity,productStockDto.getOrderId(), ProductStockHistoryChangeType.DECREASE,
+                amount,previousStock,productStockEntity.getProductStock().getValue(),"Decrease");
+
+            productStockEntity.addStockHistory(stockHistory);
+        });
+    }
+
+    @Transactional
+    public void deleteProductStockHistory(UUID productId, UUID productStockHistoryId) {
+        
+        ProductEntity productEntity = findByProductId(productId);
+
+        ProductStockEntity productStockEntity = productEntity.getProductStockEntity();
+        ProductStockHistoryEntity productStockHistoryEntity = findStockHistoryById(
+            productStockHistoryId, productStockEntity);
+
+        productStockHistoryEntity.setDeleted(true);
+        
+    }
+
+    private static ProductStockHistoryEntity findStockHistoryById(UUID productStockHistoryId,
+        ProductStockEntity productStockEntity) {
+        return productStockEntity.getProductStockHistories().stream().
+            filter(entity -> entity.getProductStockHistoryId().equals(productStockHistoryId))
+            .findFirst().orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품재고기록입니다."));
+    }
+
+    @Transactional
+    public void updateProductStockHistory(ProductStockHistoryDto productStockHistoryDto,UUID productId, UUID productStockHistoryId) {
+
+        ProductEntity productEntity = findByProductId(productId);
+
+        ProductStockEntity productStockEntity = productEntity.getProductStockEntity();
+        ProductStockHistoryEntity productStockHistoryEntity = findStockHistoryById(
+            productStockHistoryId, productStockEntity);
+
+        productStockHistoryEntity.updateProductStockHistory(
+            productStockHistoryDto.getProductStockHistoryChangeQuantity(),
+            productStockHistoryDto.getProductStockHistoryPreviousQuantity(),
+            productStockHistoryDto.getProductStockHistoryCurrentQuantity(),
+            productStockHistoryDto.getProductStockHistoryAdditionalInfo(),
+            productStockHistoryDto.getProductStockHistoryChangeType()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProductStockHistoryResponseDto> getStockHistoriesByProductId(UUID productId, Pageable pageable) {
+
+        return productRepository.getProductStockHistoryByProductId(productId, pageable).map(ProductStockHistoryResponseDto::of);
+
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProductStockHistoryResponseDto> getStockHistoriesByProductIdWithCondition(ProductStockHistorySearchCondition condition, UUID productId, Pageable pageable) {
+
+        return productRepository.searchProductStockHistoryByProductId(condition,productId,pageable).map(ProductStockHistoryResponseDto::of);
+    }
+
+    private void retryStockUpdate(Runnable stockUpdateOperation) {
+        long delay = initialDelay;
+        int retryCount = 0;
+        boolean isUpdated = false;
+
+        while (retryCount < maxRetryCount && !isUpdated) {
+            try {
+                stockUpdateOperation.run();
+                isUpdated = true;
+            }
+            catch (IllegalArgumentException e)
+            {
+                log.error(e.getMessage());
+            }
+            catch (OptimisticLockingFailureException e) {
+                retryCount++;
+                if (retryCount >= maxRetryCount) {
+                    throw new RuntimeException("재고 업데이트 중 낙관적 락 충돌이 발생했습니다. 최대 재시도 횟수를 초과했습니다.", e);
+                }
+                try {
+                    Thread.sleep(delay);
+                    delay *= 2; // 지수 백오프 전략
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt(); // 인터럽트 상태 복원
+                }
+            }
+        }
     }
 }
