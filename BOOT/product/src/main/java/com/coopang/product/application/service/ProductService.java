@@ -3,9 +3,13 @@ package com.coopang.product.application.service;
 import com.coopang.apidata.application.user.enums.UserRoleEnum;
 import com.coopang.product.application.request.ProductDto;
 import com.coopang.product.application.request.ProductHiddenAndSaleDto;
+import com.coopang.product.application.request.ProductStockDto;
 import com.coopang.product.application.response.ProductResponseDto;
 import com.coopang.product.domain.entity.CategoryEntity;
 import com.coopang.product.domain.entity.ProductEntity;
+import com.coopang.product.domain.entity.ProductStockEntity;
+import com.coopang.product.domain.entity.ProductStockHistoryChangeType;
+import com.coopang.product.domain.entity.ProductStockHistoryEntity;
 import com.coopang.product.domain.repository.CategoryRepository;
 import com.coopang.product.domain.repository.ProductRepository;
 import com.coopang.product.domain.service.ProductDomainService;
@@ -14,6 +18,7 @@ import com.coopang.product.presentation.request.ProductSearchCondition;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -167,4 +172,51 @@ public class ProductService {
     private boolean isCompany(String role){
         return role.equals(UserRoleEnum.COMPANY);
     }
+
+    @Transactional
+    public void addProductStock(UUID productId, ProductStockDto productStockDto) {
+
+        int amount = productStockDto.getAmount();
+
+        ProductEntity productEntity = findByProductId(productId);
+        ProductStockEntity productStockEntity = productEntity.getProductStockEntity();
+        int previousStock = productStockEntity.getProductStock().getValue();
+
+        int maxRetryCount = 3; // 최대 재시도 횟수
+        int retryCount = 0;    // 현재 재시도 횟수
+        int initialDelay = 50;
+        long delay = initialDelay;
+
+        boolean isUpdated = false;
+
+        //낙관적락 실패 시 재시도 로직
+        while(retryCount < maxRetryCount && isUpdated == false){
+            try {
+                productStockEntity.increaseStock(amount);
+                isUpdated = true;
+            }catch (IllegalArgumentException e){
+                e.printStackTrace();
+                throw new IllegalArgumentException("재고 수량이 음수가 될 수 없습니다.");
+            }catch(OptimisticLockingFailureException e){
+                retryCount++;
+
+                if (retryCount >= maxRetryCount) {
+                    throw new RuntimeException("재고 업데이트 중 낙관적 락 충돌이 발생했습니다. 최대 재시도 횟수를 초과했습니다.");
+                }
+
+                try {
+                    Thread.sleep(delay);
+                    delay *= 2; //지수 백오프 전략
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt(); // 인터럽트 상태 복원
+                }
+            }
+        }
+
+        ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(productStockEntity,null, ProductStockHistoryChangeType.INCREASE,
+            amount,previousStock,productStockEntity.getProductStock().getValue(),"Increase");
+
+        productStockEntity.addStockHistory(stockHistory);
+    }
+
 }

@@ -29,4 +29,5 @@ public interface ProductRepository {
 
     @Query("SELECT p FROM ProductEntity p JOIN FETCH p.productStockEntity s JOIN FETCH p.categoryEntity c")
     Page<ProductEntity> findAll(Pageable pageable);
+
 }
