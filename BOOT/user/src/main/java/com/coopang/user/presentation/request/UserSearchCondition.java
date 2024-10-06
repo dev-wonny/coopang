@@ -1,8 +1,10 @@
 package com.coopang.user.presentation.request;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class UserSearchCondition {
     private String userName;
     private String userRole;

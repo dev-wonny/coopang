@@ -24,9 +24,7 @@ public class CommonApiHeaderFilter extends OncePerRequestFilter {
 
     public CommonApiHeaderFilter(List<String> excludedPaths) {
         this.excludedPaths = excludedPaths != null ? excludedPaths : new ArrayList<>();
-
     }
-
 
     /**
      * @param request
@@ -40,25 +38,22 @@ public class CommonApiHeaderFilter extends OncePerRequestFilter {
         final String userId = request.getHeader(USER_ID_HEADER);
         final String role = request.getHeader(USER_ROLE_HEADER);
 
-        if (StringUtils.hasText(userId)) {
-
-            final UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(request.getUserPrincipal(), userId,
-                    Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role)));
-
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            log.info("Authentication set for user: " + userId);
-
-        } else {
-            SecurityContextHolder.getContext().setAuthentication(null);
-            log.info("No authentication set due to missing headers");
+        if (!StringUtils.hasText(userId) || !StringUtils.hasText(role)) {
+            log.warn("Missing headers: X-User-Id or X-User-Role");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing authentication headers");
+            return;
         }
 
-        try {
-            filterChain.doFilter(request, response);
-        } catch (Exception e) {
-            log.error("Exception during filter chain", e);
-            throw e;
-        }
+        final UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                request.getUserPrincipal(),
+                userId,
+                Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role))
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        log.info("Authentication set for user: " + userId + " with role: " + role);
+
+        filterChain.doFilter(request, response);
     }
 
     @Override

@@ -3,11 +3,14 @@ package com.coopang.user.domain.service;
 import com.coopang.user.application.request.UserDto;
 import com.coopang.user.domain.entity.user.UserEntity;
 import com.coopang.user.infrastructure.repository.UserJpaRepository;
-import com.coopang.user.presentation.request.ChangePasswordRequestDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * The UserDomainService handles domain-specific business logic related to users,
+ * including user creation, password changes, and password validation.
+ */
 @Transactional
 @Service
 public class UserDomainService {
@@ -19,27 +22,56 @@ public class UserDomainService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // 생성
+    /**
+     * Registers a new user with encrypted password and stores it in the database.
+     *
+     * @param userDto the DTO containing user details for registration.
+     * @return the newly created {@link UserEntity}.
+     */
     public UserEntity createUser(UserDto userDto) {
         // 비밀번호 암호화
         final String encodedPassword = passwordEncoder.encode(userDto.getPassword());
 
         // 회원 등록
-        UserEntity newUser = UserEntity.create(userDto.getEmail(), encodedPassword, userDto.getUsername(), userDto.getPhoneNumber(), userDto.getRole(), userDto.getSlackId(),
-                userDto.getZipCode(), userDto.getAddress1(), userDto.getAddress2());
+        UserEntity newUser = UserEntity.create(
+                null,
+                userDto.getEmail(),
+                encodedPassword,
+                userDto.getUserName(),
+                userDto.getPhoneNumber(),
+                userDto.getRole(),
+                userDto.getSlackId(),
+                userDto.getZipCode(),
+                userDto.getAddress1(),
+                userDto.getAddress2(),
+                userDto.getNearHubId()
+        );
+
         return userJpaRepository.save(newUser);
     }
 
-    public void changePassword(UserEntity user, ChangePasswordRequestDto dto) {
-        final String encodedPassword = passwordEncoder.encode(dto.getNewPassword());
+    /**
+     * Changes the user's password by encoding the new password and updating the user entity.
+     *
+     * @param user        the {@link UserEntity} whose password will be changed.
+     * @param newPassword the new password in plain text to be encrypted.
+     */
+    public void changePassword(UserEntity user, String newPassword) {
+        final String encodedPassword = passwordEncoder.encode(newPassword);
         user.changePassword(encodedPassword);
-        userJpaRepository.save(user);
     }
 
-    public void checkPassword(UserEntity user, String currentPassword) {
-        // 현재 비밀번호 확인
-        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-            throw new IllegalArgumentException();
+    /**
+     * Validates if the provided current password matches the user's actual encoded password.
+     * If the password does not match, an {@link IllegalArgumentException} is thrown with a custom error message.
+     *
+     * @param currentPassword the raw password provided by the user.
+     * @param encodedPassword the saved encoded password stored in the database.
+     * @throws IllegalArgumentException if the provided password does not match the user's actual password.
+     */
+    public void checkPassword(String currentPassword, String encodedPassword) {
+        if (!passwordEncoder.matches(currentPassword, encodedPassword)) {
+            throw new IllegalArgumentException("The provided password does not match the stored password.");
         }
     }
 }
