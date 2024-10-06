@@ -3,10 +3,14 @@ package com.coopang.product.infrastructure.repository;
 import static com.coopang.product.domain.entity.QProductEntity.productEntity;
 import static com.coopang.product.domain.entity.QCategoryEntity.categoryEntity;
 import static com.coopang.product.domain.entity.QProductStockEntity.productStockEntity;
+import static com.coopang.product.domain.entity.QProductStockHistoryEntity.productStockHistoryEntity;
 
 import com.coopang.apiconfig.querydsl.Querydsl4RepositorySupport;
 import com.coopang.product.domain.entity.ProductEntity;
+import com.coopang.product.domain.entity.ProductStockHistoryChangeType;
+import com.coopang.product.domain.entity.ProductStockHistoryEntity;
 import com.coopang.product.presentation.request.ProductSearchCondition;
+import com.coopang.product.presentation.request.ProductStockHistorySearchCondition;
 import com.querydsl.core.types.Predicate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -35,6 +39,69 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
                 productEntity.isHidden.eq(false),
                 productEntity.isSale.eq(true)
             ).fetchOne());
+    }
+
+    @Override
+    public Page<ProductStockHistoryEntity> getProductStockHistoryByProductId(UUID productId, Pageable pageable) {
+
+        return applyPagination(pageable,contentQuery ->
+
+             contentQuery.selectFrom(productStockHistoryEntity)
+                .join(productStockHistoryEntity.productStockEntity)
+                .join(productEntity)
+                .on(productStockHistoryEntity.productStockEntity.productEntity.productId.eq(productEntity.productId))
+                .where(productEntity.productId.eq(productId))
+            ,countQuery -> countQuery.selectFrom(productStockHistoryEntity)
+                .join(productStockHistoryEntity.productStockEntity)
+                .join(productEntity)
+                .on(productStockHistoryEntity.productStockEntity.productEntity.productId.eq(productEntity.productId))
+                .where(productEntity.productId.eq(productId))
+        );
+    }
+
+    @Override
+    public Page<ProductStockHistoryEntity> searchProductStockHistoryByProductId(
+        ProductStockHistorySearchCondition condition, UUID productId, Pageable pageable) {
+
+
+        return applyPagination(pageable,contentQuery ->
+                contentQuery.selectFrom(productStockHistoryEntity)
+                    .join(productStockHistoryEntity.productStockEntity)
+                    .join(productEntity)
+                    .on(productStockHistoryEntity.productStockEntity.productEntity.productId.eq(productEntity.productId))
+                    .where(productEntity.productId.eq(productId),
+                        isProductStockHistoryType(condition.changeType()),
+                        betweenStartDateAndEndDateByProductStockHistory(condition.startDate(),condition.endDate()))
+            ,countQuery -> countQuery.selectFrom(productStockHistoryEntity)
+                .join(productStockHistoryEntity.productStockEntity)
+                .join(productEntity)
+                .on(productStockHistoryEntity.productStockEntity.productEntity.productId.eq(productEntity.productId))
+                .where(productEntity.productId.eq(productId),
+                    isProductStockHistoryType(condition.changeType()),
+                    betweenStartDateAndEndDateByProductStockHistory(condition.startDate(),condition.endDate()))
+        );
+    }
+
+    private Predicate isProductStockHistoryType(ProductStockHistoryChangeType changeType) {
+        return changeType != null ? productStockHistoryEntity.productStockHistoryChangeType.eq(changeType) : null ;
+    }
+
+    private Predicate betweenStartDateAndEndDateByProductStockHistory(LocalDateTime startDate, LocalDateTime endDate) {
+
+        if(startDate==null && endDate==null) {
+            return null;
+        }
+
+        if (startDate == null) {
+            return productStockHistoryEntity.createdAt.before(endDate);
+        }
+
+        if(endDate==null) {
+
+            return productStockHistoryEntity.createdAt.after(startDate);
+        }
+
+        return productStockHistoryEntity.createdAt.between(startDate, endDate);
     }
 
     @Override

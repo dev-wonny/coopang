@@ -2,6 +2,7 @@ package com.coopang.product.presentation.request;
 
 import com.coopang.product.domain.entity.ProductStockHistoryChangeType;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,6 @@ public class UpdateStockHistoryRequest {
     private int productStockHistoryCurrentQuantity;
     @NotBlank
     private String productStockHistoryAdditionalInfo;
-    @NotBlank
+    @NotNull
     private ProductStockHistoryChangeType productStockHistoryChangeType;
 }

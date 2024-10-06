@@ -1,7 +1,9 @@
 package com.coopang.product.domain.repository;
 
 import com.coopang.product.domain.entity.ProductEntity;
+import com.coopang.product.domain.entity.ProductStockHistoryEntity;
 import com.coopang.product.presentation.request.ProductSearchCondition;
+import com.coopang.product.presentation.request.ProductStockHistorySearchCondition;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -29,5 +31,10 @@ public interface ProductRepository {
 
     @Query("SELECT p FROM ProductEntity p JOIN FETCH p.productStockEntity s JOIN FETCH p.categoryEntity c")
     Page<ProductEntity> findAll(Pageable pageable);
+
+    Page<ProductStockHistoryEntity> getProductStockHistoryByProductId(UUID productId, Pageable pageable);
+
+    Page<ProductStockHistoryEntity> searchProductStockHistoryByProductId(
+        ProductStockHistorySearchCondition condition,UUID productId, Pageable pageable);
 
 }
