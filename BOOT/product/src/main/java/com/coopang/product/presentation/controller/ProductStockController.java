@@ -52,27 +52,4 @@ public class ProductStockController {
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
-    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
-    @PatchMapping("/{productId}/rollback-increase")
-    public ResponseEntity<?> increaseProductStockByRollback(
-        @PathVariable UUID productId,
-        @PathVariable UUID productStockId,
-        @RequestBody Map<String, Object> stockUpdateRequest) {
-        // 상품 재고 수량 변경 로직
-
-        return ResponseEntity.ok("Stock updated successfully");
-    }
-
-    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
-    @PatchMapping("/{productId}/cancel-increase")
-    public ResponseEntity<String> increaseProductStockByCancel(
-        @PathVariable UUID productId,
-        @PathVariable UUID productStockId,
-        @RequestBody Map<String, Object> stockUpdateRequest) {
-        // 상품 재고 수량 변경 로직
-
-        return ResponseEntity.ok("Stock updated successfully");
-    }
-
 }
