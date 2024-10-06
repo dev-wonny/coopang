@@ -193,84 +193,32 @@ public class ProductService {
         ProductStockEntity productStockEntity = productEntity.getProductStockEntity();
         int previousStock = productStockEntity.getProductStock().getValue();
 
-        long delay = initialDelay;
-        int retryCount = 0;
+        retryStockUpdate(() -> {
+            productStockEntity.increaseStock(amount);
 
-        boolean isUpdated = false;
+            ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(productStockEntity,productStockDto.getOrderId(), ProductStockHistoryChangeType.INCREASE,
+                amount,previousStock,productStockEntity.getProductStock().getValue(),"Increase");
 
-        //낙관적락 실패 시 재시도 로직
-        while(retryCount < maxRetryCount && isUpdated == false){
-            try {
-                productStockEntity.increaseStock(amount);
-
-                ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(productStockEntity,null, ProductStockHistoryChangeType.INCREASE,
-                    amount,previousStock,productStockEntity.getProductStock().getValue(),"Increase");
-
-                productStockEntity.addStockHistory(stockHistory);
-
-                isUpdated = true;
-            }catch (IllegalArgumentException e){
-                e.printStackTrace();
-                throw new IllegalArgumentException("재고 수량이 음수가 될 수 없습니다.");
-            }catch(OptimisticLockingFailureException e){
-                retryCount++;
-
-                if (retryCount >= maxRetryCount) {
-                    throw new RuntimeException("재고 업데이트 중 낙관적 락 충돌이 발생했습니다. 최대 재시도 횟수를 초과했습니다.");
-                }
-
-                try {
-                    Thread.sleep(delay);
-                    delay *= 2; //지수 백오프 전략
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt(); // 인터럽트 상태 복원
-                }
-            }
-        }
-
+            productStockEntity.addStockHistory(stockHistory);
+        });
     }
 
     @Transactional
-    public void reduceProductStock(UUID productId, UpdateStockRequest updateStockRequest) {
-        int amount = updateStockRequest.getAmount();
+    public void reduceProductStock(UUID productId, ProductStockDto productStockDto) {
+        int amount = productStockDto.getAmount();
 
         ProductEntity productEntity = findByProductId(productId);
         ProductStockEntity productStockEntity = productEntity.getProductStockEntity();
         int previousStock = productStockEntity.getProductStock().getValue();
 
-        long delay = initialDelay;
-        int retryCount = 0;
-        boolean isUpdated = false;
+        retryStockUpdate(() -> {
+            productStockEntity.decreaseStock(amount);
 
-        //낙관적락 실패 시 재시도 로직
-        while(retryCount < maxRetryCount && isUpdated == false){
-            try {
-                productStockEntity.decreaseStock(amount);
+            ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(productStockEntity,productStockDto.getOrderId(), ProductStockHistoryChangeType.DECREASE,
+                amount,previousStock,productStockEntity.getProductStock().getValue(),"Decrease");
 
-                ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(productStockEntity,updateStockRequest.getOrderId(), ProductStockHistoryChangeType.DECREASE,
-                    amount,previousStock,productStockEntity.getProductStock().getValue(),"Decrease");
-
-                productStockEntity.addStockHistory(stockHistory);
-
-                isUpdated = true;
-            }catch (IllegalArgumentException e){
-                e.printStackTrace();
-                throw new IllegalArgumentException("재고 수량이 부족합니다.");
-            }catch(OptimisticLockingFailureException e){
-                retryCount++;
-
-                if (retryCount >= maxRetryCount) {
-                    throw new RuntimeException("재고 업데이트 중 낙관적 락 충돌이 발생했습니다. 최대 재시도 횟수를 초과했습니다.");
-                }
-
-                try {
-                    Thread.sleep(delay);
-                    delay *= 2; //지수 백오프 전략
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt(); // 인터럽트 상태 복원
-                }
-            }
-        }
+            productStockEntity.addStockHistory(stockHistory);
+        });
     }
 
     @Transactional
@@ -322,5 +270,34 @@ public class ProductService {
     public Page<ProductStockHistoryResponseDto> getStockHistoriesByProductIdWithCondition(ProductStockHistorySearchCondition condition, UUID productId, Pageable pageable) {
 
         return productRepository.searchProductStockHistoryByProductId(condition,productId,pageable).map(ProductStockHistoryResponseDto::of);
+    }
+
+    private void retryStockUpdate(Runnable stockUpdateOperation) {
+        long delay = initialDelay;
+        int retryCount = 0;
+        boolean isUpdated = false;
+
+        while (retryCount < maxRetryCount && !isUpdated) {
+            try {
+                stockUpdateOperation.run();
+                isUpdated = true;
+            }
+            catch (IllegalArgumentException e)
+            {
+                log.error(e.getMessage());
+            }
+            catch (OptimisticLockingFailureException e) {
+                retryCount++;
+                if (retryCount >= maxRetryCount) {
+                    throw new RuntimeException("재고 업데이트 중 낙관적 락 충돌이 발생했습니다. 최대 재시도 횟수를 초과했습니다.", e);
+                }
+                try {
+                    Thread.sleep(delay);
+                    delay *= 2; // 지수 백오프 전략
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt(); // 인터럽트 상태 복원
+                }
+            }
+        }
     }
 }
