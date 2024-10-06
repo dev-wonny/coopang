@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -44,6 +45,10 @@ public class ProductStockEntity extends BaseEntity {
     @Embedded
     private ProductStock productStock;
 
+    //낙관적 락을 위한 버전 필드
+    @Version
+    private int version;
+
     @OneToMany(mappedBy = "productStockEntity", cascade = CascadeType.ALL)
     private List<ProductStockHistoryEntity> productStockHistories = new ArrayList<>();
 
@@ -63,5 +68,13 @@ public class ProductStockEntity extends BaseEntity {
             .productEntity(productEntity)
             .productStock(productStock)
             .build();
+    }
+
+    public void increaseStock(int amount) {
+        this.productStock.addStock(amount);
+    }
+
+    public void decreaseStock(int amount) {
+        this.productStock.reduceStock(amount);
     }
 }
