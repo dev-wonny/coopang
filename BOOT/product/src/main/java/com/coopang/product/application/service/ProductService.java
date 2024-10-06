@@ -6,6 +6,7 @@ import com.coopang.product.application.request.ProductHiddenAndSaleDto;
 import com.coopang.product.application.request.ProductStockDto;
 import com.coopang.product.application.request.ProductStockHistoryDto;
 import com.coopang.product.application.response.ProductResponseDto;
+import com.coopang.product.application.response.ProductStockHistoryResponseDto;
 import com.coopang.product.domain.entity.CategoryEntity;
 import com.coopang.product.domain.entity.ProductEntity;
 import com.coopang.product.domain.entity.ProductStockEntity;
@@ -17,6 +18,7 @@ import com.coopang.product.domain.repository.ProductRepository;
 import com.coopang.product.domain.service.ProductDomainService;
 import com.coopang.product.presentation.request.BaseSearchCondition;
 import com.coopang.product.presentation.request.ProductSearchCondition;
+import com.coopang.product.presentation.request.ProductStockHistorySearchCondition;
 import com.coopang.product.presentation.request.UpdateStockRequest;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -272,7 +274,7 @@ public class ProductService {
     }
 
     @Transactional
-    public void deleteProductStockHistory(UUID productId, UUID productStockHistoryId, UUID userId, String role) {
+    public void deleteProductStockHistory(UUID productId, UUID productStockHistoryId) {
         
         ProductEntity productEntity = findByProductId(productId);
 
@@ -307,5 +309,18 @@ public class ProductService {
             productStockHistoryDto.getProductStockHistoryAdditionalInfo(),
             productStockHistoryDto.getProductStockHistoryChangeType()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProductStockHistoryResponseDto> getStockHistoriesByProductId(UUID productId, Pageable pageable) {
+
+        return productRepository.getProductStockHistoryByProductId(productId, pageable).map(ProductStockHistoryResponseDto::of);
+
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProductStockHistoryResponseDto> getStockHistoriesByProductIdWithCondition(ProductStockHistorySearchCondition condition, UUID productId, Pageable pageable) {
+
+        return productRepository.searchProductStockHistoryByProductId(condition,productId,pageable).map(ProductStockHistoryResponseDto::of);
     }
 }
