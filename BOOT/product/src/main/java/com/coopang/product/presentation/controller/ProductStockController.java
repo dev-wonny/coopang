@@ -48,7 +48,7 @@ public class ProductStockController {
         // 상품 재고 수량 변경 로직
         ProductStockDto productStockDto = mapperConfig.strictMapper().map(updateStockRequest, ProductStockDto.class);
 
-        productService.reduceProductStock(productId,updateStockRequest);
+        productService.reduceProductStock(productId,productStockDto);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
