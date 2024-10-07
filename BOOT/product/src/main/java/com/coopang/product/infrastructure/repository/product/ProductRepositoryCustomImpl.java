@@ -114,7 +114,7 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
                 .leftJoin(productEntity.categoryEntity,categoryEntity)
                 .fetchJoin()
                 .where(
-                    productNameEq(productSearchCondition.getProductName()),
+                    productNameContains(productSearchCondition.getProductName()),
                     companyIdEq(productSearchCondition.getCompanyId()),
                     betweenStartDateAndEndDate(productSearchCondition.getStartDate(), productSearchCondition.getEndDate()),
                     isProductPriceGreaterThan(productSearchCondition.getMinProductPrice()),
@@ -128,7 +128,7 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
                     productEntity.productId
                 ).from(productEntity)
                 .where(
-                    productNameEq(productSearchCondition.getProductName()),
+                    productNameContains(productSearchCondition.getProductName()),
                     companyIdEq(productSearchCondition.getCompanyId()),
                     betweenStartDateAndEndDate(productSearchCondition.getStartDate(), productSearchCondition.getEndDate()),
                     isProductPriceGreaterThan(productSearchCondition.getMinProductPrice()),
@@ -141,8 +141,8 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
         );
     }
 
-    private Predicate productNameEq(String productName) {
-        return StringUtils.hasText(productName) ? productEntity.productName.eq(productName) : null;
+    private Predicate productNameContains(String productName) {
+        return StringUtils.hasText(productName) ? productEntity.productName.contains(productName) : null;
     }
 
     private Predicate companyIdEq(UUID companyId) {
