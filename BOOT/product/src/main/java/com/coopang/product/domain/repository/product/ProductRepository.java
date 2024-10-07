@@ -14,8 +14,6 @@ public interface ProductRepository {
 
     Optional<ProductEntity> getOneByProductId(UUID productId);
 
-    ProductEntity save(ProductEntity productEntity);
-
     @Query("SELECT p FROM ProductEntity p JOIN FETCH p.productStockEntity s JOIN FETCH p.categoryEntity c WHERE p.isDeleted = false and p.isHidden = false and p.isSale = true and s.productStock.value > 0")
     Page<ProductEntity> findAllWithStockAndCategory(Pageable pageable);
 

@@ -28,7 +28,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class ProductEntity extends BaseEntity {
 
     @Id
-    @UuidGenerator
     @Column(name = "product_id", columnDefinition = "UUID", nullable = false, unique = true)
     private UUID productId;
 
@@ -59,8 +58,9 @@ public class ProductEntity extends BaseEntity {
     }
 
     @Builder(access = AccessLevel.PRIVATE)
-    public ProductEntity(CategoryEntity categoryEntity,
+    public ProductEntity(UUID productId,CategoryEntity categoryEntity,
         UUID companyId, String productName, double productPrice, boolean isHidden, boolean isSale) {
+        this.productId = productId;
         this.categoryEntity = categoryEntity;
         this.companyId = companyId;
         this.productName = productName;
@@ -69,10 +69,11 @@ public class ProductEntity extends BaseEntity {
         this.isSale = isSale;
     }
 
-    public static ProductEntity create(CategoryEntity categoryEntity,
+    public static ProductEntity create(UUID productId,CategoryEntity categoryEntity,
         UUID companyId, String productName, double productPrice, boolean isHidden, boolean isSale)
     {
         return ProductEntity.builder()
+            .productId(productId != null ? productId : UUID.randomUUID())
             .categoryEntity(categoryEntity)
             .companyId(companyId)
             .productName(productName)
