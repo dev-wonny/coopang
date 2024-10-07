@@ -1,11 +1,10 @@
 package com.coopang.order.application.service;
 
-import com.coopang.order.application.OrderTestDto;
 import com.coopang.order.application.PaymentProcessDto;
+import com.coopang.order.application.ProcessProduct;
 import com.coopang.order.application.response.OrderCheckResponseDto;
 import com.coopang.order.domain.PaymentMethodEnum;
 import com.coopang.order.domain.PaymentStatusEnum;
-import com.coopang.order.domain.entity.payment.PaymentEntity;
 import com.coopang.order.domain.repository.PaymentRepository;
 import com.coopang.order.domain.service.PaymentDomainService;
 import com.coopang.order.presentation.request.PGRequestDto;
@@ -79,5 +78,34 @@ public class PaymentService {
             e.printStackTrace();
             return "Payment request creation failed";
         }
+    }
+
+    // Kafka 리스너 추후에 Payment쪽으로 이동
+    @KafkaListener(topics = "delivery-topic", groupId = "my-group")
+    public void listen(String message) {
+        try {
+            ProcessProduct orderInfo = objectMapper.readValue(message, ProcessProduct.class);
+            String successMessage = handleOrder(orderInfo); // 주문 처리 후 성공 메시지 반환
+
+            // 응답 메시지 생성
+            OrderCheckResponseDto response = new OrderCheckResponseDto();
+            response.setOrderId(orderInfo.getOrderId());
+            response.setMessage(successMessage);
+
+            // 응답을 응답 토픽에 전송
+            String responseMessage = objectMapper.writeValueAsString(response);
+            kafkaTemplate.send("delivery-response-topic", responseMessage);
+        } catch (Exception e) {
+            e.printStackTrace(); // 예외 처리
+        }
+    }
+    private String handleOrder(ProcessProduct orderInfo) {
+        // 주문 정보 처리 로직
+        System.out.println("Received Order Info: ID=" + orderInfo.getOrderId() +
+                ", Quantity=" + orderInfo.getOrderQuantity() +
+                ", Price=" + orderInfo.getOrderTotalPrice());
+
+        // 주문 처리 성공 메시지 반환
+        return "Order processed successfully";
     }
 }

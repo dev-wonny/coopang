@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class OrderTestDto {
+public class CancelOrder {
     private UUID orderId;
     private UUID productId;
     private Integer orderQuantity;

@@ -28,8 +28,8 @@ public class PGController {
 
     // PG사 결제 요청을 처리하는 임시 엔드포인트 (테스트용)
     private String processPaymentRequest(PGRequestDto requestDto) {
-        // 랜덤으로 결제 성공 또는 실패 결정 (98% 성공, 2% 실패)
-        final int successThreshold = 98; // 성공 확률 95%
+        // 랜덤으로 결제 성공 또는 실패 결정 (50% 성공, 50% 실패)
+        final int successThreshold = 50; // 성공 확률 95%
         final int randomValue = ThreadLocalRandom.current().nextInt(100); // 0부터 99까지의 랜덤 값
 
         return randomValue < successThreshold ? "Payment processed successfully" : "Payment failed";

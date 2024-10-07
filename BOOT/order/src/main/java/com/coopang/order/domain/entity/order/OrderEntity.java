@@ -107,15 +107,19 @@ public class OrderEntity extends BaseEntity {
                 .build();
     }
 
-    public void updateOrder(
-            UUID companyId,
+    public void updateAtOrder(
+            UUID companyId
+    ){
+        this.companyId = companyId;
+        this.orderStatus = OrderStatusEnum.PENDING;
+    }
+
+    public void updateAtCompleteDelivery(
             UUID productHubId,
             UUID nearHubId
     ){
-        this.companyId = companyId;
         this.productHubId = productHubId;
         this.nearHubId = nearHubId;
-        this.orderStatus = OrderStatusEnum.PENDING;
     }
 
     public void setOrderStatus(OrderStatusEnum orderStatus) {

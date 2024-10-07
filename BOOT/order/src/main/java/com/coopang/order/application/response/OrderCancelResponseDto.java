@@ -11,51 +11,37 @@ import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
-public class OrderResponseDto {
+public class OrderCancelResponseDto {
 
     private UUID orderId;
     private UUID productId;
-    private UUID userId;
-    private Address address;
     private Integer orderQuantity;
-    private BigDecimal orderSinglePrice;
     private BigDecimal orderTotalPrice;
     private OrderStatusEnum orderStatus;
-    private boolean isDeleted;
 
-    private OrderResponseDto(
+    private OrderCancelResponseDto(
             UUID orderId,
-            UUID userId,
             UUID productId,
-            Address address,
             Integer orderQuantity,
-            BigDecimal orderSinglePrice,
             BigDecimal orderTotalPrice,
-            OrderStatusEnum orderStatus,
-            boolean isDeleted
-    ){
+            OrderStatusEnum orderStatus
+    ) {
         this.orderId = orderId;
-        this.userId = userId;
         this.productId = productId;
-        this.address = address;
         this.orderQuantity = orderQuantity;
-        this.orderSinglePrice = orderSinglePrice;
         this.orderTotalPrice = orderTotalPrice;
         this.orderStatus = orderStatus;
-        this.isDeleted = isDeleted;
     }
 
-    public static OrderResponseDto fromOrder(OrderEntity orderEntity) {
-        return new OrderResponseDto(
+    public static OrderCancelResponseDto fromOrderCancel(
+            OrderEntity orderEntity
+    ){
+        return new OrderCancelResponseDto(
                 orderEntity.getOrderId(),
-                orderEntity.getUserId(),
                 orderEntity.getProductId(),
-                new Address(orderEntity.getAddressEntity().getZipCode(),orderEntity.getAddressEntity().getAddress1(),orderEntity.getAddressEntity().getAddress2()),
                 orderEntity.getOrderQuantity(),
-                orderEntity.getOrderSinglePrice(),
                 orderEntity.getOrderTotalPrice(),
-                orderEntity.getOrderStatus(),
-                orderEntity.isDeleted()
-                );
+                orderEntity.getOrderStatus()
+        );
     }
 }

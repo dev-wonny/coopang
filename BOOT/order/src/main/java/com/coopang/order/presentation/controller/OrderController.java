@@ -45,4 +45,10 @@ public class OrderController {
         return new ResponseEntity<>(orderCheckResponseDto, HttpStatus.OK);
     }
 
+    // 주문취소
+    @PatchMapping("/order/{orderId}")
+    public ResponseEntity<String> cancelOrder(@PathVariable("orderId") UUID orderId) {
+        return new ResponseEntity<>(orderService.cancelOrder(orderId), HttpStatus.OK);
+    }
+
 }
