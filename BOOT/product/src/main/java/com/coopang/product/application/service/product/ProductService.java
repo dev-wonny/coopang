@@ -1,5 +1,7 @@
 package com.coopang.product.application.service.product;
 
+import com.coopang.apicommunication.kafka.message.CompleteProduct;
+import com.coopang.apicommunication.kafka.message.ErrorProduct;
 import com.coopang.apidata.application.user.enums.UserRoleEnum;
 import com.coopang.product.application.request.product.ProductDto;
 import com.coopang.product.application.request.product.ProductHiddenAndSaleDto;
@@ -19,6 +21,8 @@ import com.coopang.product.infrastructure.repository.category.CategoryJpaReposit
 import com.coopang.product.presentation.request.product.BaseSearchCondition;
 import com.coopang.product.presentation.request.product.ProductSearchCondition;
 import com.coopang.product.presentation.request.productStockHistory.ProductStockHistorySearchCondition;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +42,8 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductDomainService productDomainService;
     private final CategoryJpaRepository categoryJpaRepository;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final ObjectMapper objectMapper;
 
     @Value("${stock.retry.maxRetryCount:3}")
     private int maxRetryCount;
@@ -183,6 +190,7 @@ public class ProductService {
         return role.equals(UserRoleEnum.COMPANY);
     }
 
+    //상품의 재고 수량을 증가시키는 함수
     @Transactional
     public void addProductStock(UUID productId, ProductStockDto productStockDto) {
 
@@ -202,6 +210,7 @@ public class ProductService {
         });
     }
 
+    //상품의 재고 수량을 감소하는 함수 - 낙관적 락을 이용
     @Transactional
     public void reduceProductStock(UUID productId, ProductStockDto productStockDto) {
         int amount = productStockDto.getAmount();
@@ -210,16 +219,59 @@ public class ProductService {
         ProductStockEntity productStockEntity = productEntity.getProductStockEntity();
         int previousStock = productStockEntity.getProductStock().getValue();
 
-        retryStockUpdate(() -> {
-            productStockEntity.decreaseStock(amount);
+        long delay = initialDelay;
+        int retryCount = 0;
+        boolean isUpdated = false;
 
-            ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(null,productStockEntity,productStockDto.getOrderId(), ProductStockHistoryChangeType.DECREASE,
-                amount,previousStock,productStockEntity.getProductStock().getValue(),"Decrease");
+        while (retryCount < maxRetryCount && !isUpdated) {
+            try {
+                //재고 수량 감소
+                productStockEntity.decreaseStock(amount);
 
-            productStockEntity.addStockHistory(stockHistory);
-        });
+                //재고 기록 등록
+                ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(null,productStockEntity,productStockDto.getOrderId(), ProductStockHistoryChangeType.DECREASE,
+                    amount,previousStock,productStockEntity.getProductStock().getValue(),"Decrease");
+
+                //재고 기록과 재고와 연결
+                productStockEntity.addStockHistory(stockHistory);
+                isUpdated = true;
+
+                try {
+                    //재고수량 차감 완료 메시지 생성 및 주문 서버에 send
+                    CompleteProduct completeProduct = new CompleteProduct();
+                    completeProduct.setOrderId(productStockDto.getOrderId());
+                    completeProduct.setCompanyId(productEntity.getCompanyId());
+                    String completedMessage = objectMapper.writeValueAsString(completeProduct);
+                    kafkaTemplate.send("complete_product",completedMessage);
+
+                } catch (JsonProcessingException e) {
+                    log.error(e.getMessage());
+                    throw new RuntimeException(e);
+                }
+
+            }
+            catch (IllegalArgumentException e)
+            {
+                //재고 수량 부족 시 주문 서버에 error product 메시지 요청
+                log.error(e.getMessage());
+                sendOutOfStockMessage(productStockDto.getOrderId());
+            }
+            catch (OptimisticLockingFailureException e) {
+                retryCount++;
+                if (retryCount >= maxRetryCount) {
+                    throw new RuntimeException("재고 업데이트 중 낙관적 락 충돌이 발생했습니다. 최대 재시도 횟수를 초과했습니다.", e);
+                }
+                try {
+                    Thread.sleep(delay);
+                    delay *= 2; // 지수 백오프 전략
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt(); // 인터럽트 상태 복원
+                }
+            }
+        }
     }
 
+    //재고기록 논리적으로 삭제하는 함수
     @Transactional
     public void deleteProductStockHistory(UUID productId, UUID productStockHistoryId) {
         
@@ -233,6 +285,7 @@ public class ProductService {
         
     }
 
+    //특정 상품의 재고 기록 엔티티를 찾는 함수
     private static ProductStockHistoryEntity findStockHistoryById(UUID productStockHistoryId,
         ProductStockEntity productStockEntity) {
         return productStockEntity.getProductStockHistories().stream().
@@ -240,6 +293,7 @@ public class ProductService {
             .findFirst().orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품재고기록입니다."));
     }
 
+    //특정 상품의 재고 기록을 변경하는 함수
     @Transactional
     public void updateProductStockHistory(ProductStockHistoryDto productStockHistoryDto,UUID productId, UUID productStockHistoryId) {
 
@@ -258,6 +312,7 @@ public class ProductService {
         );
     }
 
+    //특정 상품의 재고기록들을 모두 조회하는 함수 (페이징, 정렬기능 지원)
     @Transactional(readOnly = true)
     public Page<ProductStockHistoryResponseDto> getStockHistoriesByProductId(UUID productId, Pageable pageable) {
 
@@ -265,12 +320,14 @@ public class ProductService {
 
     }
 
+    //특정상품의 재고기록들을 키워드 혹은 날짜별로 조회하는 함수
     @Transactional(readOnly = true)
     public Page<ProductStockHistoryResponseDto> getStockHistoriesByProductIdWithCondition(ProductStockHistorySearchCondition condition, UUID productId, Pageable pageable) {
 
         return productRepository.searchProductStockHistoryByProductId(condition,productId,pageable).map(ProductStockHistoryResponseDto::of);
     }
 
+    //낙관적락에 대한 재시도 호출 함수 -> 재고 증가할때만 이용
     private void retryStockUpdate(Runnable stockUpdateOperation) {
         long delay = initialDelay;
         int retryCount = 0;
@@ -284,6 +341,7 @@ public class ProductService {
             catch (IllegalArgumentException e)
             {
                 log.error(e.getMessage());
+
             }
             catch (OptimisticLockingFailureException e) {
                 retryCount++;
@@ -298,5 +356,63 @@ public class ProductService {
                 }
             }
         }
+    }
+
+    //주문 수량이 재고 수량보다 많을 경우 에러메시지 주문서버에 전달
+    private void sendOutOfStockMessage(UUID orderId)
+    {
+        try{
+            ErrorProduct errorProduct = new ErrorProduct();
+            errorProduct.setOrderId(orderId);
+            errorProduct.setErrorMessage("재고수량이 부족합니다.");
+            String errorMessage = objectMapper.writeValueAsString(errorProduct);
+            kafkaTemplate.send("error_product",errorMessage);
+
+        }catch (JsonProcessingException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 잔액 부족/ 결제실패에 대한 상품 수량 롤백
+     */
+    @Transactional
+    public void rollbackProduct(UUID orderId,UUID productId,int orderQuantity){
+
+        ProductEntity productEntity = findByProductId(productId);
+        ProductStockEntity productStockEntity = productEntity.getProductStockEntity();
+        int previousStock = productStockEntity.getProductStock().getValue();
+
+        retryStockUpdate(() -> {
+            productStockEntity.increaseStock(orderQuantity);
+
+            ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(null,productStockEntity,orderId, ProductStockHistoryChangeType.INCREASE,
+                orderQuantity,previousStock,productStockEntity.getProductStock().getValue(),"Rollback Product");
+
+            productStockEntity.addStockHistory(stockHistory);
+        });
+    }
+
+    /**
+     * 결제 취소 시 상품 수량 복구
+     * @param orderId
+     * @param productId
+     * @param orderQuantity
+     */
+    @Transactional
+    public void cancelProduct(UUID orderId, UUID productId, int orderQuantity)
+    {
+        ProductEntity productEntity = findByProductId(productId);
+        ProductStockEntity productStockEntity = productEntity.getProductStockEntity();
+        int previousStock = productStockEntity.getProductStock().getValue();
+
+        retryStockUpdate(() -> {
+            productStockEntity.increaseStock(orderQuantity);
+
+            ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(null,productStockEntity,orderId, ProductStockHistoryChangeType.INCREASE,
+                orderQuantity,previousStock,productStockEntity.getProductStock().getValue(),"Cancel Order and Product Stock increase");
+
+            productStockEntity.addStockHistory(stockHistory);
+        });
     }
 }

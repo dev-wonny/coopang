@@ -29,7 +29,7 @@ public class ProductStockController {
 
     @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @PatchMapping("/{productId}/restock")
-    public ResponseEntity<?> addProductStock(@PathVariable UUID productId,
+    public ResponseEntity<String> addProductStock(@PathVariable UUID productId,
         @Valid @RequestBody AddStockRequest addStockRequest) {
 
         ProductStockDto productStockDto = mapperConfig.strictMapper().map(addStockRequest, ProductStockDto.class);
@@ -44,10 +44,35 @@ public class ProductStockController {
     public ResponseEntity<String> reduceProductStock(
         @PathVariable UUID productId,
         @Valid @RequestBody UpdateStockRequest updateStockRequest) {
-        // 상품 재고 수량 변경 로직
+
         ProductStockDto productStockDto = mapperConfig.strictMapper().map(updateStockRequest, ProductStockDto.class);
 
         productService.reduceProductStock(productId,productStockDto);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
+    @PatchMapping("/{productId}/rollback-increase")
+    public ResponseEntity<String> rollbackProductStock(
+        @PathVariable UUID productId,
+        @Valid @RequestBody UpdateStockRequest updateStockRequest) {
+
+        ProductStockDto productStockDto = mapperConfig.strictMapper().map(updateStockRequest, ProductStockDto.class);
+
+        productService.rollbackProduct(productStockDto.getOrderId(),productId,productStockDto.getAmount());
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
+    @PatchMapping("/{productId}/cancel-increase")
+    public ResponseEntity<String> cancelProductStock(
+        @PathVariable UUID productId,
+        @Valid @RequestBody UpdateStockRequest updateStockRequest) {
+
+        ProductStockDto productStockDto = mapperConfig.strictMapper().map(updateStockRequest, ProductStockDto.class);
+
+        productService.cancelProduct(productStockDto.getOrderId(),productId,productStockDto.getAmount());
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
