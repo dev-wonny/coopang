@@ -35,7 +35,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class ProductStockEntity extends BaseEntity {
 
     @Id
-    @UuidGenerator
     @Column(name = "product_stock_id", columnDefinition = "UUID", nullable = false, unique = true)
     private UUID productStockId;
 
@@ -59,13 +58,15 @@ public class ProductStockEntity extends BaseEntity {
     }
 
     @Builder(access = AccessLevel.PRIVATE)
-    public ProductStockEntity(ProductEntity productEntity, ProductStock productStock) {
+    public ProductStockEntity(UUID productStockId,ProductEntity productEntity, ProductStock productStock) {
+        this.productStockId = productStockId;
         this.productEntity = productEntity;
         this.productStock = productStock;
     }
 
-    public static ProductStockEntity create(ProductEntity productEntity, ProductStock productStock) {
+    public static ProductStockEntity create(UUID productStockId,ProductEntity productEntity, ProductStock productStock) {
         return ProductStockEntity.builder()
+            .productStockId(productStockId != null ? productStockId : UUID.randomUUID())
             .productEntity(productEntity)
             .productStock(productStock)
             .build();
