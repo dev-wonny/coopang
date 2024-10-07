@@ -30,7 +30,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class ProductStockHistoryEntity extends BaseEntity {
 
     @Id
-    @UuidGenerator
     @Column(name = "product_stock_history_id", columnDefinition = "UUID", nullable = false, unique = true)
     private UUID productStockHistoryId;
 
@@ -62,10 +61,11 @@ public class ProductStockHistoryEntity extends BaseEntity {
     }
 
     @Builder(access = AccessLevel.PRIVATE)
-    public ProductStockHistoryEntity(ProductStockEntity productStockEntity, UUID orderId,
+    public ProductStockHistoryEntity(UUID productStockHistoryId,ProductStockEntity productStockEntity, UUID orderId,
         ProductStockHistoryChangeType productStockHistoryChangeType,
         int productStockHistoryChangeQuantity, int productStockHistoryPreviousQuantity,int productStockHistoryCurrentQuantity,
         String productStockHistoryAdditionalInfo) {
+        this.productStockHistoryId = productStockHistoryId;
         this.productStockEntity = productStockEntity;
         this.orderId = orderId;
         this.productStockHistoryChangeType = productStockHistoryChangeType;
@@ -75,12 +75,14 @@ public class ProductStockHistoryEntity extends BaseEntity {
         this.productStockHistoryAdditionalInfo = productStockHistoryAdditionalInfo;
     }
 
-    public static ProductStockHistoryEntity create(ProductStockEntity productStockEntity, UUID orderId,
+    public static ProductStockHistoryEntity create(
+        UUID productStockHistoryId,ProductStockEntity productStockEntity, UUID orderId,
         ProductStockHistoryChangeType productStockHistoryChangeType,
         int productStockHistoryChangeQuantity, int productStockHistoryPreviousQuantity, int productStockHistoryCurrentQuantity,
         String productStockHistoryAdditionalInfo)
     {
         return ProductStockHistoryEntity.builder()
+            .productStockHistoryId(productStockHistoryId != null ? productStockHistoryId : UUID.randomUUID())
             .productStockEntity(productStockEntity)
             .orderId(orderId)
             .productStockHistoryChangeType(productStockHistoryChangeType)

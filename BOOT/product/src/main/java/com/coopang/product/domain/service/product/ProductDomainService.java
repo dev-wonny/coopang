@@ -10,6 +10,8 @@ import com.coopang.product.domain.entity.productStockHistory.ProductStockHistory
 import com.coopang.product.domain.entity.productStock.ProductStock;
 import com.coopang.product.domain.repository.category.CategoryRepository;
 import com.coopang.product.domain.repository.product.ProductRepository;
+import com.coopang.product.infrastructure.repository.category.CategoryJpaRepository;
+import com.coopang.product.infrastructure.repository.product.ProductJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ProductDomainService {
 
-    private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
+    private final ProductJpaRepository productJpaRepository;
+    private final CategoryJpaRepository categoryJpaRepository;
 
     public ProductEntity create(ProductDto productDto) {
 
@@ -38,17 +40,18 @@ public class ProductDomainService {
         productEntity.addProductStockEntity(productStockEntity);
         productStockEntity.addStockHistory(productStockHistoryEntity);
 
-        return productRepository.save(productEntity);
+        return productJpaRepository.save(productEntity);
     }
 
 
     private ProductEntity productDtoToProductEntity(ProductDto productDto) {
 
-        CategoryEntity categoryEntity = categoryRepository.findById(productDto.getCategoryId()).orElseThrow(
+        CategoryEntity categoryEntity = categoryJpaRepository.findById(productDto.getCategoryId()).orElseThrow(
             () -> new IllegalArgumentException("존재하지 않는 카테고리입니다.")
         );
 
         return ProductEntity.create(
+            null,
             categoryEntity,
             productDto.getCompanyId(),
             productDto.getProductName(),
@@ -61,6 +64,7 @@ public class ProductDomainService {
     private ProductStockEntity productDtoToProductStockEntity(ProductEntity productEntity,ProductStock  stock) {
 
         return ProductStockEntity.create(
+            null,
             productEntity,
             stock
         );
@@ -70,6 +74,7 @@ public class ProductDomainService {
         ProductStockEntity productStockEntity,int stock
     ) {
         return ProductStockHistoryEntity.create(
+            null,
             productStockEntity,
             null,
             ProductStockHistoryChangeType.INCREASE,

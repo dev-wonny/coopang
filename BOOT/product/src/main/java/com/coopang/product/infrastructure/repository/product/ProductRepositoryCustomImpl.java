@@ -1,9 +1,9 @@
 package com.coopang.product.infrastructure.repository.product;
 
-import static com.coopang.product.domain.entity.QProductEntity.productEntity;
-import static com.coopang.product.domain.entity.QCategoryEntity.categoryEntity;
-import static com.coopang.product.domain.entity.QProductStockEntity.productStockEntity;
-import static com.coopang.product.domain.entity.QProductStockHistoryEntity.productStockHistoryEntity;
+import static com.coopang.product.domain.entity.product.QProductEntity.productEntity;
+import static com.coopang.product.domain.entity.category.QCategoryEntity.categoryEntity;
+import static com.coopang.product.domain.entity.productStock.QProductStockEntity.productStockEntity;
+import static com.coopang.product.domain.entity.productStockHistory.QProductStockHistoryEntity.productStockHistoryEntity;
 
 import com.coopang.apiconfig.querydsl.Querydsl4RepositorySupport;
 import com.coopang.product.domain.entity.product.ProductEntity;

@@ -15,6 +15,7 @@ import com.coopang.product.domain.entity.productStockHistory.ProductStockHistory
 import com.coopang.product.domain.repository.category.CategoryRepository;
 import com.coopang.product.domain.repository.product.ProductRepository;
 import com.coopang.product.domain.service.product.ProductDomainService;
+import com.coopang.product.infrastructure.repository.category.CategoryJpaRepository;
 import com.coopang.product.presentation.request.product.BaseSearchCondition;
 import com.coopang.product.presentation.request.product.ProductSearchCondition;
 import com.coopang.product.presentation.request.productStockHistory.ProductStockHistorySearchCondition;
@@ -35,7 +36,7 @@ public class ProductService {
     //TODO : 내부통신 연결해야된다.
     private final ProductRepository productRepository;
     private final ProductDomainService productDomainService;
-    private final CategoryRepository categoryRepository;
+    private final CategoryJpaRepository categoryJpaRepository;
 
     @Value("${stock.retry.maxRetryCount:3}")
     private int maxRetryCount;
@@ -158,7 +159,7 @@ public class ProductService {
     }
 
     private CategoryEntity findByCategoryId(UUID categoryId){
-        return categoryRepository.findById(categoryId).orElseThrow
+        return categoryJpaRepository.findById(categoryId).orElseThrow
             (() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
     }
 
@@ -194,7 +195,7 @@ public class ProductService {
         retryStockUpdate(() -> {
             productStockEntity.increaseStock(amount);
 
-            ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(productStockEntity,productStockDto.getOrderId(), ProductStockHistoryChangeType.INCREASE,
+            ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(null,productStockEntity,productStockDto.getOrderId(), ProductStockHistoryChangeType.INCREASE,
                 amount,previousStock,productStockEntity.getProductStock().getValue(),"Increase");
 
             productStockEntity.addStockHistory(stockHistory);
@@ -212,7 +213,7 @@ public class ProductService {
         retryStockUpdate(() -> {
             productStockEntity.decreaseStock(amount);
 
-            ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(productStockEntity,productStockDto.getOrderId(), ProductStockHistoryChangeType.DECREASE,
+            ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(null,productStockEntity,productStockDto.getOrderId(), ProductStockHistoryChangeType.DECREASE,
                 amount,previousStock,productStockEntity.getProductStock().getValue(),"Decrease");
 
             productStockEntity.addStockHistory(stockHistory);

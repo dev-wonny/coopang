@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
@@ -25,7 +26,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class CategoryEntity extends BaseEntity {
 
     @Id
-    @UuidGenerator
     @Column(name = "category_id", columnDefinition = "UUID", nullable = false, unique = true)
     private UUID categoryId;
 
@@ -35,7 +35,14 @@ public class CategoryEntity extends BaseEntity {
     @OneToMany(mappedBy = "categoryEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductEntity> products;
 
-    public CategoryEntity(String categoryName) {
+    @Builder(access = AccessLevel.PRIVATE)
+    public CategoryEntity(UUID categoryId,String categoryName) {
+        this.categoryId = categoryId;
         this.categoryName = categoryName;
+    }
+
+    public static CategoryEntity create(UUID categoryId,String categoryName){
+        return CategoryEntity.builder().categoryId(categoryId != null ? categoryId : UUID.randomUUID())
+            .categoryName(categoryName).build();
     }
 }
