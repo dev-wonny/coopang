@@ -11,4 +11,7 @@ include 'INFRA:api-config'
 include 'INFRA:api-communication'
 
 // BOOT (Server)
-include 'BOOT:gateway', 'BOOT:user', 'BOOT:hub', 'BOOT:order'
+include 'BOOT:gateway', 'BOOT:user', 'BOOT:hub'
+include 'BOOT:product'
+include 'BOOT:order', 'BOOT:delivery'
+include 'BOOT:ainoti'
