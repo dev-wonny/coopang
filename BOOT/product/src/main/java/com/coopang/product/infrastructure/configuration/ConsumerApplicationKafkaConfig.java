@@ -15,7 +15,6 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 @Configuration
 public class ConsumerApplicationKafkaConfig {
 
-
     //TODO : 추후 하드코딩 된 내용은 환경변수로 변경
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {

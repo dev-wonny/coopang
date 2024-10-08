@@ -1,4 +1,4 @@
-package com.coopang.product.infrastructure.kafka;
+package com.coopang.product.application.kafka;
 
 import com.coopang.apicommunication.kafka.message.ProcessProduct;
 import com.coopang.apicommunication.kafka.message.RollbackProduct;
@@ -48,12 +48,11 @@ public class ProductConsumer {
         try {
             //메시지 변환 String -> class
             RollbackProduct rollbackProduct = objectMapper.readValue(message, RollbackProduct.class);
-            ProductStockDto productStockDto =  new ProductStockDto();
-            productStockDto.setOrderId(rollbackProduct.getOrderId());
-            productStockDto.setAmount(rollbackProduct.getOrderQuantity());
+
 
             //재고 증가 요청
-            productService.addProductStock(rollbackProduct.getProductId(),productStockDto);
+            productService.rollbackProduct(rollbackProduct.getOrderId(),rollbackProduct.getProductId(),
+                rollbackProduct.getOrderQuantity());
 
         }catch (JsonProcessingException e)
         {
