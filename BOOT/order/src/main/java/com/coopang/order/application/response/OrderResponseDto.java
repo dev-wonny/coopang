@@ -19,7 +19,7 @@ public class OrderResponseDto {
     private Integer orderQuantity;
     private BigDecimal orderSinglePrice;
     private BigDecimal orderTotalPrice;
-    private OrderStatusEnum orderStatus;
+    private String orderStatus;
     private boolean isDeleted;
 
     private OrderResponseDto(
@@ -30,7 +30,7 @@ public class OrderResponseDto {
             Integer orderQuantity,
             BigDecimal orderSinglePrice,
             BigDecimal orderTotalPrice,
-            OrderStatusEnum orderStatus,
+            String orderStatus,
             boolean isDeleted
     ){
         this.orderId = orderId;
@@ -53,7 +53,7 @@ public class OrderResponseDto {
                 orderEntity.getOrderQuantity(),
                 orderEntity.getOrderSinglePrice(),
                 orderEntity.getOrderTotalPrice(),
-                orderEntity.getOrderStatus(),
+                orderEntity.getOrderStatus().toString(),
                 orderEntity.isDeleted()
                 );
     }

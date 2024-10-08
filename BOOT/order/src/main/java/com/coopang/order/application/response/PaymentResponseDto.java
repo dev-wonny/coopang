@@ -13,17 +13,17 @@ public class PaymentResponseDto {
 
     private UUID paymentId;
     private UUID orderId;
-    private PaymentMethodEnum paymentMethod;
+    private String paymentMethod;
     private BigDecimal paymentPrice;
-    private PaymentStatusEnum paymentStatus;
+    private String paymentStatus;
     private boolean isDeleted;
 
     private PaymentResponseDto(
             UUID paymentId,
             UUID orderId,
-            PaymentMethodEnum paymentMethod,
+            String paymentMethod,
             BigDecimal paymentPrice,
-            PaymentStatusEnum paymentStatus,
+            String paymentStatus,
             boolean isDeleted
             ) {
         this.paymentId = paymentId;
@@ -40,9 +40,9 @@ public class PaymentResponseDto {
         return new PaymentResponseDto(
                 payment.getPaymentId(),
                 payment.getOrderId(),
-                payment.getPaymentMethod(),
+                payment.getPaymentMethod().toString(),
                 payment.getPaymentPrice(),
-                payment.getPaymentStatus(),
+                payment.getPaymentStatus().toString(),
                 payment.isDeleted()
         );
     }
