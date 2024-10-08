@@ -69,4 +69,8 @@ public class PaymentEntity extends BaseEntity {
                 .paymentStatus(paymentStatus)
                 .build();
     }
+
+    public void setPaymentStatus(PaymentStatusEnum paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
 }

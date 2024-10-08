@@ -164,6 +164,28 @@ public class OrderService {
         }
     }
 
+    // error_cancel_order 수신용
+    @KafkaListener(topics = "error_cancel_order", groupId = "my-group")
+    public void listenErrorCancelOrder(String message) {
+        try {
+            ErrorCancelOrder errorCancelOrder = objectMapper.readValue(message, ErrorCancelOrder.class);
+            log.error("Error Cancel Order received: {}", errorCancelOrder.getErrorMessage());
+
+            // 응답 메시지 생성
+            MessageToOrder response = new MessageToOrder();
+            response.setOrderId(errorCancelOrder.getOrderId());
+            response.setMessage(errorCancelOrder.getErrorMessage());
+
+            // 응답을 응답 토픽에 전송
+            String responseMessage = objectMapper.writeValueAsString(response);
+            kafkaTemplate.send("message_to_order", responseMessage);
+            log.info("Error Cancel Order response sent: {}", responseMessage);
+        } catch (Exception e) {
+            log.error("Error while processing error cancel order message: {}", e.getMessage());
+            e.printStackTrace(); // 예외 처리
+        }
+    }
+
     // complete_payment 수신용
     @KafkaListener(topics = "complete_payment", groupId = "my-group")
     public void listenCompletePayment(String message) {
