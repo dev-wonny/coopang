@@ -10,6 +10,10 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
+import org.springframework.kafka.listener.DefaultErrorHandler;
+import org.springframework.util.backoff.FixedBackOff;
 
 @EnableKafka
 @Configuration
@@ -28,9 +32,26 @@ public class ConsumerApplicationKafkaConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory(
+        DefaultErrorHandler errorHandler
+    ) {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
+        factory.setCommonErrorHandler(errorHandler);
         return factory;
+    }
+
+    /**
+     * 지수 백오프 전략 생각
+     * ExponentialBackOff backOff = new ExponentialBackOff(1000L, 2.0);
+     *     backOff.setMaxInterval(30000L); // 최대 대기 시간 설정
+     * @param template
+     * @return
+     */
+    @Bean
+    public DefaultErrorHandler errorHandler(KafkaTemplate<String, String> template) {
+        // DeadLetterPublishingRecoverer를 사용하여 실패한 메시지를 DLT로 전송
+        DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(template);
+        return new DefaultErrorHandler(recoverer, new FixedBackOff(1000L, 0)); // 1초 대기, 재시도 횟수
     }
 }
