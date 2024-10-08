@@ -1,11 +1,11 @@
 package com.coopang.order.application.service;
 
+import com.coopang.apicommunication.kafka.message.*;
+import com.coopang.apidata.application.order.enums.OrderStatusEnum;
 import com.coopang.order.application.*;
 import com.coopang.order.application.request.OrderDto;
-import com.coopang.order.application.response.OrderCancelResponseDto;
 import com.coopang.order.application.response.OrderCheckResponseDto;
 import com.coopang.order.application.response.OrderResponseDto;
-import com.coopang.order.domain.OrderStatusEnum;
 import com.coopang.order.domain.entity.order.OrderEntity;
 import com.coopang.order.domain.repository.OrderRepository;
 import com.coopang.order.domain.service.OrderDomainService;
@@ -124,7 +124,7 @@ public class OrderService {
     @KafkaListener(topics = "product_error", groupId = "my-group")
     public void listenProductError(String message) {
         try {
-            ProductError productError = objectMapper.readValue(message, ProductError.class);
+            ErrorProduct productError = objectMapper.readValue(message, ErrorProduct.class);
             log.error("Product error received: {}", productError.getErrorMessage());
 
             // 응답 메시지 생성
@@ -146,7 +146,7 @@ public class OrderService {
     @KafkaListener(topics = "payment_error", groupId = "my-group")
     public void listenPaymentError(String message) {
         try {
-            PaymentError paymentError = objectMapper.readValue(message, PaymentError.class);
+            ErrorProduct paymentError = objectMapper.readValue(message, ErrorProduct.class);
             log.error("Payment error received: {}", paymentError.getErrorMessage());
 
             // 응답 메시지 생성
