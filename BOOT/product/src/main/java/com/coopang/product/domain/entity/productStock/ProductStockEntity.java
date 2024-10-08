@@ -45,10 +45,6 @@ public class ProductStockEntity extends BaseEntity {
     @Embedded
     private ProductStock productStock;
 
-    //낙관적 락을 위한 버전 필드
-    @Version
-    private int version;
-
     @OneToMany(mappedBy = "productStockEntity", cascade = CascadeType.ALL)
     private List<ProductStockHistoryEntity> productStockHistories = new ArrayList<>();
 

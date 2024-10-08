@@ -7,11 +7,13 @@ import static com.coopang.product.domain.entity.productStockHistory.QProductStoc
 
 import com.coopang.apiconfig.querydsl.Querydsl4RepositorySupport;
 import com.coopang.product.domain.entity.product.ProductEntity;
+import com.coopang.product.domain.entity.productStock.ProductStockEntity;
 import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryChangeType;
 import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryEntity;
 import com.coopang.product.presentation.request.product.ProductSearchCondition;
 import com.coopang.product.presentation.request.productStockHistory.ProductStockHistorySearchCondition;
 import com.querydsl.core.types.Predicate;
+import jakarta.persistence.LockModeType;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,6 +43,7 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
             ).fetchOne());
     }
 
+
     @Override
     public Page<ProductStockHistoryEntity> getProductStockHistoryByProductId(UUID productId, Pageable pageable) {
 
@@ -63,7 +66,6 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
     public Page<ProductStockHistoryEntity> searchProductStockHistoryByProductId(
         ProductStockHistorySearchCondition condition, UUID productId, Pageable pageable) {
 
-
         return applyPagination(pageable,contentQuery ->
                 contentQuery.selectFrom(productStockHistoryEntity)
                     .join(productStockHistoryEntity.productStockEntity)
@@ -80,6 +82,18 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
                     isProductStockHistoryType(condition.changeType()),
                     betweenStartDateAndEndDateByProductStockHistory(condition.startDate(),condition.endDate()))
         );
+    }
+
+    @Override
+    public ProductStockEntity findAndLockProductStock(UUID productId) {
+
+        return selectFrom(productStockEntity)
+            .join(productEntity)
+            .on(productEntity.productStockEntity.productStockId.eq(productStockEntity.productStockId))
+            .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+            .where(productStockEntity.isDeleted.eq(false),
+                productEntity.productId.eq(productId))
+            .fetchOne();
     }
 
     private Predicate isProductStockHistoryType(ProductStockHistoryChangeType changeType) {
