@@ -14,10 +14,10 @@ import com.coopang.product.domain.entity.product.ProductEntity;
 import com.coopang.product.domain.entity.productStock.ProductStockEntity;
 import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryChangeType;
 import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryEntity;
-import com.coopang.product.domain.repository.category.CategoryRepository;
 import com.coopang.product.domain.repository.product.ProductRepository;
 import com.coopang.product.domain.service.product.ProductDomainService;
 import com.coopang.product.infrastructure.repository.category.CategoryJpaRepository;
+import com.coopang.product.infrastructure.repository.productStock.ProductStockJpaRepository;
 import com.coopang.product.presentation.request.product.BaseSearchCondition;
 import com.coopang.product.presentation.request.product.ProductSearchCondition;
 import com.coopang.product.presentation.request.productStockHistory.ProductStockHistorySearchCondition;
@@ -27,7 +27,6 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -42,13 +41,9 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductDomainService productDomainService;
     private final CategoryJpaRepository categoryJpaRepository;
+    private final ProductStockJpaRepository productStockJpaRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
-
-    @Value("${stock.retry.maxRetryCount:3}")
-    private int maxRetryCount;
-    @Value("${stock.retry.initialDelay:50}")
-    private int initialDelay;
 
     public ProductResponseDto createProduct(ProductDto productDto) {
 
@@ -160,16 +155,6 @@ public class ProductService {
 
     }
 
-    private ProductEntity findByProductId(UUID productId){
-        return productRepository.getOneByProductId(productId).orElseThrow(
-            () -> new IllegalArgumentException("존재하지 않는 상품입니다."));
-    }
-
-    private CategoryEntity findByCategoryId(UUID categoryId){
-        return categoryJpaRepository.findById(categoryId).orElseThrow
-            (() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
-    }
-
     @Transactional(readOnly = true)
     public Page<ProductResponseDto> searchProduct(ProductSearchCondition searchCondition, Pageable pageable) {
 
@@ -196,78 +181,69 @@ public class ProductService {
 
         int amount = productStockDto.getAmount();
 
-        ProductEntity productEntity = findByProductId(productId);
-        ProductStockEntity productStockEntity = productEntity.getProductStockEntity();
+        //비관적 락을 이용하여 조회 -> 다른 트랜잭션은 읽기와 쓰기 불가능
+        ProductStockEntity productStockEntity = productRepository.findAndLockProductStock(productId);
+
         int previousStock = productStockEntity.getProductStock().getValue();
 
-        retryStockUpdate(() -> {
+        try {
             productStockEntity.increaseStock(amount);
-
             ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(null,productStockEntity,productStockDto.getOrderId(), ProductStockHistoryChangeType.INCREASE,
                 amount,previousStock,productStockEntity.getProductStock().getValue(),"Increase");
 
             productStockEntity.addStockHistory(stockHistory);
-        });
+            productStockJpaRepository.save(productStockEntity);
+        }catch (IllegalArgumentException e)
+        {
+            log.error(e.getMessage());
+            throw new IllegalArgumentException("재고의 수량은 음수가 될 수 없습니다.");
+        }
+
     }
 
-    //상품의 재고 수량을 감소하는 함수 - 낙관적 락을 이용
+    //상품의 재고 수량을 감소하는 함수 - 비관적 락 사
     @Transactional
     public void reduceProductStock(UUID productId, ProductStockDto productStockDto) {
         int amount = productStockDto.getAmount();
+        //비관적 락을 이용하여 조회 -> 다른 트랜잭션은 읽기와 쓰기 불가능
+        ProductStockEntity productStockEntity = productRepository.findAndLockProductStock(productId);
 
-        ProductEntity productEntity = findByProductId(productId);
-        ProductStockEntity productStockEntity = productEntity.getProductStockEntity();
         int previousStock = productStockEntity.getProductStock().getValue();
 
-        long delay = initialDelay;
-        int retryCount = 0;
-        boolean isUpdated = false;
+        try {
+            //재고 수량 감소
+            productStockEntity.decreaseStock(amount);
 
-        while (retryCount < maxRetryCount && !isUpdated) {
+            //재고 기록 등록
+            ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(null,productStockEntity,productStockDto.getOrderId(), ProductStockHistoryChangeType.DECREASE,
+                amount,previousStock,productStockEntity.getProductStock().getValue(),"Decrease");
+
+            //재고 기록과 재고와 연결
+            productStockEntity.addStockHistory(stockHistory);
+            productStockJpaRepository.save(productStockEntity);
+
             try {
-                //재고 수량 감소
-                productStockEntity.decreaseStock(amount);
 
-                //재고 기록 등록
-                ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(null,productStockEntity,productStockDto.getOrderId(), ProductStockHistoryChangeType.DECREASE,
-                    amount,previousStock,productStockEntity.getProductStock().getValue(),"Decrease");
+                ProductEntity productEntity = findByProductId(productId);
+                //재고수량 차감 완료 메시지 생성 및 주문 서버에 send
+                CompleteProduct completeProduct = new CompleteProduct();
+                completeProduct.setOrderId(productStockDto.getOrderId());
+                completeProduct.setCompanyId(productEntity.getCompanyId());
+                String completedMessage = objectMapper.writeValueAsString(completeProduct);
+                kafkaTemplate.send("complete_product",completedMessage);
 
-                //재고 기록과 재고와 연결
-                productStockEntity.addStockHistory(stockHistory);
-                isUpdated = true;
-
-                try {
-                    //재고수량 차감 완료 메시지 생성 및 주문 서버에 send
-                    CompleteProduct completeProduct = new CompleteProduct();
-                    completeProduct.setOrderId(productStockDto.getOrderId());
-                    completeProduct.setCompanyId(productEntity.getCompanyId());
-                    String completedMessage = objectMapper.writeValueAsString(completeProduct);
-                    kafkaTemplate.send("complete_product",completedMessage);
-
-                } catch (JsonProcessingException e) {
-                    log.error(e.getMessage());
-                    throw new RuntimeException(e);
-                }
-
-            }
-            catch (IllegalArgumentException e)
-            {
-                //재고 수량 부족 시 주문 서버에 error product 메시지 요청
+            } catch (JsonProcessingException e) {
                 log.error(e.getMessage());
-                sendOutOfStockMessage(productStockDto.getOrderId());
+                throw new RuntimeException(e);
             }
-            catch (OptimisticLockingFailureException e) {
-                retryCount++;
-                if (retryCount >= maxRetryCount) {
-                    throw new RuntimeException("재고 업데이트 중 낙관적 락 충돌이 발생했습니다. 최대 재시도 횟수를 초과했습니다.", e);
-                }
-                try {
-                    Thread.sleep(delay);
-                    delay *= 2; // 지수 백오프 전략
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt(); // 인터럽트 상태 복원
-                }
-            }
+
+        }
+        catch (IllegalArgumentException e)
+        {
+            //재고 수량 부족 시 주문 서버에 error product 메시지 요청
+            log.error(e.getMessage());
+            sendOutOfStockMessage(productStockDto.getOrderId());
+            throw new IllegalArgumentException("주문 수량보다 재고 수량이 부족합니다.");
         }
     }
 
@@ -327,37 +303,6 @@ public class ProductService {
         return productRepository.searchProductStockHistoryByProductId(condition,productId,pageable).map(ProductStockHistoryResponseDto::of);
     }
 
-    //낙관적락에 대한 재시도 호출 함수 -> 재고 증가할때만 이용
-    private void retryStockUpdate(Runnable stockUpdateOperation) {
-        long delay = initialDelay;
-        int retryCount = 0;
-        boolean isUpdated = false;
-
-        while (retryCount < maxRetryCount && !isUpdated) {
-            try {
-                stockUpdateOperation.run();
-                isUpdated = true;
-            }
-            catch (IllegalArgumentException e)
-            {
-                log.error(e.getMessage());
-
-            }
-            catch (OptimisticLockingFailureException e) {
-                retryCount++;
-                if (retryCount >= maxRetryCount) {
-                    throw new RuntimeException("재고 업데이트 중 낙관적 락 충돌이 발생했습니다. 최대 재시도 횟수를 초과했습니다.", e);
-                }
-                try {
-                    Thread.sleep(delay);
-                    delay *= 2; // 지수 백오프 전략
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt(); // 인터럽트 상태 복원
-                }
-            }
-        }
-    }
-
     //주문 수량이 재고 수량보다 많을 경우 에러메시지 주문서버에 전달
     private void sendOutOfStockMessage(UUID orderId)
     {
@@ -379,18 +324,24 @@ public class ProductService {
     @Transactional
     public void rollbackProduct(UUID orderId,UUID productId,int orderQuantity){
 
-        ProductEntity productEntity = findByProductId(productId);
-        ProductStockEntity productStockEntity = productEntity.getProductStockEntity();
+        //비관적 락을 이용하여 조회 -> 다른 트랜잭션은 읽기와 쓰기 불가능
+        ProductStockEntity productStockEntity = productRepository.findAndLockProductStock(productId);
+
         int previousStock = productStockEntity.getProductStock().getValue();
 
-        retryStockUpdate(() -> {
+        try {
+
             productStockEntity.increaseStock(orderQuantity);
 
             ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(null,productStockEntity,orderId, ProductStockHistoryChangeType.INCREASE,
                 orderQuantity,previousStock,productStockEntity.getProductStock().getValue(),"Rollback Product");
 
             productStockEntity.addStockHistory(stockHistory);
-        });
+        }catch (IllegalArgumentException e)
+        {
+            log.error(e.getMessage());
+            throw new IllegalArgumentException("재고의 수량은 음수가 될 수 없습니다.");
+        }
     }
 
     /**
@@ -402,17 +353,36 @@ public class ProductService {
     @Transactional
     public void cancelProduct(UUID orderId, UUID productId, int orderQuantity)
     {
-        ProductEntity productEntity = findByProductId(productId);
-        ProductStockEntity productStockEntity = productEntity.getProductStockEntity();
+
+        //비관적 락을 이용하여 조회 -> 다른 트랜잭션은 읽기와 쓰기 불가능
+        ProductStockEntity productStockEntity = productRepository.findAndLockProductStock(productId);
+
         int previousStock = productStockEntity.getProductStock().getValue();
 
-        retryStockUpdate(() -> {
+        try {
+
             productStockEntity.increaseStock(orderQuantity);
 
             ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(null,productStockEntity,orderId, ProductStockHistoryChangeType.INCREASE,
                 orderQuantity,previousStock,productStockEntity.getProductStock().getValue(),"Cancel Order and Product Stock increase");
 
             productStockEntity.addStockHistory(stockHistory);
-        });
+
+        }catch (IllegalArgumentException e)
+        {
+            log.error(e.getMessage());
+            throw new IllegalArgumentException("재고의 수량은 음수가 될 수 없습니다.");
+        }
+
+    }
+
+    private ProductEntity findByProductId(UUID productId){
+        return productRepository.getOneByProductId(productId).orElseThrow(
+            () -> new IllegalArgumentException("존재하지 않는 상품입니다."));
+    }
+
+    private CategoryEntity findByCategoryId(UUID categoryId){
+        return categoryJpaRepository.findById(categoryId).orElseThrow
+            (() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
     }
 }
