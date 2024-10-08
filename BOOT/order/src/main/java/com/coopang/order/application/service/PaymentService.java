@@ -1,10 +1,9 @@
 package com.coopang.order.application.service;
 
-import com.coopang.order.application.PaymentProcessDto;
-import com.coopang.order.application.ProcessProduct;
-import com.coopang.order.application.response.OrderCheckResponseDto;
+import com.coopang.order.application.*;
 import com.coopang.order.domain.PaymentMethodEnum;
 import com.coopang.order.domain.PaymentStatusEnum;
+import com.coopang.order.domain.entity.payment.PaymentEntity;
 import com.coopang.order.domain.repository.PaymentRepository;
 import com.coopang.order.domain.service.PaymentDomainService;
 import com.coopang.order.presentation.request.PGRequestDto;
@@ -24,7 +23,7 @@ import java.math.BigDecimal;
 @Transactional
 public class PaymentService {
 
-    private PaymentRepository paymentRepository;
+    private final PaymentRepository paymentRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate;
@@ -45,7 +44,7 @@ public class PaymentService {
         this.paymentDomainService = paymentDomainService;
     }
 
-    @KafkaListener(topics = "process_payment")
+    @KafkaListener(topics = "complete_product", groupId = "my-group")
     public void createPayment(String message) {
         try {
             PaymentProcessDto paymentInfo = objectMapper.readValue(message, PaymentProcessDto.class);
@@ -62,6 +61,50 @@ public class PaymentService {
             e.printStackTrace(); // 예외 처리
         }
     }
+    // 결제 취소 주문 취소에서 이어지는..
+    @KafkaListener(topics = "cancel_order", groupId = "my-group")
+    public void cancelOrder(String message) {
+        try {
+            CancelOrder cancelOrder = objectMapper.readValue(message,CancelOrder.class);
+            // 해당 결제 정보 찾는 findByOrderId 필요
+            PaymentEntity paymentEntity = paymentRepository.findByOrderId(cancelOrder.getOrderId())
+                    .orElseThrow(() -> new IllegalArgumentException("Payment not found. orderId=" + cancelOrder.getOrderId()));
+            final String request = tryPayToPGCancel(PaymentMethodEnum.CARD, cancelOrder.getOrderTotalPrice());
+            // 추후에 결제 취소에 관한 부분 처리 필요 (성공/실패)
+            if (request.equals("Payment cancelled")) {
+                // 결제 취소 성공 했을때 해당 결제 정보 상태값 변경
+                paymentEntity.setPaymentStatus(PaymentStatusEnum.CANCELED);
+                // 추후 리팩토링 시 save필요
+
+                // product쪽으로 cancelOrder정보를 RollbackProduct로 담아서 그대로 보내기
+                RollbackProduct rollbackProduct = new RollbackProduct();
+                rollbackProduct.setOrderId(cancelOrder.getOrderId());
+                rollbackProduct.setProductId(cancelOrder.getProductId());
+                rollbackProduct.setOrderQuantity(cancelOrder.getOrderQuantity());
+                rollbackProduct.setOrderTotalPrice(cancelOrder.getOrderTotalPrice());
+
+                final String sendMessageToProduct = objectMapper.writeValueAsString(rollbackProduct);
+                kafkaTemplate.send("rollback_product", sendMessageToProduct);
+
+                // delivery쪽으로 orderId 전달해서 취소 보내기(애매한 시간대에 대한 처리 필요할거 같음)
+                CancelDelivery cancelDelivery = new CancelDelivery();
+                cancelDelivery.setOrderId(cancelOrder.getOrderId());
+
+                final String sendMessageToDelviery = objectMapper.writeValueAsString(cancelDelivery);
+                kafkaTemplate.send("cancel_delivery", sendMessageToDelviery);
+            } else { // 결제 취소가 실패 했을경우
+                // order쪽으로 결제 취소가 실패 했다는 메세지 보내기
+                ErrorCancelOrder errorCancelOrder = new ErrorCancelOrder();
+                errorCancelOrder.setOrderId(cancelOrder.getOrderId());
+                errorCancelOrder.setErrorMessage(request);
+
+                final String sendMessageToOrder = objectMapper.writeValueAsString(errorCancelOrder);
+                kafkaTemplate.send("error_cancel_order", sendMessageToOrder);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
     // PG사에 결제 요청 처리
     public String tryPayToPG(PaymentMethodEnum paymentMethod, BigDecimal orderTotalPrice) {
@@ -69,7 +112,7 @@ public class PaymentService {
         PGRequestDto pgRequestDto = new PGRequestDto();
         pgRequestDto.setPaymentMethod(paymentMethod.toString());
         pgRequestDto.setOrderTotalPrice(orderTotalPrice);
-        final String paymentUrl = "http://localhost:19097/pay/PG";
+        final String paymentUrl = "http://localhost:19097/payments/v1/pg";
 
         try{
             ResponseEntity<String> response = restTemplate.postForEntity(paymentUrl, pgRequestDto, String.class);
@@ -79,33 +122,22 @@ public class PaymentService {
             return "Payment request creation failed";
         }
     }
+    // 결제 취소에 관한 메서드 작업 해야함
+    public String tryPayToPGCancel(PaymentMethodEnum paymentMethod, BigDecimal orderTotalPrice) {
 
-    // Kafka 리스너 추후에 Payment쪽으로 이동
-    @KafkaListener(topics = "delivery-topic", groupId = "my-group")
-    public void listen(String message) {
-        try {
-            ProcessProduct orderInfo = objectMapper.readValue(message, ProcessProduct.class);
-            String successMessage = handleOrder(orderInfo); // 주문 처리 후 성공 메시지 반환
+        PGRequestDto pgRequestDto = new PGRequestDto();
+        pgRequestDto.setPaymentMethod(paymentMethod.toString());
+        pgRequestDto.setOrderTotalPrice(orderTotalPrice);
+        final String paymentUrl = "http://localhost:19097/payments/v1/pg/cancel";
 
-            // 응답 메시지 생성
-            OrderCheckResponseDto response = new OrderCheckResponseDto();
-            response.setOrderId(orderInfo.getOrderId());
-            response.setMessage(successMessage);
-
-            // 응답을 응답 토픽에 전송
-            String responseMessage = objectMapper.writeValueAsString(response);
-            kafkaTemplate.send("delivery-response-topic", responseMessage);
-        } catch (Exception e) {
-            e.printStackTrace(); // 예외 처리
+        try{
+            ResponseEntity<String> response = restTemplate.postForEntity(paymentUrl, pgRequestDto, String.class);
+            return response.getBody();
+        }catch (Exception e){
+            e.printStackTrace();
+            return "Cancel payment request creation failed";
         }
     }
-    private String handleOrder(ProcessProduct orderInfo) {
-        // 주문 정보 처리 로직
-        System.out.println("Received Order Info: ID=" + orderInfo.getOrderId() +
-                ", Quantity=" + orderInfo.getOrderQuantity() +
-                ", Price=" + orderInfo.getOrderTotalPrice());
 
-        // 주문 처리 성공 메시지 반환
-        return "Order processed successfully";
-    }
+
 }
