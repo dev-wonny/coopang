@@ -1,8 +1,8 @@
 package com.coopang.order.domain.entity.order;
 
+import com.coopang.apidata.application.order.enums.OrderStatusEnum;
 import com.coopang.apidata.jpa.entity.address.AddressEntity;
 import com.coopang.apidata.jpa.entity.base.BaseEntity;
-import com.coopang.order.domain.OrderStatusEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

@@ -1,8 +1,9 @@
 package com.coopang.order.application.service;
 
+import com.coopang.apicommunication.kafka.message.*;
+import com.coopang.apidata.application.payment.enums.PaymentMethodEnum;
+import com.coopang.apidata.application.payment.enums.PaymentStatusEnum;
 import com.coopang.order.application.*;
-import com.coopang.order.domain.PaymentMethodEnum;
-import com.coopang.order.domain.PaymentStatusEnum;
 import com.coopang.order.domain.entity.payment.PaymentEntity;
 import com.coopang.order.domain.repository.PaymentRepository;
 import com.coopang.order.domain.service.PaymentDomainService;
@@ -47,11 +48,11 @@ public class PaymentService {
     @KafkaListener(topics = "complete_product", groupId = "my-group")
     public void createPayment(String message) {
         try {
-            PaymentProcessDto paymentInfo = objectMapper.readValue(message, PaymentProcessDto.class);
+            ProcessPayment paymentInfo = objectMapper.readValue(message, ProcessPayment.class);
             final String request = tryPayToPG(PaymentMethodEnum.CARD, paymentInfo.getOrderTotalPrice());
             // 만약 결제 성공했을때
             if (request.equals("Payment processed successfully")) {
-                paymentDomainService.createPayment(paymentInfo,PaymentStatusEnum.COMPLETED);
+                paymentDomainService.createPayment(paymentInfo, PaymentStatusEnum.COMPLETED);
                 final String sendMessage = objectMapper.writeValueAsString(paymentInfo);
                 kafkaTemplate.send("compelete_payment", sendMessage);
             } else { // 결제 실패하거나 예외문에 걸렸을 경우

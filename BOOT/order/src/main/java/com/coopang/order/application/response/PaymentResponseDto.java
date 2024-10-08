@@ -1,7 +1,5 @@
 package com.coopang.order.application.response;
 
-import com.coopang.order.domain.PaymentMethodEnum;
-import com.coopang.order.domain.PaymentStatusEnum;
 import com.coopang.order.domain.entity.payment.PaymentEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

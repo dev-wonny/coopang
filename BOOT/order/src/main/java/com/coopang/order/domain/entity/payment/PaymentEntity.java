@@ -1,8 +1,8 @@
 package com.coopang.order.domain.entity.payment;
 
+import com.coopang.apidata.application.payment.enums.PaymentMethodEnum;
+import com.coopang.apidata.application.payment.enums.PaymentStatusEnum;
 import com.coopang.apidata.jpa.entity.base.BaseEntity;
-import com.coopang.order.domain.PaymentMethodEnum;
-import com.coopang.order.domain.PaymentStatusEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

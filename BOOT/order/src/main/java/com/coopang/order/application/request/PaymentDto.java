@@ -1,6 +1,5 @@
 package com.coopang.order.application.request;
 
-import com.coopang.order.domain.PaymentMethodEnum;
 import lombok.Getter;
 import lombok.Setter;
 

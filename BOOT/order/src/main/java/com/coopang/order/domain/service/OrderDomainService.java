@@ -1,8 +1,7 @@
 package com.coopang.order.domain.service;
 
-import com.coopang.order.application.ProcessDelivery;
+import com.coopang.apicommunication.kafka.message.ProcessDelivery;
 import com.coopang.order.application.request.OrderDto;
-import com.coopang.order.domain.OrderStatusEnum;
 import com.coopang.order.domain.entity.order.OrderEntity;
 import com.coopang.order.infrastructure.repository.OrderJpaRepository;
 import lombok.extern.slf4j.Slf4j;

@@ -1,7 +1,7 @@
 package com.coopang.order.domain.service;
 
-import com.coopang.order.application.PaymentProcessDto;
-import com.coopang.order.domain.PaymentStatusEnum;
+import com.coopang.apicommunication.kafka.message.ProcessPayment;
+import com.coopang.apidata.application.payment.enums.PaymentStatusEnum;
 import com.coopang.order.domain.entity.payment.PaymentEntity;
 import com.coopang.order.infrastructure.repository.PaymentJpaRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ public class PaymentDomainService {
         this.paymentJpaRepository = paymentJpaRepository;
     }
 
-    public void createPayment(PaymentProcessDto paymentProcessDto,PaymentStatusEnum paymentStatus ){
+    public void createPayment(ProcessPayment paymentProcessDto, PaymentStatusEnum paymentStatus ){
         PaymentEntity paymentEntity = PaymentEntity.create(
                 paymentProcessDto.getOrderId(),
                 paymentProcessDto.getOrderTotalPrice(),

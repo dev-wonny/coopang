@@ -1,7 +1,5 @@
 package com.coopang.order.application.response;
 
-import com.coopang.apidata.application.address.Address;
-import com.coopang.order.domain.OrderStatusEnum;
 import com.coopang.order.domain.entity.order.OrderEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
