@@ -1,7 +1,6 @@
 package com.coopang.delivery.application.service;
 
 import com.coopang.apicommunication.kafka.message.CancelDelivery;
-import com.coopang.apicommunication.kafka.message.CancelOrder;
 import com.coopang.apicommunication.kafka.message.ProcessDelivery;
 import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
 import com.coopang.delivery.application.request.DeliveryDto;

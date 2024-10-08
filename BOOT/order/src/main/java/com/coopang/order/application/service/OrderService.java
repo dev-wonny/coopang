@@ -2,7 +2,6 @@ package com.coopang.order.application.service;
 
 import com.coopang.apicommunication.kafka.message.*;
 import com.coopang.apidata.application.order.enums.OrderStatusEnum;
-import com.coopang.order.application.*;
 import com.coopang.order.application.request.OrderDto;
 import com.coopang.order.application.response.OrderCheckResponseDto;
 import com.coopang.order.application.response.OrderResponseDto;
