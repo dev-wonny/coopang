@@ -69,10 +69,20 @@ public class ProductStockEntity extends BaseEntity {
     }
 
     public void increaseStock(int amount) {
-        this.productStock.addStock(amount);
+        try {
+            this.productStock.addStock(amount);
+        }catch(IllegalArgumentException e)
+        {
+            throw e;
+        }
     }
 
     public void decreaseStock(int amount) {
-        this.productStock.reduceStock(amount);
+        try {
+            this.productStock.reduceStock(amount);
+        }catch(IllegalArgumentException e)
+        {
+            throw e;
+        }
     }
 }
