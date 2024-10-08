@@ -1,0 +1,50 @@
+HELP.md
+# Gradle 관련
+.gradle/
+**/gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+# Docker 관련
+docker-compose.override.yml
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+docker-compose-*.yml
+
+# Application 설정 파일
+**/application-*.yml
+**/application-*.properties
