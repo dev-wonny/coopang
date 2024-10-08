@@ -231,7 +231,7 @@ public class ProductService {
                 completeProduct.setCompanyId(productEntity.getCompanyId());
                 String completedMessage = objectMapper.writeValueAsString(completeProduct);
                 kafkaTemplate.send("complete_product",completedMessage);
-
+                log.info("complete_product kafka sent " + completedMessage);
             } catch (JsonProcessingException e) {
                 log.error(e.getMessage());
                 throw new RuntimeException(e);
