@@ -16,6 +16,7 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 public class ConsumerApplicationKafkaConfig {
 
 
+    //TODO : 추후 하드코딩 된 내용은 환경변수로 변경
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> configProps = new HashMap<>();
@@ -23,6 +24,7 @@ public class ConsumerApplicationKafkaConfig {
         configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configProps.put(ConsumerConfig.GROUP_ID_CONFIG, "product-sever-group");  // 그룹 아이디 설정
+        configProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         return new DefaultKafkaConsumerFactory<>(configProps);
     }
 
