@@ -15,14 +15,14 @@ public class OrderCancelResponseDto {
     private UUID productId;
     private Integer orderQuantity;
     private BigDecimal orderTotalPrice;
-    private OrderStatusEnum orderStatus;
+    private String orderStatus;
 
     private OrderCancelResponseDto(
             UUID orderId,
             UUID productId,
             Integer orderQuantity,
             BigDecimal orderTotalPrice,
-            OrderStatusEnum orderStatus
+            String orderStatus
     ) {
         this.orderId = orderId;
         this.productId = productId;
@@ -39,7 +39,7 @@ public class OrderCancelResponseDto {
                 orderEntity.getProductId(),
                 orderEntity.getOrderQuantity(),
                 orderEntity.getOrderTotalPrice(),
-                orderEntity.getOrderStatus()
+                orderEntity.getOrderStatus().toString()
         );
     }
 }

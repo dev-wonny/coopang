@@ -11,7 +11,7 @@ import java.util.UUID;
 public class PaymentDto {
 
     private UUID orderId;
-    private PaymentMethodEnum paymentMethod;
+    private String paymentMethod;
     private BigDecimal paymentPrice;
 
 }

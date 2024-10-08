@@ -1,5 +1,8 @@
 package com.coopang.delivery.application.service;
 
+import com.coopang.apicommunication.kafka.message.CancelDelivery;
+import com.coopang.apicommunication.kafka.message.CancelOrder;
+import com.coopang.apicommunication.kafka.message.ProcessDelivery;
 import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
 import com.coopang.delivery.application.request.DeliveryDto;
 import com.coopang.delivery.application.response.DeliveryResponseDto;
@@ -7,9 +10,11 @@ import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;
 import com.coopang.delivery.domain.repository.DeliveryRepository;
 import com.coopang.delivery.domain.service.DeliveryDomainService;
 import com.coopang.delivery.presentation.request.DeliverySearchCondition;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,13 +29,16 @@ public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
     private final DeliveryDomainService deliveryDomainService;
+    private final ObjectMapper objectMapper;
 
     public DeliveryService(
             DeliveryRepository deliveryRepository,
-            DeliveryDomainService deliveryDomainService
+            DeliveryDomainService deliveryDomainService,
+            ObjectMapper objectMapper
     ) {
         this.deliveryRepository = deliveryRepository;
         this.deliveryDomainService = deliveryDomainService;
+        this.objectMapper = objectMapper;
     }
     // 등록 //
 
@@ -39,6 +47,17 @@ public class DeliveryService {
         DeliveryEntity deliveryEntity = deliveryDomainService.createDelivery(deliveryDto);
         log.debug("createDelivery");
         return DeliveryResponseDto.fromDelivery(deliveryEntity);
+    }
+
+    // 배송 등록 기본적인 흐름
+    @KafkaListener(topics = "process", groupId = "my-group")
+    public void processDelivery(String message){
+        try {
+            ProcessDelivery processDelivery = objectMapper.readValue(message, ProcessDelivery.class);
+            deliveryDomainService.createProcessDelivery(processDelivery);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     // 조회 //
@@ -153,6 +172,19 @@ public class DeliveryService {
         DeliveryEntity deliveryEntity = findByDeliveryId(deliveryId);
         deliveryEntity.setDeleted(true);
         log.debug("deletedelivery deliveryId : {}", deliveryId);
+    }
+
+    // 취소 //
+
+    // 배송 취소
+    @KafkaListener(topics = "cancel_delivery", groupId = "my-group")
+    public void cancelDelivery(String message){
+        try {
+            CancelDelivery cancelDelivery = objectMapper.readValue(message, CancelDelivery.class);
+            deliveryDomainService.cancelDelivery(cancelDelivery);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // 공통 메서드 //
