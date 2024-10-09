@@ -1,5 +1,6 @@
 package com.coopang.user.application.response;
 
+import com.coopang.apidata.application.address.Address;
 import com.coopang.apidata.application.user.enums.UserRoleEnum;
 import com.coopang.user.domain.entity.user.UserEntity;
 import lombok.Getter;
@@ -17,9 +18,8 @@ public class UserResponseDto {
     private UserRoleEnum role;
     private String slackId;
 
-    private String zipCode;
-    private String address1;
-    private String address2;
+    private Address address;
+
     private UUID nearHubId;
 
     private boolean isBlock;
@@ -33,9 +33,7 @@ public class UserResponseDto {
             String phoneNumber,
             UserRoleEnum role,
             String slackId,
-            String zipCode,
-            String address1,
-            String address2,
+            Address address,
             UUID nearHubId,
             boolean isBlock,
             boolean isDeleted
@@ -46,9 +44,7 @@ public class UserResponseDto {
         this.phoneNumber = phoneNumber;
         this.role = role;
         this.slackId = slackId;
-        this.zipCode = zipCode;
-        this.address1 = address1;
-        this.address2 = address2;
+        this.address = address;
         this.nearHubId = nearHubId;
         this.isBlock = isBlock;
         this.isDeleted = isDeleted;
@@ -69,9 +65,11 @@ public class UserResponseDto {
                 user.getPhoneNumber(),
                 user.getRole(),
                 user.getSlackId(),
-                user.getAddressEntity().getZipCode(),
-                user.getAddressEntity().getAddress1(),
-                user.getAddressEntity().getAddress2(),
+                new Address(
+                        user.getAddressEntity().getZipCode(),
+                        user.getAddressEntity().getAddress1(),
+                        user.getAddressEntity().getAddress2()
+                ),
                 user.getNearHubId(),
                 user.isBlock(),
                 user.isDeleted()

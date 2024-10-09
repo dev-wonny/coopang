@@ -2,23 +2,19 @@ package com.coopang.user.infrastructure.configuration;
 
 import com.coopang.apidata.application.user.enums.UserRoleEnum;
 import com.coopang.user.application.request.UserDto;
-import com.coopang.user.domain.entity.user.UserEntity;
-import com.coopang.user.infrastructure.repository.UserJpaRepository;
+import com.coopang.user.application.service.UserService;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 @Component
 public class UserDataInitializer implements CommandLineRunner {
-    private final UserJpaRepository userJpaRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
     private int uuidIndex = 0;
 
-    public UserDataInitializer(UserJpaRepository userJpaRepository, PasswordEncoder passwordEncoder) {
-        this.userJpaRepository = userJpaRepository;
-        this.passwordEncoder = passwordEncoder;
+    public UserDataInitializer(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
@@ -112,28 +108,15 @@ public class UserDataInitializer implements CommandLineRunner {
     }
 
     // 공통 메서드: User 생성
-    private void createUser(UUID userId, UserDto userDto) {
-        String encodedPassword = passwordEncoder.encode(userDto.getPassword());
-
-        userJpaRepository.save(UserEntity.create(
-                userId,
-                userDto.getEmail(),
-                encodedPassword,
-                userDto.getUserName(),
-                userDto.getPhoneNumber(),
-                userDto.getRole(),
-                userDto.getSlackId(),
-                userDto.getZipCode(),
-                userDto.getAddress1(),
-                userDto.getAddress2(),
-                userDto.getNearHubId()
-        ));
+    private void createUser(UserDto userDto) {
+        userService.join(userDto);
     }
 
     // Master 4명 생성
     private void createMasterUsers() {
         for (int i = 1; i <= 4; i++) {
             UserDto masterDto = new UserDto();
+            masterDto.setUserId(getNextFixedUuid());
             masterDto.setEmail("master" + i + "@coopang.com");
             masterDto.setPassword("coopang");
             masterDto.setUserName("Master" + i);
@@ -144,7 +127,7 @@ public class UserDataInitializer implements CommandLineRunner {
             masterDto.setAddress1("서울특별시");
             masterDto.setAddress2("101동");
 
-            createUser(getNextFixedUuid(), masterDto);
+            createUser(masterDto);
         }
     }
 
@@ -153,6 +136,7 @@ public class UserDataInitializer implements CommandLineRunner {
         String[] hubRegions = getHubRegions();
         for (int i = 1; i <= 11; i++) {
             UserDto hubManagerDto = new UserDto();
+            hubManagerDto.setUserId(getNextFixedUuid());
             hubManagerDto.setEmail("hub_manager" + i + "@coopang.com");
             hubManagerDto.setPassword("coopang");
             hubManagerDto.setUserName("HubManager" + i);
@@ -162,7 +146,7 @@ public class UserDataInitializer implements CommandLineRunner {
             hubManagerDto.setZipCode("11111");
             hubManagerDto.setAddress1(hubRegions[i]);
             hubManagerDto.setAddress2("102동");
-            createUser(getNextFixedUuid(), hubManagerDto);
+            createUser(hubManagerDto);
         }
     }
 
@@ -173,6 +157,7 @@ public class UserDataInitializer implements CommandLineRunner {
             String hubName = hubRegions[i].replaceAll("\\s", "_").toLowerCase();
 
             UserDto customerDto = new UserDto();
+            customerDto.setUserId(getNextFixedUuid());
             customerDto.setEmail("customer_" + hubName + "@coopang.com");
             customerDto.setPassword("coopang");
             customerDto.setUserName("Customer-" + hubRegions[i]);
@@ -183,7 +168,7 @@ public class UserDataInitializer implements CommandLineRunner {
             customerDto.setAddress1(hubName);
             customerDto.setAddress2("103동");
 
-            createUser(getNextFixedUuid(), customerDto);
+            createUser(customerDto);
         }
     }
 
@@ -196,6 +181,7 @@ public class UserDataInitializer implements CommandLineRunner {
 
             // Shipper Hub 생성
             UserDto shipperHubDto = new UserDto();
+            shipperHubDto.setUserId(getNextFixedUuid());
             shipperHubDto.setEmail("shipperHub_" + hubName + "@coopang.com");
             shipperHubDto.setPassword("coopang");
             shipperHubDto.setUserName("ShipperHub-" + hubRegions[i]);
@@ -206,11 +192,12 @@ public class UserDataInitializer implements CommandLineRunner {
             shipperHubDto.setAddress1(hubName);
             shipperHubDto.setAddress2("104동");
 
-            createUser(getNextFixedUuid(), shipperHubDto);
+            createUser(shipperHubDto);
 
             // Shipper Customer 2명 생성
             for (int j = 1; j <= 2; j++) {
                 UserDto shipperCustomerDto = new UserDto();
+                shipperCustomerDto.setUserId(getNextFixedUuid());
                 shipperCustomerDto.setEmail("shipperCustomer_" + j + "_" + hubName + "@coopang.com");
                 shipperCustomerDto.setPassword("coopang");
                 shipperCustomerDto.setUserName("ShipperCustomer " + j + " - " + hubRegions[i]);
@@ -221,7 +208,7 @@ public class UserDataInitializer implements CommandLineRunner {
                 shipperCustomerDto.setAddress1(hubName);
                 shipperCustomerDto.setAddress2("105동");
 
-                createUser(getNextFixedUuid(), shipperCustomerDto);
+                createUser(shipperCustomerDto);
             }
         }
     }

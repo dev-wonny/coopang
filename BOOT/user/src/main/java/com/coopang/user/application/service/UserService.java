@@ -6,11 +6,11 @@ import com.coopang.user.application.request.AddressDto;
 import com.coopang.user.application.request.ChangePasswordDto;
 import com.coopang.user.application.request.MyInfoUpdateDto;
 import com.coopang.user.application.request.UserDto;
+import com.coopang.user.application.request.UserSearchCondition;
 import com.coopang.user.application.response.UserResponseDto;
 import com.coopang.user.domain.entity.user.UserEntity;
 import com.coopang.user.domain.repository.UserRepository;
 import com.coopang.user.domain.service.UserDomainService;
-import com.coopang.user.presentation.request.UserSearchCondition;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -56,8 +56,13 @@ public class UserService {
     public UserResponseDto join(UserDto userDto) {
         // email 중복 확인
         if (userRepository.existsByEmail(userDto.getEmail())) {
-            throw new IllegalArgumentException("Email already exists");
+            throw new IllegalArgumentException("Email already exists: " + userDto.getEmail());
         }
+
+        // 서비스 레이어에서 UUID 생성
+        final UUID userId = userDto.getUserId() != null ? userDto.getUserId() : UUID.randomUUID();
+        userDto.setUserId(userId);
+
         log.debug("try join email:{}", userDto.getEmail());
         return UserResponseDto.fromUser(userDomainService.createUser(userDto));
     }
@@ -199,7 +204,7 @@ public class UserService {
     @CacheEvict(value = "users", key = "#userId")
     public void updateUserInfo(UUID userId, UserDto dto) {
         UserEntity user = findUserById(userId);
-        user.updateUserInfo(dto.getUserName(), dto.getPhoneNumber(), dto.getRole(), dto.getSlackId());
+        user.updateUserInfo(dto.getUserName(), dto.getPhoneNumber(), UserRoleEnum.getRoleEnum(dto.getRole()), dto.getSlackId());
         log.debug("updateUserInfo userId:{}", userId);
     }
 
@@ -209,6 +214,7 @@ public class UserService {
      * @param userId      the user's UUID.
      * @param newPassword the new password.
      */
+    @CacheEvict(value = "users", key = "#userId")
     public void resetPassword(UUID userId, String newPassword) {
         UserEntity user = findValidUserById(userId);
         userDomainService.changePassword(user, newPassword);
@@ -221,6 +227,7 @@ public class UserService {
      * @param userId the user's UUID.
      * @param dto    contains the current and new password.
      */
+    @CacheEvict(value = "users", key = "#userId")
     public void updatePasswordAfterValidation(UUID userId, ChangePasswordDto dto) {
         UserEntity user = findValidUserById(userId);
         checkPassword(dto.getCurrentPassword(), user.getPassword());
@@ -234,10 +241,10 @@ public class UserService {
      * @param userId the user's UUID.
      * @param role   the new role.
      */
+    @CacheEvict(value = "users", key = "#userId")
     public void updateUserRole(UUID userId, String role) {
-        final UserRoleEnum userRole = UserRoleEnum.getRoleEnum(role);
         UserEntity user = findUserById(userId);
-        user.updateUserRole(userRole);
+        user.updateUserRole(UserRoleEnum.getRoleEnum(role));
         log.debug("updateUserRole userId:{}", userId);
     }
 
@@ -247,6 +254,7 @@ public class UserService {
      * @param userId  the user's UUID.
      * @param slackId the new Slack ID.
      */
+    @CacheEvict(value = "users", key = "#userId")
     public void updateSlackId(UUID userId, String slackId) {
         UserEntity user = findUserById(userId);
         user.updateSlackId(slackId);
@@ -259,6 +267,7 @@ public class UserService {
      * @param userId     the user's UUID.
      * @param addressDto the new address data.
      */
+    @CacheEvict(value = "users", key = "#userId")
     public void updateAddress(UUID userId, AddressDto addressDto) {
         UserEntity user = findUserById(userId);
         user.updateAddress(addressDto.getZipCode(), addressDto.getAddress1(), addressDto.getAddress2());
@@ -271,6 +280,7 @@ public class UserService {
      * @param userId    the user's UUID.
      * @param nearHubId the new nearby hub ID.
      */
+    @CacheEvict(value = "users", key = "#userId")
     public void updateNearHub(UUID userId, UUID nearHubId) {
         UserEntity user = findUserById(userId);
         user.updateNearHubId(nearHubId);
@@ -282,6 +292,7 @@ public class UserService {
      *
      * @param userId the user's UUID.
      */
+    @CacheEvict(value = "users", key = "#userId")
     public void blockUser(UUID userId) {
         UserEntity user = findUserById(userId);
         user.blockUser();
@@ -293,6 +304,7 @@ public class UserService {
      *
      * @param userId the user's UUID.
      */
+    @CacheEvict(value = "users", key = "#userId")
     public void unblockUser(UUID userId) {
         UserEntity user = findUserById(userId);
         user.unblockUser();

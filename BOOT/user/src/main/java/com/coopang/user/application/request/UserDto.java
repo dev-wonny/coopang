@@ -6,6 +6,7 @@ import java.util.UUID;
 
 @Data
 public class UserDto {
+    private UUID userId;
     private String email;
     private String password;
     private String userName;
