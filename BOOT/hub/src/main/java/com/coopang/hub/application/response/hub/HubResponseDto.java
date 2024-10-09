@@ -1,4 +1,4 @@
-package com.coopang.hub.application.response;
+package com.coopang.hub.application.response.hub;
 
 import com.coopang.apidata.application.address.Address;
 import com.coopang.hub.domain.entity.hub.HubEntity;
@@ -13,14 +13,22 @@ public class HubResponseDto {
     private UUID hubId;
     private String hubName;
     private UUID hubManagerId;
+
     private Address address;
+
     private boolean isDeleted;
 
-    private HubResponseDto(UUID hubId, String hubName, Address address, UUID hubManagerId, boolean isDeleted) {
+    private HubResponseDto(
+            UUID hubId
+            , String hubName
+            , UUID hubManagerId
+            , Address address
+            , boolean isDeleted
+    ) {
         this.hubId = hubId;
         this.hubName = hubName;
-        this.address = address;
         this.hubManagerId = hubManagerId;
+        this.address = address;
         this.isDeleted = isDeleted;
     }
 
@@ -32,11 +40,16 @@ public class HubResponseDto {
      */
     public static HubResponseDto fromHub(HubEntity hub) {
         return new HubResponseDto(
-                hub.getHubId(),
-                hub.getHubName(),
-                new Address(hub.getAddressEntity().getZipCode(), hub.getAddressEntity().getAddress1(), hub.getAddressEntity().getAddress2()),
-                hub.getHubManagerId(),
-                hub.isDeleted()
+                hub.getHubId()
+                , hub.getHubName()
+                , hub.getHubManagerId()
+                ,
+                new Address(
+                        hub.getAddressEntity().getZipCode()
+                        , hub.getAddressEntity().getAddress1()
+                        , hub.getAddressEntity().getAddress2()
+                )
+                , hub.isDeleted()
         );
     }
 }
