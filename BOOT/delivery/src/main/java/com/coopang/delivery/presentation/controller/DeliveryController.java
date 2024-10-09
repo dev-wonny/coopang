@@ -1,8 +1,8 @@
 package com.coopang.delivery.presentation.controller;
 
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
-import com.coopang.delivery.application.request.DeliveryDto;
-import com.coopang.delivery.application.response.DeliveryResponseDto;
+import com.coopang.delivery.application.request.delivery.DeliveryDto;
+import com.coopang.delivery.application.response.delivery.DeliveryResponseDto;
 import com.coopang.delivery.application.service.DeliveryService;
 import com.coopang.delivery.presentation.request.DeliveryRequestDto;
 import com.coopang.delivery.presentation.request.DeliverySearchCondition;

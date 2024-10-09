@@ -9,6 +9,9 @@ import com.coopang.order.domain.service.PaymentDomainService;
 import com.coopang.order.presentation.request.PGRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -113,9 +116,15 @@ public class PaymentService {
         pgRequestDto.setPaymentMethod(paymentMethod.toString());
         pgRequestDto.setOrderTotalPrice(orderTotalPrice);
         final String paymentUrl = "http://localhost:19097/payments/v1/pg";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("X-User-Id","1111-1111-1111-1111");
+        headers.set("X-User-Role","MASTER");
+
+        HttpEntity<PGRequestDto> requestEntity = new HttpEntity<>(pgRequestDto, headers);
 
         try{
-            ResponseEntity<String> response = restTemplate.postForEntity(paymentUrl, pgRequestDto, String.class);
+            ResponseEntity<String> response = restTemplate.postForEntity(paymentUrl, requestEntity, String.class);
             return response.getBody();
         }catch (Exception e){
             e.printStackTrace();
@@ -129,9 +138,15 @@ public class PaymentService {
         pgRequestDto.setPaymentMethod(paymentMethod.toString());
         pgRequestDto.setOrderTotalPrice(orderTotalPrice);
         final String paymentUrl = "http://localhost:19097/payments/v1/pg/cancel";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("X-User-Id","1111-1111-1111-1111");
+        headers.set("X-User-Role","MASTER");
+
+        HttpEntity<PGRequestDto> requestEntity = new HttpEntity<>(pgRequestDto, headers);
 
         try{
-            ResponseEntity<String> response = restTemplate.postForEntity(paymentUrl, pgRequestDto, String.class);
+            ResponseEntity<String> response = restTemplate.postForEntity(paymentUrl, requestEntity, String.class);
             return response.getBody();
         }catch (Exception e){
             e.printStackTrace();

@@ -24,6 +24,8 @@ import java.util.concurrent.CountDownLatch;
 @Service
 @Transactional
 public class OrderService {
+    // Todo : groupId 명칭통일
+    // Todo : 회의 후 캐시메모리를 사용해서 결제 결과 조회 할지 고민
 
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final OrderRepository orderRepository;
@@ -51,7 +53,7 @@ public class OrderService {
         return OrderResponseDto.fromOrder(orderEntity);
     }
 
-    // 주문하기 -> 주문 서비스로 전달
+    // 결제하기 -> 주문 서비스로 전달
     public OrderCheckResponseDto checkOrder(UUID orderId) {
         OrderEntity orderEntity = findByOrderId(orderId);
 
@@ -120,7 +122,7 @@ public class OrderService {
     }
 
     // product_error 수신용
-    @KafkaListener(topics = "product_error", groupId = "my-group")
+    @KafkaListener(topics = "error_product", groupId = "my-group")
     public void listenProductError(String message) {
         try {
             ErrorProduct productError = objectMapper.readValue(message, ErrorProduct.class);

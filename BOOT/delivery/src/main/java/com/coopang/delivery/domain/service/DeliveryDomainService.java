@@ -4,7 +4,7 @@ import com.coopang.apicommunication.kafka.message.CancelDelivery;
 import com.coopang.apicommunication.kafka.message.CompleteDelivery;
 import com.coopang.apicommunication.kafka.message.ProcessDelivery;
 import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
-import com.coopang.delivery.application.request.DeliveryDto;
+import com.coopang.delivery.application.request.delivery.DeliveryDto;
 import com.coopang.delivery.application.service.DeliveryHubHistoryService;
 import com.coopang.delivery.application.service.DeliveryUserHistoryService;
 import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;
@@ -61,6 +61,7 @@ public class DeliveryDomainService {
     }
 
     // 배송 등록 - 주문 등록 후 바로 이어지는..
+    // Todo : feign client 연결
     public void createProcessDelivery(ProcessDelivery processDelivery) {
         // feign client : 허브 배송 기사, 출발 허브 값 가져오기 (hub)
         final UUID hubShipperId = UUID.randomUUID();

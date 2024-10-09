@@ -1,8 +1,7 @@
-package com.coopang.delivery.application.response;
+package com.coopang.delivery.application.response.delivery;
 
 import com.coopang.apidata.application.address.Address;
 import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
-import com.coopang.apidata.jpa.entity.address.AddressEntity;
 import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
