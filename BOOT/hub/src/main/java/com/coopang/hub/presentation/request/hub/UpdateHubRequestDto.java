@@ -1,6 +1,7 @@
-package com.coopang.hub.presentation.request;
+package com.coopang.hub.presentation.request.hub;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,18 +9,19 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class HubRequestDto {
-    @NotBlank(message = "Hub name is required")
+public class UpdateHubRequestDto {
+    @NotBlank
     private String hubName;
 
+    @NotNull
     private UUID hubManagerId;
 
-    @NotBlank(message = "Hub zipCode is required")
+    @NotBlank
     private String zipCode;
 
-    @NotBlank(message = "Hub address1 is required")
+    @NotBlank
     private String address1;
 
-    @NotBlank(message = "Hub address2 is required")
+    @NotBlank
     private String address2;
 }
