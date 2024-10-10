@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,13 +67,13 @@ public class ProductService {
         /**
          * 마스터인 경우 모든 상품들을 봄
          */
-        if(isMaster(role)){
+        if(UserRoleEnum.isMaster(role)){
             return productRepository.findAll(pageable).map(ProductResponseDto::of);
-        }else if(isHubManager(role)){
+        }else if(UserRoleEnum.isHubManager(role)){
             //허브에 소속된 업체들의 상품 리스트
             //TODO : 내부통신으로 업체리스트들을 조회
             return null;
-        }else if(isCompany(role)){
+        }else if(UserRoleEnum.isCompany(role)){
             //내 업체들의 상품들만 조회
             return productRepository.findAllWithStockAndCategoryByCompanyId(condition.getCompanyId(), pageable).map(ProductResponseDto::of);
         }else{
@@ -139,10 +140,10 @@ public class ProductService {
     @Transactional
     public void deleteProductById(UUID userId, String role, UUID productId) {
 
-        if(isCompany(role))
+        if(UserRoleEnum.isCompany(role))
         {
            //TODO : 업체 관리자 조회(company와 통신)
-        }else if(isHubManager(role))
+        }else if(UserRoleEnum.isHubManager(role))
         {
             //TODO : 허브 관리자 조회(hub와 통신)
         }
@@ -161,18 +162,6 @@ public class ProductService {
         Page <ProductEntity> productEntities = productRepository.search(searchCondition, pageable);
 
         return productEntities.map(ProductResponseDto::of);
-    }
-
-    private boolean isMaster(String role){
-        return role.equals(UserRoleEnum.MASTER);
-    }
-
-    private boolean isHubManager(String role){
-        return role.equals(UserRoleEnum.HUB_MANAGER);
-    }
-
-    private boolean isCompany(String role){
-        return role.equals(UserRoleEnum.COMPANY);
     }
 
     //상품의 재고 수량을 증가시키는 함수
