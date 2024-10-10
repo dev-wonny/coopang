@@ -1,26 +1,28 @@
 package com.coopang.hub.infrastructure.configuration;
 
-import static com.coopang.apiconfig.initdata.HubRegions.BUSAN;
-import static com.coopang.apiconfig.initdata.HubRegions.CHUNGBUK;
-import static com.coopang.apiconfig.initdata.HubRegions.DAEGU;
-import static com.coopang.apiconfig.initdata.HubRegions.DAEJEON;
-import static com.coopang.apiconfig.initdata.HubRegions.GANGWON;
-import static com.coopang.apiconfig.initdata.HubRegions.GWANGJU;
-import static com.coopang.apiconfig.initdata.HubRegions.GYEONGGI_NORTH;
-import static com.coopang.apiconfig.initdata.HubRegions.GYEONGGI_SOUTH;
-import static com.coopang.apiconfig.initdata.HubRegions.INCHEON;
-import static com.coopang.apiconfig.initdata.HubRegions.SEJONG;
-import static com.coopang.apiconfig.initdata.HubRegions.SEOUL;
-import static com.coopang.apiconfig.initdata.HubRegions.ULSAN;
+import static com.coopang.apidata.constants.HubRegions.BUSAN;
+import static com.coopang.apidata.constants.HubRegions.CHUNGBUK;
+import static com.coopang.apidata.constants.HubRegions.DAEGU;
+import static com.coopang.apidata.constants.HubRegions.DAEJEON;
+import static com.coopang.apidata.constants.HubRegions.GANGWON;
+import static com.coopang.apidata.constants.HubRegions.GWANGJU;
+import static com.coopang.apidata.constants.HubRegions.GYEONGGI_NORTH;
+import static com.coopang.apidata.constants.HubRegions.GYEONGGI_SOUTH;
+import static com.coopang.apidata.constants.HubRegions.INCHEON;
+import static com.coopang.apidata.constants.HubRegions.SEJONG;
+import static com.coopang.apidata.constants.HubRegions.SEOUL;
+import static com.coopang.apidata.constants.HubRegions.ULSAN;
 
 import com.coopang.hub.application.request.hub.HubDto;
 import com.coopang.hub.application.service.hub.HubService;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 @Component
+@ConditionalOnProperty(name = "data.init.enabled", havingValue = "true", matchIfMissing = false)
 public class HubDataInitializer implements CommandLineRunner {
     private final HubService hubService;
 
