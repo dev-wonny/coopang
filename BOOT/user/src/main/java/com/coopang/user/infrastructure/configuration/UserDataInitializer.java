@@ -6,6 +6,8 @@ import com.coopang.user.application.service.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Component
@@ -23,6 +25,7 @@ public class UserDataInitializer implements CommandLineRunner {
         createHubManagers();
         createShipperUsers();
         createCustomers();
+        createCompanyUsers();
     }
 
     // 허브 지역 정보 제공
@@ -31,6 +34,22 @@ public class UserDataInitializer implements CommandLineRunner {
                 "서울", "경기북부", "경기남부", "부산", "대구", "인천", "광주", "대전", "울산", "세종", "강원", "충북"
         };
     }
+
+    // 지역별 hub_id 맵핑
+    private final Map<String, UUID> hubIds = new HashMap<>() {{
+        put("서울", UUID.fromString("12fc1d66-4270-4468-b76d-93264856327b"));
+        put("경기북부", UUID.fromString("4dd1bc35-fecf-40a6-a3cd-281a6a800752"));
+        put("경기남부", UUID.fromString("83f3e5ab-adda-4d53-adb1-bf2e00f80af6"));
+        put("부산", UUID.fromString("83004b5d-122a-4bab-a27c-78824da0ad77"));
+        put("대구", UUID.fromString("d25e0314-0b9d-47dc-8a35-afd4381d3a9e"));
+        put("인천", UUID.fromString("094f9450-8916-4d5d-872f-af929cba79f7"));
+        put("광주", UUID.fromString("297e573f-a450-46c4-b0ac-3d318ae66e27"));
+        put("대전", UUID.fromString("f2bea779-3987-474b-a044-d707551ad689"));
+        put("울산", UUID.fromString("773db62c-eae9-4d4e-9029-d24f348f8c61"));
+        put("세종", UUID.fromString("c3aebe6d-a257-4798-b3ce-b9595c3c59f3"));
+        put("강원", UUID.fromString("666278fe-006f-4895-a094-bac433c2d669"));
+        put("충북", UUID.fromString("c5fb540b-63f0-464a-951c-6cd711986440"));
+    }};
 
     // 고정된 uuid
     String[] fixedUuids = {
@@ -96,7 +115,31 @@ public class UserDataInitializer implements CommandLineRunner {
             "4d7aff3d-a455-43d8-8675-eeaab76eb5d3",
             "c14b44a1-28f3-4c58-8700-b616ff141fc6",
             "ac9bcee5-709c-4f10-8b2c-d45418aed6de",
-            "a698a623-aa8f-4137-9951-a407af4025ab"
+            "a698a623-aa8f-4137-9951-a407af4025ab",
+            "8233f07c-f3eb-44a0-9522-563304369768",
+            "ec75ee25-1ee5-404f-a156-ddeba231daae",
+            "5e69568e-9a30-442b-bcd0-a8a30a80ac0e",
+            "1f19e2ff-d270-4d55-bf82-91739bf344ab",
+            "01b5bca3-aedb-44b3-9d1a-f5fdbaca141d",
+            "6619735d-66f2-4388-a17e-f1d6074669b3",
+            "d1f7b37c-96c1-48d8-a6c8-2c6dab9545ec",
+            "58f8dd25-2383-4edf-a0a7-1a85ac312bc4",
+            "2b236f99-4a5f-4542-97c3-341f0d9ebc57",
+            "7cc32daf-cd16-444c-a6a9-e5ca8923c4f5",
+            "56d419ff-20cc-4469-9e17-9ae9f0735dde",
+            "dc578d2e-c850-471a-86b7-c1b760c9f35b",
+            "10b830f1-aa78-433d-9d34-e46dc450b1ca",
+            "16ba1a03-fd9e-429b-a047-558f8c67bbe8",
+            "7a124a90-d15e-4e9d-b1b8-1e31e43524eb",
+            "0ea3bd2a-d202-4f9e-bade-d7f2defbf03e",
+            "735d2c64-5c0a-41ea-bf71-53e9f49b9b09",
+            "b6bdb9bc-a2e7-4da6-bc96-417a990e5cd0",
+            "9f049e8c-d207-4dce-9fcd-dbae49432b81",
+            "372e5bb4-4d93-42a0-bf50-3f99094c35c6",
+            "aafba163-0224-45fe-9005-2ac36a1e5847",
+            "d44242a9-74db-4c01-8b10-8617ab1cb1ad",
+            "a5295c52-3dfa-467f-aafb-3f728ba2a4e5",
+            "ef7a4240-c305-42fd-a5ee-42cbb99cdbaf"
     };
 
     // 고정된 UUID 배열에서 하나를 가져오는 메소드
@@ -126,6 +169,7 @@ public class UserDataInitializer implements CommandLineRunner {
             masterDto.setZipCode("11111");
             masterDto.setAddress1("서울특별시");
             masterDto.setAddress2("101동");
+            masterDto.setNearHubId(hubIds.get("서울"));
 
             createUser(masterDto);
         }
@@ -134,18 +178,20 @@ public class UserDataInitializer implements CommandLineRunner {
     // Hub Manager 11명 생성
     private void createHubManagers() {
         String[] hubRegions = getHubRegions();
-        for (int i = 1; i <= 11; i++) {
+        for (int i = 0; i < hubRegions.length; i++) {
             UserDto hubManagerDto = new UserDto();
             hubManagerDto.setUserId(getNextFixedUuid());
-            hubManagerDto.setEmail("hub_manager" + i + "@coopang.com");
+            hubManagerDto.setEmail("hub_manager" + (i + 1) + "@coopang.com");
             hubManagerDto.setPassword("coopang");
-            hubManagerDto.setUserName("HubManager" + i);
+            hubManagerDto.setUserName("HubManager" + (i + 1));
             hubManagerDto.setPhoneNumber("010-1111-1111");
             hubManagerDto.setRole(UserRoleEnum.HUB_MANAGER.name());
-            hubManagerDto.setSlackId("HubManager" + i);
+            hubManagerDto.setSlackId("HubManager" + (i + 1));
             hubManagerDto.setZipCode("11111");
             hubManagerDto.setAddress1(hubRegions[i]);
             hubManagerDto.setAddress2("102동");
+            hubManagerDto.setNearHubId(hubIds.get(hubRegions[i]));
+
             createUser(hubManagerDto);
         }
     }
@@ -167,6 +213,7 @@ public class UserDataInitializer implements CommandLineRunner {
             customerDto.setZipCode("11111");
             customerDto.setAddress1(hubName);
             customerDto.setAddress2("103동");
+            customerDto.setNearHubId(hubIds.get(hubRegions[i]));
 
             createUser(customerDto);
         }
@@ -191,6 +238,7 @@ public class UserDataInitializer implements CommandLineRunner {
             shipperHubDto.setZipCode("11111");
             shipperHubDto.setAddress1(hubName);
             shipperHubDto.setAddress2("104동");
+            shipperHubDto.setNearHubId(hubIds.get(hubRegions[i]));
 
             createUser(shipperHubDto);
 
@@ -207,8 +255,34 @@ public class UserDataInitializer implements CommandLineRunner {
                 shipperCustomerDto.setZipCode("11111");
                 shipperCustomerDto.setAddress1(hubName);
                 shipperCustomerDto.setAddress2("105동");
+                shipperCustomerDto.setNearHubId(hubIds.get(hubRegions[i]));
 
                 createUser(shipperCustomerDto);
+            }
+        }
+    }
+
+    // Company 사용자 생성 (허브별 2명씩)
+    private void createCompanyUsers() {
+        String[] hubRegions = getHubRegions();
+
+        for (int i = 0; i < hubRegions.length; i++) {
+            String hubName = hubRegions[i].replaceAll("\\s", "_").toLowerCase();
+
+            for (int j = 1; j <= 2; j++) {
+                UserDto companyDto = new UserDto();
+                companyDto.setUserId(null);
+                companyDto.setEmail("company" + j + "_" + hubName + "@coopang.com");
+                companyDto.setPassword("coopang");
+                companyDto.setUserName("CompanyManager " + j + " - " + hubRegions[i]);
+                companyDto.setPhoneNumber("010-1111-1111");
+                companyDto.setRole(UserRoleEnum.COMPANY.name());
+                companyDto.setSlackId("CompanyManager" + j);
+                companyDto.setZipCode("11111");
+                companyDto.setAddress1(hubName);
+                companyDto.setAddress2("106동");
+
+                createUser(companyDto);
             }
         }
     }
