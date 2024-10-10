@@ -1,4 +1,4 @@
-package com.coopang.order.infrastructure.config;
+package com.coopang.delivery.infrastructure.config;
 
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
