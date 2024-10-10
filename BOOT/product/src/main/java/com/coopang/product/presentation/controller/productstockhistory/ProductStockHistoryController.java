@@ -1,6 +1,7 @@
 package com.coopang.product.presentation.controller.productStockHistory;
 
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
+import com.coopang.apidata.application.user.enums.UserRoleEnum.Authority;
 import com.coopang.product.application.request.ProductStockHistory.ProductStockHistoryDto;
 import com.coopang.product.application.service.product.ProductService;
 import com.coopang.product.presentation.request.productStockHistory.ProductStockHistorySearchCondition;
@@ -34,14 +35,14 @@ public class ProductStockHistoryController {
     private static final String USER_ID_HEADER = "X-User-Id";
     private static final String USER_ROLE_HEADER = "X-User-Role";
 
-    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
+    @Secured({Authority.MASTER,Authority.COMPANY,Authority.HUB_MANAGER})
     @GetMapping("/{productId}/product-stock-history")
     public ResponseEntity<?> getStockHistoriesByProductId(@PathVariable UUID productId, Pageable pageable) {
 
         return new ResponseEntity<>(productService.getStockHistoriesByProductId(productId,pageable),HttpStatus.OK);
     }
 
-    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
+    @Secured({Authority.MASTER,Authority.COMPANY,Authority.HUB_MANAGER})
     @GetMapping("/{productId}/product-stock-history/search")
     public ResponseEntity<?> getStockHistoriesByProductIdWithCondition(@ModelAttribute
     ProductStockHistorySearchCondition condition,@PathVariable UUID productId, Pageable pageable) {
@@ -49,7 +50,7 @@ public class ProductStockHistoryController {
         return new ResponseEntity<>(productService.getStockHistoriesByProductIdWithCondition(condition,productId,pageable),HttpStatus.OK);
     }
 
-    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER"})
+    @Secured({Authority.MASTER,Authority.HUB_MANAGER})
     @PutMapping("/{productId}/product-stock-history/{productStockHistoryId}")
     public ResponseEntity<?> updateProductStockHistory(@PathVariable UUID productId, @PathVariable UUID productStockHistoryId,
         @RequestBody @Valid UpdateStockHistoryRequest request) {
@@ -60,7 +61,7 @@ public class ProductStockHistoryController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER"})
+    @Secured({Authority.MASTER,Authority.HUB_MANAGER})
     @DeleteMapping("/{productId}/product-stock-history/{productStockHistoryId}")
     public ResponseEntity<?> deleteProductStockHistoryById(@PathVariable UUID productId, @PathVariable UUID productStockHistoryId) {
 
