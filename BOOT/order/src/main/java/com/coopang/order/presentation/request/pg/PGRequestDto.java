@@ -1,4 +1,4 @@
-package com.coopang.order.presentation.request;
+package com.coopang.order.presentation.request.pg;
 
 import lombok.Getter;
 import lombok.Setter;

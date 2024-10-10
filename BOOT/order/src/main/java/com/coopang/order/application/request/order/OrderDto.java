@@ -1,12 +1,14 @@
-package com.coopang.order.presentation.request;
+package com.coopang.order.application.request.order;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
 @Getter
-public class OrderRequestDto {
+@Setter
+public class OrderDto {
 
     private UUID productId;
     private String zipCode;

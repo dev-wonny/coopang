@@ -1,4 +1,4 @@
-package com.coopang.order.application.request;
+package com.coopang.order.application.request.payment;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,4 +1,4 @@
-package com.coopang.order.domain.repository;
+package com.coopang.order.domain.repository.order;
 
 import com.coopang.order.domain.entity.order.OrderEntity;
 

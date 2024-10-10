@@ -1,4 +1,4 @@
-package com.coopang.order.domain.repository;
+package com.coopang.order.domain.repository.payment;
 
 import com.coopang.order.domain.entity.payment.PaymentEntity;
 

@@ -1,4 +1,4 @@
-package com.coopang.order.application.response;
+package com.coopang.order.application.response.order;
 
 
 import com.coopang.order.domain.entity.order.OrderEntity;
