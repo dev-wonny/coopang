@@ -23,16 +23,13 @@ public class ProductConsumer {
     @KafkaListener(topics = "process_product", groupId = "product-server-group")
     public void handleProductStockReduceEvent(String message)
      {
-
+        log.info("process_product consumer start");
         try {
             //메시지 변환 String -> class
             ProcessProduct processProduct = objectMapper.readValue(message, ProcessProduct.class);
-            ProductStockDto productStockDto =  new ProductStockDto();
-            productStockDto.setOrderId(processProduct.getOrderId());
-            productStockDto.setAmount(processProduct.getOrderQuantity());
 
             //재고 감소 요청
-            productService.reduceProductStock(processProduct.getProductId(),productStockDto);
+            productService.listenerReduceProductStock(processProduct);
 
         }catch (JsonProcessingException e)
         {
@@ -48,7 +45,6 @@ public class ProductConsumer {
         try {
             //메시지 변환 String -> class
             RollbackProduct rollbackProduct = objectMapper.readValue(message, RollbackProduct.class);
-
 
             //재고 증가 요청
             productService.rollbackProduct(rollbackProduct.getOrderId(),rollbackProduct.getProductId(),
