@@ -27,11 +27,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,6 +54,8 @@ public class ProductService {
         return ProductResponseDto.of(productEntity);
     }
 
+    //특정 상품 조회
+    @Cacheable(value = "products", key = "#productId")
     @Transactional(readOnly = true)
     public ProductResponseDto getProductById(UUID productId) {
 
@@ -62,6 +64,8 @@ public class ProductService {
         return ProductResponseDto.of(productEntity);
     }
 
+    //모든 상품 조회
+    @Cacheable(value = "Allproducts", key = "#condition")
     @Transactional(readOnly = true)
     public Page<ProductResponseDto> getAllProducts(BaseSearchCondition condition,String role,Pageable pageable) {
 
@@ -82,6 +86,8 @@ public class ProductService {
         }
     }
 
+    //카테고리별로 상품 조회
+    @Cacheable(value = "Allproducts", key = "#pageable.pageNumber+ '-' + #pageable.pageSize")
     @Transactional(readOnly = true)
     public Page<ProductResponseDto> getProductWithCategory(UUID categoryId, Pageable pageable) {
 
@@ -91,6 +97,8 @@ public class ProductService {
         return productEntities.map(ProductResponseDto::of);
     }
 
+    //특정 상품 변경
+    @CacheEvict(value = "products", key = "#productId")
     @Transactional
     public void updateProduct(ProductDto productDto, UUID productId) {
 
@@ -100,6 +108,8 @@ public class ProductService {
 
     }
 
+    //특정 상품에 대한 숨김처리
+    @CacheEvict(value = "products", key = "#productId")
     @Transactional
     public void updateProductHidden(ProductHiddenAndSaleDto productHiddenAndSaleDto, UUID productId) {
 
@@ -116,6 +126,8 @@ public class ProductService {
 
     }
 
+    //특정 상품에 대한 판매가능 여부 처리
+    @CacheEvict(value = "products", key = "#productId")
     @Transactional
     public void updateProductSale(ProductHiddenAndSaleDto productHiddenAndSaleDto, UUID productId) {
 
@@ -138,6 +150,7 @@ public class ProductService {
      * 상품 숨김, 판매 불가능 처리
      * @param productId
      */
+    @CacheEvict(value = "products", key = "#productId")
     @Transactional
     public void deleteProductById(UUID userId, String role, UUID productId) {
 
@@ -157,6 +170,8 @@ public class ProductService {
 
     }
 
+    //키워드로 상품 검색
+    @Cacheable(value = "Allproducts", key = "#condition")
     @Transactional(readOnly = true)
     public Page<ProductResponseDto> searchProduct(ProductSearchCondition searchCondition, Pageable pageable) {
 
