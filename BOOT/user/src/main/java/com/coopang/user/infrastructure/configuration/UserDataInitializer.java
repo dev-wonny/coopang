@@ -1,29 +1,32 @@
 package com.coopang.user.infrastructure.configuration;
 
-import static com.coopang.apiconfig.initdata.HubRegions.SEOUL;
-import static com.coopang.apiconfig.initdata.HubRegions.getHubRegions;
+import static com.coopang.apidata.constants.HubRegions.SEOUL;
+import static com.coopang.apidata.constants.HubRegions.getHubRegions;
 import static com.coopang.apidata.constants.UserConstants.COOPANG_EMAIL;
 import static com.coopang.apidata.constants.UserConstants.COOPANG_LOWERCASE;
 
-import com.coopang.apiconfig.initdata.HubMapInitializer;
 import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.apidata.initdata.HubMapInitializer;
 import com.coopang.user.application.request.UserDto;
 import com.coopang.user.application.service.UserService;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.UUID;
 
 @Component
+@ConditionalOnProperty(name = "data.init.enabled", havingValue = "true", matchIfMissing = false)
 public class UserDataInitializer implements CommandLineRunner {
     private final UserService userService;
     private Map<String, UUID> hubMap;
 
     private int uuidIndex = 0;
 
-    public UserDataInitializer(UserService userService, HubMapInitializer hubMapInitializer) {
+    public UserDataInitializer(UserService userService) {
         this.userService = userService;
+        HubMapInitializer hubMapInitializer = new HubMapInitializer();
         this.hubMap = hubMapInitializer.getHubMap();
     }
 
