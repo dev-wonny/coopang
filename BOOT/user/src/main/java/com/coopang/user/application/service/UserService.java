@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -180,6 +181,15 @@ public class UserService {
     public Page<UserResponseDto> searchUsers(UserSearchCondition condition, Pageable pageable) {
         Page<UserEntity> users = userRepository.search(condition, pageable);
         return users.map(UserResponseDto::fromUser);
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(value = "userList", key = "#condition")
+    public List<UserResponseDto> getUserList(UserSearchCondition condition) {
+        List<UserEntity> userList = userRepository.findUserList(condition);
+        return userList.stream()
+                .map(UserResponseDto::fromUser)
+                .toList();
     }
 
     /**

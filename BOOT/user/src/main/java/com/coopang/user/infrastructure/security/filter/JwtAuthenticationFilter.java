@@ -1,5 +1,7 @@
 package com.coopang.user.infrastructure.security.filter;
 
+import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ID;
+
 import com.coopang.user.infrastructure.security.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,7 +30,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        final String userId = request.getHeader("X-User-Id");
+        final String userId = request.getHeader(HEADER_USER_ID);
 
         if (StringUtils.hasText(userId)) {
             try {
