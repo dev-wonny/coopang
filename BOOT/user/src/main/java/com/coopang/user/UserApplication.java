@@ -16,7 +16,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @ComponentScan(basePackages = {"com.coopang.user", "com.coopang.apiconfig"})
 @EnableMethodSecurity(securedEnabled = true)
 public class UserApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(UserApplication.class, args);
     }
