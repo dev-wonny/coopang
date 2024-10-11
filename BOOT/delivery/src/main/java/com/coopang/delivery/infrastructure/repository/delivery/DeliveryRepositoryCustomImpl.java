@@ -1,10 +1,10 @@
-package com.coopang.delivery.infrastructure.repository;
+package com.coopang.delivery.infrastructure.repository.delivery;
 
 import static com.coopang.delivery.domain.entity.delivery.QDeliveryEntity.deliveryEntity;
 
 import com.coopang.apiconfig.querydsl.Querydsl4RepositorySupport;
 import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;
-import com.coopang.delivery.presentation.request.DeliverySearchCondition;
+import com.coopang.delivery.presentation.request.delivery.DeliverySearchCondition;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;

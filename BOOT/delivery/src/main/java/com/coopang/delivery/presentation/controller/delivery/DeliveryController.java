@@ -1,11 +1,11 @@
-package com.coopang.delivery.presentation.controller;
+package com.coopang.delivery.presentation.controller.delivery;
 
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.delivery.application.request.delivery.DeliveryDto;
 import com.coopang.delivery.application.response.delivery.DeliveryResponseDto;
-import com.coopang.delivery.application.service.DeliveryService;
-import com.coopang.delivery.presentation.request.DeliveryRequestDto;
-import com.coopang.delivery.presentation.request.DeliverySearchCondition;
+import com.coopang.delivery.application.service.delivery.DeliveryService;
+import com.coopang.delivery.presentation.request.delivery.DeliveryRequestDto;
+import com.coopang.delivery.presentation.request.delivery.DeliverySearchCondition;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;

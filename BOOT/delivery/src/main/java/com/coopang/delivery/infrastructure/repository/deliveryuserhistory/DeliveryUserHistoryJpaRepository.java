@@ -1,4 +1,4 @@
-package com.coopang.delivery.infrastructure.repository;
+package com.coopang.delivery.infrastructure.repository.deliveryuserhistory;
 
 import com.coopang.delivery.domain.entity.deliveryuserhistory.DeliveryUserHistoryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

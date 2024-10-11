@@ -1,14 +1,14 @@
-package com.coopang.delivery.application.service;
+package com.coopang.delivery.application.service.delivery;
 
-import com.coopang.apicommunication.kafka.message.CancelDelivery;
 import com.coopang.apicommunication.kafka.message.ProcessDelivery;
 import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
 import com.coopang.delivery.application.request.delivery.DeliveryDto;
 import com.coopang.delivery.application.response.delivery.DeliveryResponseDto;
 import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;
-import com.coopang.delivery.domain.repository.DeliveryRepository;
-import com.coopang.delivery.domain.service.DeliveryDomainService;
-import com.coopang.delivery.presentation.request.DeliverySearchCondition;
+import com.coopang.delivery.domain.repository.delivery.DeliveryRepository;
+import com.coopang.delivery.domain.service.delivery.DeliveryDomainService;
+import com.coopang.delivery.infrastructure.messaging.delivery.DeliveryKafkaProducer;
+import com.coopang.delivery.presentation.request.delivery.DeliverySearchCondition;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -29,15 +29,18 @@ public class DeliveryService {
     private final DeliveryRepository deliveryRepository;
     private final DeliveryDomainService deliveryDomainService;
     private final ObjectMapper objectMapper;
+    private final DeliveryKafkaProducer deliveryKafkaProducer;
 
     public DeliveryService(
             DeliveryRepository deliveryRepository,
             DeliveryDomainService deliveryDomainService,
-            ObjectMapper objectMapper
+            ObjectMapper objectMapper,
+            DeliveryKafkaProducer deliveryKafkaProducer
     ) {
         this.deliveryRepository = deliveryRepository;
         this.deliveryDomainService = deliveryDomainService;
         this.objectMapper = objectMapper;
+        this.deliveryKafkaProducer = deliveryKafkaProducer;
     }
     // 등록 //
 
@@ -49,7 +52,7 @@ public class DeliveryService {
     }
 
     // 배송 등록 기본적인 흐름
-    @KafkaListener(topics = "process", groupId = "my-group")
+    @KafkaListener(topics = "process_delivery", groupId = "my-group")
     public void processDelivery(String message){
         try {
             ProcessDelivery processDelivery = objectMapper.readValue(message, ProcessDelivery.class);
@@ -138,6 +141,7 @@ public class DeliveryService {
         List<DeliveryEntity> deliveries = findByDeliveryStatus(DeliveryStatusEnum.HUB_DELIVERY_ASSIGNMENT_IN_PROGRESS);
         deliveryDomainService.sendToSlackHubDelivery(deliveries);
         // api쪽으로 해당 정보 전달하기
+        deliveryKafkaProducer.hubDeliveryNotification(deliveries);
     }
 
     // 스케줄링 - 허브 배송 출발 : 21시
@@ -154,7 +158,8 @@ public class DeliveryService {
         // 허브들마다 정보 전달하기
         List<DeliveryEntity> deliveries = findByDeliveryStatus(DeliveryStatusEnum.CUSTOMER_DELIVERY_ASSIGNMENT_IN_PROGRESS);
         deliveryDomainService.sendToSlackCustomerDelivery(deliveries);
-        // api쪽으로 해당 정보 전달하기
+
+        deliveryKafkaProducer.userDeliveryNotification(deliveries);
     }
 
     // 스케줄링 - 고객 배송 출발 : 08시
@@ -171,19 +176,6 @@ public class DeliveryService {
         DeliveryEntity deliveryEntity = findByDeliveryId(deliveryId);
         deliveryEntity.setDeleted(true);
         log.debug("deletedelivery deliveryId : {}", deliveryId);
-    }
-
-    // 취소 //
-
-    // 배송 취소
-    @KafkaListener(topics = "cancel_delivery", groupId = "my-group")
-    public void cancelDelivery(String message){
-        try {
-            CancelDelivery cancelDelivery = objectMapper.readValue(message, CancelDelivery.class);
-            deliveryDomainService.cancelDelivery(cancelDelivery);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     // 공통 메서드 //

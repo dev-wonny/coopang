@@ -1,23 +1,22 @@
-package com.coopang.delivery.domain.service;
+package com.coopang.delivery.application.service.deliveryuserhistory;
 
 import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
-import com.coopang.delivery.domain.entity.deliveryuserhistory.DeliveryUserHistoryEntity;
-import com.coopang.delivery.infrastructure.repository.DeliveryUserHistoryJpaRepository;
+import com.coopang.delivery.domain.service.deliveryuserhistory.DeliveryUserHistoryDomainService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-@Slf4j(topic = "DeliveryUserHistoryDomainService")
+@Slf4j(topic = "DeliveryUserHistoryService")
 @Service
 @Transactional
-public class DeliveryUserHistoryDomainService {
+public class DeliveryUserHistoryService {
 
-    private final DeliveryUserHistoryJpaRepository deliveryUserHistoryJpaRepository;
+    private final DeliveryUserHistoryDomainService deliveryUserHistoryDomainService;
 
-    public DeliveryUserHistoryDomainService(DeliveryUserHistoryJpaRepository deliveryUserHistoryJpaRepository) {
-        this.deliveryUserHistoryJpaRepository = deliveryUserHistoryJpaRepository;
+    public DeliveryUserHistoryService(DeliveryUserHistoryDomainService deliveryUserHistoryDomainService) {
+        this.deliveryUserHistoryDomainService = deliveryUserHistoryDomainService;
     }
 
     public void createUserHistory(
@@ -29,7 +28,7 @@ public class DeliveryUserHistoryDomainService {
             UUID userShipperId,
             DeliveryStatusEnum deliveryRouteHistoryStatus
     ){
-        DeliveryUserHistoryEntity deliveryUserHistoryEntity = DeliveryUserHistoryEntity.create(
+        deliveryUserHistoryDomainService.createUserHistory(
                 deliveryId,
                 departureHubId,
                 zipCode,
@@ -38,7 +37,5 @@ public class DeliveryUserHistoryDomainService {
                 userShipperId,
                 deliveryRouteHistoryStatus
         );
-
-        deliveryUserHistoryJpaRepository.save(deliveryUserHistoryEntity);
     }
 }

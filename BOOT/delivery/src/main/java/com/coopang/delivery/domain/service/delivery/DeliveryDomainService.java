@@ -1,17 +1,14 @@
-package com.coopang.delivery.domain.service;
+package com.coopang.delivery.domain.service.delivery;
 
 import com.coopang.apicommunication.kafka.message.CancelDelivery;
-import com.coopang.apicommunication.kafka.message.CompleteDelivery;
 import com.coopang.apicommunication.kafka.message.ProcessDelivery;
 import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
 import com.coopang.delivery.application.request.delivery.DeliveryDto;
-import com.coopang.delivery.application.service.DeliveryHubHistoryService;
-import com.coopang.delivery.application.service.DeliveryUserHistoryService;
+import com.coopang.delivery.application.service.deliveryhubhistory.DeliveryHubHistoryService;
+import com.coopang.delivery.application.service.deliveryuserhistory.DeliveryUserHistoryService;
 import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;
-import com.coopang.delivery.infrastructure.repository.DeliveryJpaRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.coopang.delivery.infrastructure.repository.delivery.DeliveryJpaRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,25 +20,21 @@ import java.util.UUID;
 @Transactional
 public class DeliveryDomainService {
 
+    /*
+    Todo : 배송지 수정시 인접허브 찾아서 해당 배송 ID 수정이 일어나게 끔하기
+     */
     private final DeliveryJpaRepository deliveryJpaRepository;
     private final DeliveryHubHistoryService deliveryHubHistoryService;
     private final DeliveryUserHistoryService deliveryUserHistoryService;
-    private final KafkaTemplate<String, String> kafkaTemplate;
-    private final ObjectMapper objectMapper;
-
 
     public DeliveryDomainService(
             DeliveryJpaRepository deliveryJpaRepository,
             DeliveryHubHistoryService deliveryHubHistoryService,
-            DeliveryUserHistoryService deliveryUserHistoryService,
-            KafkaTemplate<String, String> kafkaTemplate,
-            ObjectMapper objectMapper
+            DeliveryUserHistoryService deliveryUserHistoryService
             ) {
         this.deliveryJpaRepository = deliveryJpaRepository;
         this.deliveryHubHistoryService = deliveryHubHistoryService;
         this.deliveryUserHistoryService = deliveryUserHistoryService;
-        this.kafkaTemplate = kafkaTemplate;
-        this.objectMapper = objectMapper;
     }
 
     public DeliveryEntity createDelivery(
@@ -78,19 +71,6 @@ public class DeliveryDomainService {
                 processDelivery.getAddress2(),
                 hubShipperId
         );
-
-        try {
-            CompleteDelivery completeDelivery = new CompleteDelivery();
-            completeDelivery.setOrderId(processDelivery.getOrderId());
-            completeDelivery.setHubId(departureHubId);
-            completeDelivery.setNearHubId(destinationHubId);
-
-            final String sendMessage = objectMapper.writeValueAsString(completeDelivery);
-            kafkaTemplate.send("complete-delivery", sendMessage);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         deliveryJpaRepository.save(deliveryEntity);
     }
     // 배송 취소
@@ -99,8 +79,6 @@ public class DeliveryDomainService {
                 .orElseThrow();
         deliveryEntity.setDeliveryStatus(DeliveryStatusEnum.DELIVERY_CANCELED);
     }
-    // 배송 수정 (배송지) - 주문쪽에서 배송지 수정 후 바로 이어지는..
-    // 결국엔 배송지 수정이 일어나면 인접 허브 값도 같이 받자
 
     // 배송 상태 변경 - 목적지 허브 도착 : 허브 배송 기사님 용
     public void arrivedHub(List<DeliveryEntity> deliveries) {

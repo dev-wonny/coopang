@@ -1,4 +1,4 @@
-package com.coopang.delivery.presentation.request;
+package com.coopang.delivery.presentation.request.delivery;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

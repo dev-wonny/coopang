@@ -1,8 +1,8 @@
-package com.coopang.delivery.domain.service;
+package com.coopang.delivery.domain.service.deliveryhubhistory;
 
 import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
 import com.coopang.delivery.domain.entity.deliveryhubhistory.DeliveryHubHistoryEntity;
-import com.coopang.delivery.infrastructure.repository.DeliveryHubHistoryJpaRepository;
+import com.coopang.delivery.infrastructure.repository.deliveryhubhistory.DeliveryHubHistoryJpaRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

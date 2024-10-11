@@ -1,4 +1,4 @@
-package com.coopang.delivery.presentation.request;
+package com.coopang.delivery.presentation.request.delivery;
 
 import lombok.Data;
 

@@ -1,7 +1,7 @@
-package com.coopang.delivery.infrastructure.repository;
+package com.coopang.delivery.infrastructure.repository.delivery;
 
 import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;
-import com.coopang.delivery.domain.repository.DeliveryRepository;
+import com.coopang.delivery.domain.repository.delivery.DeliveryRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
