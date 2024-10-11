@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class ShipperSearchConditionRequest {
+public class ShipperSearchConditionRequestDto {
     private UUID shipperId;
     private UUID hubId;
     private String shipperType;

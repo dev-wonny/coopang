@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class HubSearchConditionRequest {
+public class HubSearchConditionRequestDto {
     private UUID hubId;
     private String hubName;//starsWith
     private UUID hubManagerId;

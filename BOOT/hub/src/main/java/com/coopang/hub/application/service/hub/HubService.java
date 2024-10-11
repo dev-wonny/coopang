@@ -1,7 +1,7 @@
 package com.coopang.hub.application.service.hub;
 
 import com.coopang.hub.application.request.hub.HubDto;
-import com.coopang.hub.application.request.hub.HubSearchCondition;
+import com.coopang.hub.application.request.hub.HubSearchConditionDto;
 import com.coopang.hub.application.response.hub.HubResponseDto;
 import com.coopang.hub.domain.entity.hub.HubEntity;
 import com.coopang.hub.domain.repository.hub.HubRepository;
@@ -67,7 +67,7 @@ public class HubService {
 
     @Transactional(readOnly = true)
     @Cacheable(value = "hubList", key = "#condition")
-    public List<HubResponseDto> getHubList(HubSearchCondition condition) {
+    public List<HubResponseDto> getHubList(HubSearchConditionDto condition) {
         List<HubEntity> hubs = hubRepository.findHubList(condition);
         return hubs.stream()
                 .map(HubResponseDto::fromHub)
@@ -76,7 +76,7 @@ public class HubService {
 
     @Transactional(readOnly = true)
     @Cacheable(value = "allHubs", key = "#condition")
-    public Page<HubResponseDto> searchHubs(HubSearchCondition condition, Pageable pageable) {
+    public Page<HubResponseDto> searchHubs(HubSearchConditionDto condition, Pageable pageable) {
         Page<HubEntity> hubs = hubRepository.search(condition, pageable);
         return hubs.map(HubResponseDto::fromHub);
     }

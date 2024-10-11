@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class CompanySearchConditionRequest {
+public class CompanySearchConditionRequestDto {
     private UUID companyId;
     private UUID hubId;
     private UUID companyManagerId;

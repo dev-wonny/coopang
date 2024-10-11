@@ -1,6 +1,9 @@
 package com.coopang.hub.presentation.controller.shipper;
 
 
+import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ID;
+import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ROLE;
+
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.apidata.application.hub.enums.ShipperTypeEnum;
 import com.coopang.apidata.application.user.enums.UserRoleEnum;
@@ -13,7 +16,7 @@ import com.coopang.hub.application.validator.HubPermissionValidator;
 import com.coopang.hub.domain.entity.shipper.ShipperEntity;
 import com.coopang.hub.presentation.request.shipper.CreateShipperRequestDto;
 import com.coopang.hub.presentation.request.shipper.HubIdRequestDto;
-import com.coopang.hub.presentation.request.shipper.ShipperSearchConditionRequest;
+import com.coopang.hub.presentation.request.shipper.ShipperSearchConditionRequestDto;
 import com.coopang.hub.presentation.request.shipper.ShipperTypeRequestDto;
 import com.coopang.hub.presentation.request.shipper.UpdateShipperRequestDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -67,8 +70,8 @@ public class ShipperController {
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER})
     @PostMapping
     public ResponseEntity<ShipperResponseDto> createShipper(
-            @RequestHeader("X-User-Id") String userIdHeader
-            , @RequestHeader("X-User-Role") String roleHeader
+            @RequestHeader(HEADER_USER_ID) String userIdHeader
+            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
             , @Valid @RequestBody CreateShipperRequestDto req
     ) {
         HubPermissionValidator.validateHubManagerBelongToHub(roleHeader, req.getHubId(), UUID.fromString(userIdHeader), hubService);
@@ -90,8 +93,8 @@ public class ShipperController {
     @GetMapping("/{shipperId}")
     public ResponseEntity<ShipperResponseDto> getShipperById(
             @PathVariable UUID shipperId
-            , @RequestHeader("X-User-Id") String userIdHeader
-            , @RequestHeader("X-User-Role") String roleHeader
+            , @RequestHeader(HEADER_USER_ID) String userIdHeader
+            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
     ) {
         ShipperResponseDto shipper;
 
@@ -128,10 +131,10 @@ public class ShipperController {
      * @return
      */
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER, UserRoleEnum.Authority.SHIPPER})
-    @GetMapping("/search")
+    @PostMapping("/search")
     public ResponseEntity<Page<ShipperResponseDto>> searchShippers(
-            @RequestHeader("X-User-Role") String roleHeader
-            , ShipperSearchConditionRequest req
+            @RequestHeader(HEADER_USER_ROLE) String roleHeader
+            , @RequestBody ShipperSearchConditionRequestDto req
             , Pageable pageable
     ) {
         // 마스터 권한이면 클라이언트에서 받은 isDeleted 값을 사용하고, 그외 권한은 삭제되지 않은 항목만 조회하도록 false로 설정
@@ -149,8 +152,8 @@ public class ShipperController {
     }
 
     // todo 서버 권한
-    @GetMapping("/list")
-    public ResponseEntity<List<ShipperResponseDto>> getShipperList(ShipperSearchConditionRequest req) {
+    @PostMapping("/list")
+    public ResponseEntity<List<ShipperResponseDto>> getShipperList(@RequestBody ShipperSearchConditionRequestDto req) {
         final ShipperSearchCondition condition = ShipperSearchCondition.from(
                 req.getShipperId()
                 , req.getHubId()
@@ -177,8 +180,8 @@ public class ShipperController {
     @PutMapping("/{shipperId}")
     public ResponseEntity<ShipperResponseDto> updateShipperInfo(
             @PathVariable UUID shipperId
-            , @RequestHeader("X-User-Id") String userIdHeader
-            , @RequestHeader("X-User-Role") String roleHeader
+            , @RequestHeader(HEADER_USER_ID) String userIdHeader
+            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
             , @Valid @RequestBody UpdateShipperRequestDto updateShipperRequestDto
     ) {
         // 수정하려는 shipper의 이전 정보
@@ -207,8 +210,8 @@ public class ShipperController {
     @PatchMapping("/{shipperId}/change-hub")
     public ResponseEntity<Void> changeHub(
             @PathVariable UUID shipperId
-            , @RequestHeader("X-User-Id") String userIdHeader
-            , @RequestHeader("X-User-Role") String roleHeader
+            , @RequestHeader(HEADER_USER_ID) String userIdHeader
+            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
             , @Valid @RequestBody HubIdRequestDto req
     ) {
         // 수정하려는 shipper의 이전 정보
@@ -234,8 +237,8 @@ public class ShipperController {
     @PatchMapping("/{shipperId}/change-shipperType")
     public ResponseEntity<Void> changeShipperType(
             @PathVariable UUID shipperId
-            , @RequestHeader("X-User-Id") String userIdHeader
-            , @RequestHeader("X-User-Role") String roleHeader
+            , @RequestHeader(HEADER_USER_ID) String userIdHeader
+            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
             , @Valid @RequestBody ShipperTypeRequestDto req
     ) {
         // 수정하려는 shipper의 이전 정보
@@ -260,8 +263,8 @@ public class ShipperController {
     @DeleteMapping("/{shipperId}")
     public ResponseEntity<Void> deleteShipper(
             @PathVariable UUID shipperId
-            , @RequestHeader("X-User-Id") String userIdHeader
-            , @RequestHeader("X-User-Role") String roleHeader
+            , @RequestHeader(HEADER_USER_ID) String userIdHeader
+            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
     ) {
         // 수정하려는 shipper의 이전 정보
         final ShipperResponseDto shipper = shipperService.getShipperById(shipperId);
