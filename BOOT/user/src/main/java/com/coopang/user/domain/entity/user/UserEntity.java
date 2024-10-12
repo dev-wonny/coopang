@@ -104,7 +104,7 @@ public class UserEntity extends BaseEntity {
             UUID nearHubId
     ) {
         return UserEntity.builder()
-                .userId(userId != null ? userId : UUID.randomUUID())
+                .userId(userId)
                 .email(email)
                 .password(passwordEncode)
                 .userName(userName)
@@ -118,12 +118,12 @@ public class UserEntity extends BaseEntity {
 
     public void updateUserInfo(String userName,
                                String phoneNumber,
-                               String role,
+                               UserRoleEnum role,
                                String slackId
     ) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
-        this.role = UserRoleEnum.getRoleEnum(role);
+        this.role = role;
         this.slackId = slackId;
     }
 

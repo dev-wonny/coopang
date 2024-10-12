@@ -1,52 +1,49 @@
-package com.coopang.apiconfig.feignClient;
+package com.coopang.apiconfig.feignclient;
+
+import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ID;
+import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ROLE;
 
 import feign.RequestInterceptor;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Configuration
 public class FeignConfig {
-
-//    @Bean
-//    public RequestInterceptor requestInterceptor() {
-//        return requestTemplate -> {
-//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//
-//            if (authentication != null && authentication.getPrincipal() != null) {
-//                // CommonApiHeaderFilter에서 설정된 Authentication 정보 활용
-//                String userId = (String) authentication.getCredentials(); // userId
-//                String role = authentication.getAuthorities().stream()
-//                        .findFirst().orElseThrow(() -> new RuntimeException("Role not found")).getAuthority();
-//
-//                // Feign 요청 헤더에 userId와 role 추가
-//                requestTemplate.header("X-User-Id", userId);
-//                requestTemplate.header("X-User-Role", role.replace("ROLE_", "")); // ROLE_ prefix 제거
-//            }
-//        };
-//    }
+    private static final ThreadLocal<String> dynamicRole = new ThreadLocal<>();
 
     @Bean
     public RequestInterceptor requestInterceptor() {
         return requestTemplate -> {
             // 현재 HttpServletRequest 가져오기
-            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            final ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             if (attributes != null) {
                 HttpServletRequest request = attributes.getRequest();
 
                 // 원래 요청에서 userId와 role 헤더를 가져와 Feign 요청에 추가
-                String userId = request.getHeader("X-User-Id");
-                String role = request.getHeader("X-User-Role");
+                final String headerUserId = request.getHeader(HEADER_USER_ID);
+                final String headerRole = dynamicRole.get() != null ? dynamicRole.get() : request.getHeader(HEADER_USER_ROLE);
 
-                if (userId != null) {
-                    requestTemplate.header("X-User-Id", userId);
+                if (StringUtils.hasText(headerUserId)) {
+                    requestTemplate.header(HEADER_USER_ID, headerUserId);
                 }
-                if (role != null) {
-                    requestTemplate.header("X-User-Role", role);
+                if (StringUtils.hasText(headerRole)) {
+                    requestTemplate.header(HEADER_USER_ROLE, headerRole);
                 }
             }
         };
+    }
+
+    // 역할을 SERVER로 변경하는 메서드
+    public void changeHeaderRoleToServer() {
+        dynamicRole.set("SERVER");
+    }
+
+    // 역할을 초기화하는 메서드
+    public void resetRole() {
+        dynamicRole.remove();
     }
 }

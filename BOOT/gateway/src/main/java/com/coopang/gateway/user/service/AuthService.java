@@ -1,5 +1,7 @@
 package com.coopang.gateway.user.service;
 
+import static com.coopang.apidata.constants.UserConstants.HEADER_USER_ID;
+
 import com.coopang.gateway.response.HeaderResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,7 +37,7 @@ public class AuthService {
         return exchange.mutate()
                 .request(exchange.getRequest().mutate()
                         .header("X-Token", responseDto.getToken())
-                        .header("X-User-Id", responseDto.getUserId())
+                        .header(HEADER_USER_ID, responseDto.getUserId())
                         .header("X-Role", responseDto.getRole())
                         .build())
                 .build();
