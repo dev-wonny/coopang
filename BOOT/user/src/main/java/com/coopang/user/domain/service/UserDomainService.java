@@ -34,7 +34,7 @@ public class UserDomainService {
 
         // 회원 등록
         UserEntity newUser = UserEntity.create(
-                null,
+                userDto.getUserId(),
                 userDto.getEmail(),
                 encodedPassword,
                 userDto.getUserName(),
