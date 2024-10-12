@@ -1,5 +1,7 @@
 package com.coopang.user.presentation.controller;
 
+import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ID;
+
 import com.coopang.apiconfig.error.AccessDeniedException;
 import com.coopang.user.application.response.LoginResponseDto;
 import com.coopang.user.application.response.UserResponseDto;
@@ -72,7 +74,7 @@ public class AuthController {
      * @throws AccessDeniedException if the authenticated user's ID does not match the header's user ID.
      */
     @PostMapping("/header")
-    public ResponseEntity<UserResponseDto> getUserInfoByHeader(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestHeader(value = "X-User-Id", required = true) String headerUserId) {
+    public ResponseEntity<UserResponseDto> getUserInfoByHeader(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestHeader(value = HEADER_USER_ID, required = true) String headerUserId) {
 
         UserEntity user = userDetails.getUser();
         // 현재 인증된 사용자의 userId
@@ -95,13 +97,13 @@ public class AuthController {
      * * - 세션 사용하지 않음
      * * - 클라이언트에서 jwt 토큰 쿠키 삭제
      *
-     * @param userIdHeader the user ID extracted from the request header ("X-User-Id").
+     * @param userIdHeader the user ID extracted from the request header (HEADER_USER_ID).
      * @param tokenHeader  the JWT token extracted from the request header ("X-Token").
      * @return a response indicating that the logout was successful.
      */
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
-            @RequestHeader(value = "X-User-Id", required = true) UUID userIdHeader,
+            @RequestHeader(value = HEADER_USER_ID, required = true) UUID userIdHeader,
             @RequestHeader(value = "X-Token", required = true) String tokenHeader) {
         authService.logout(userIdHeader, tokenHeader);
         return new ResponseEntity<>(HttpStatus.OK);

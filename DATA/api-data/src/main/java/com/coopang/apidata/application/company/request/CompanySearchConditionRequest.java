@@ -1,4 +1,4 @@
-package com.coopang.hub.presentation.request.company;
+package com.coopang.apidata.application.company.request;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class UserSearchConditionRequest {
+public class UserSearchConditionRequestDto {
     private UUID userId;
     private String userName;
     private String userRole;
