@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class HubSearchCondition {
+public class HubSearchConditionDto {
     private UUID hubId;
     private String hubName;//starsWith
     private UUID hubManagerId;

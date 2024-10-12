@@ -1,15 +1,17 @@
 package com.coopang.hub.presentation.controller.hub;
 
-import com.coopang.apicommunication.feignClient.user.UserClientService;
+import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ROLE;
+
+import com.coopang.apicommunication.feignclient.user.UserClientService;
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.apidata.application.user.enums.UserRoleEnum;
 import com.coopang.apidata.application.user.response.UserResponse;
 import com.coopang.hub.application.request.hub.HubDto;
-import com.coopang.hub.application.request.hub.HubSearchCondition;
+import com.coopang.hub.application.request.hub.HubSearchConditionDto;
 import com.coopang.hub.application.response.hub.HubResponseDto;
 import com.coopang.hub.application.service.hub.HubService;
 import com.coopang.hub.presentation.request.hub.CreateHubRequestDto;
-import com.coopang.hub.presentation.request.hub.HubSearchConditionRequest;
+import com.coopang.hub.presentation.request.hub.HubSearchConditionRequestDto;
 import com.coopang.hub.presentation.request.hub.UpdateHubRequestDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -66,7 +68,7 @@ public class HubController {
     //단일 허브 조회
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER, UserRoleEnum.Authority.COMPANY, UserRoleEnum.Authority.SHIPPER})
     @GetMapping("/{hubId}")
-    public ResponseEntity<HubResponseDto> getHubById(@PathVariable UUID hubId, @RequestHeader("X-User-Role") String roleHeader) {
+    public ResponseEntity<HubResponseDto> getHubById(@PathVariable UUID hubId, @RequestHeader(HEADER_USER_ROLE) String roleHeader) {
         HubResponseDto hubInfo;
         if (UserRoleEnum.isMaster(roleHeader)) {
             hubInfo = hubService.getHubById(hubId);
@@ -77,18 +79,18 @@ public class HubController {
     }
 
     // todo 서버 권한
-    @GetMapping("/list")
-    public ResponseEntity<List<HubResponseDto>> getHubList(HubSearchConditionRequest req) {
-        final HubSearchCondition condition = mapperConfig.strictMapper().map(req, HubSearchCondition.class);
+    @PostMapping("/list")
+    public ResponseEntity<List<HubResponseDto>> getHubList(@RequestBody HubSearchConditionRequestDto req) {
+        final HubSearchConditionDto condition = mapperConfig.strictMapper().map(req, HubSearchConditionDto.class);
         final List<HubResponseDto> hubs = hubService.getHubList(condition);
         return new ResponseEntity<>(hubs, HttpStatus.OK);
     }
 
     //허브 검색 (페이징, 정렬, 키워드 검색)
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER, UserRoleEnum.Authority.COMPANY, UserRoleEnum.Authority.SHIPPER})
-    @GetMapping("/search")
-    public ResponseEntity<Page<HubResponseDto>> searchHubs(@RequestHeader("X-User-Role") String roleHeader, HubSearchConditionRequest req, Pageable pageable) {
-        HubSearchCondition condition = mapperConfig.strictMapper().map(req, HubSearchCondition.class);
+    @PostMapping("/search")
+    public ResponseEntity<Page<HubResponseDto>> searchHubs(@RequestHeader(HEADER_USER_ROLE) String roleHeader, @RequestBody HubSearchConditionRequestDto req, Pageable pageable) {
+        HubSearchConditionDto condition = mapperConfig.strictMapper().map(req, HubSearchConditionDto.class);
         if (!UserRoleEnum.isMaster(roleHeader)) {
             condition.setIsDeleted(true);
         }

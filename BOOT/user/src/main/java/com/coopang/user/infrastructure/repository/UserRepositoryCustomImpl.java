@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -43,6 +44,19 @@ public class UserRepositoryCustomImpl extends Querydsl4RepositorySupport impleme
                                 , userEntity.isDeleted.eq(condition.getIsDeleted())
                         )
         );
+    }
+
+    @Override
+    public List<UserEntity> findUserList(UserSearchCondition condition) {
+        return selectFrom(userEntity)
+                .where(
+                        userIdEq(condition.getUserId())
+                        , userNameEq(condition.getUserName())
+                        , emailEq(condition.getEmail())
+                        , roleEq(condition.getUserRole())
+                        , userEntity.isDeleted.eq(condition.getIsDeleted())
+                )
+                .fetch();
     }
 
     private Predicate userIdEq(UUID userId) {

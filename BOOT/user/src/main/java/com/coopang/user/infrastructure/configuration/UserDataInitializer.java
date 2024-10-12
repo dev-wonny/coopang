@@ -1,20 +1,33 @@
 package com.coopang.user.infrastructure.configuration;
 
+import static com.coopang.apidata.constants.HubRegions.SEOUL;
+import static com.coopang.apidata.constants.HubRegions.getHubRegions;
+import static com.coopang.apidata.constants.UserConstants.COOPANG_EMAIL;
+import static com.coopang.apidata.constants.UserConstants.COOPANG_LOWERCASE;
+
 import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.apidata.initdata.HubMapInitializer;
 import com.coopang.user.application.request.UserDto;
 import com.coopang.user.application.service.UserService;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Component
+@ConditionalOnProperty(name = "data.init.enabled", havingValue = "true", matchIfMissing = false)
 public class UserDataInitializer implements CommandLineRunner {
     private final UserService userService;
+    private Map<String, UUID> hubMap;
+
     private int uuidIndex = 0;
 
     public UserDataInitializer(UserService userService) {
         this.userService = userService;
+        HubMapInitializer hubMapInitializer = new HubMapInitializer();
+        this.hubMap = hubMapInitializer.getHubMap();
     }
 
     @Override
@@ -23,13 +36,7 @@ public class UserDataInitializer implements CommandLineRunner {
         createHubManagers();
         createShipperUsers();
         createCustomers();
-    }
-
-    // 허브 지역 정보 제공
-    private String[] getHubRegions() {
-        return new String[] {
-                "서울", "경기북부", "경기남부", "부산", "대구", "인천", "광주", "대전", "울산", "세종", "강원", "충북"
-        };
+        createCompanyUsers();
     }
 
     // 고정된 uuid
@@ -96,7 +103,31 @@ public class UserDataInitializer implements CommandLineRunner {
             "4d7aff3d-a455-43d8-8675-eeaab76eb5d3",
             "c14b44a1-28f3-4c58-8700-b616ff141fc6",
             "ac9bcee5-709c-4f10-8b2c-d45418aed6de",
-            "a698a623-aa8f-4137-9951-a407af4025ab"
+            "a698a623-aa8f-4137-9951-a407af4025ab",
+            "8233f07c-f3eb-44a0-9522-563304369768",
+            "ec75ee25-1ee5-404f-a156-ddeba231daae",
+            "5e69568e-9a30-442b-bcd0-a8a30a80ac0e",
+            "1f19e2ff-d270-4d55-bf82-91739bf344ab",
+            "01b5bca3-aedb-44b3-9d1a-f5fdbaca141d",
+            "6619735d-66f2-4388-a17e-f1d6074669b3",
+            "d1f7b37c-96c1-48d8-a6c8-2c6dab9545ec",
+            "58f8dd25-2383-4edf-a0a7-1a85ac312bc4",
+            "2b236f99-4a5f-4542-97c3-341f0d9ebc57",
+            "7cc32daf-cd16-444c-a6a9-e5ca8923c4f5",
+            "56d419ff-20cc-4469-9e17-9ae9f0735dde",
+            "dc578d2e-c850-471a-86b7-c1b760c9f35b",
+            "10b830f1-aa78-433d-9d34-e46dc450b1ca",
+            "16ba1a03-fd9e-429b-a047-558f8c67bbe8",
+            "7a124a90-d15e-4e9d-b1b8-1e31e43524eb",
+            "0ea3bd2a-d202-4f9e-bade-d7f2defbf03e",
+            "735d2c64-5c0a-41ea-bf71-53e9f49b9b09",
+            "b6bdb9bc-a2e7-4da6-bc96-417a990e5cd0",
+            "9f049e8c-d207-4dce-9fcd-dbae49432b81",
+            "372e5bb4-4d93-42a0-bf50-3f99094c35c6",
+            "aafba163-0224-45fe-9005-2ac36a1e5847",
+            "d44242a9-74db-4c01-8b10-8617ab1cb1ad",
+            "a5295c52-3dfa-467f-aafb-3f728ba2a4e5",
+            "ef7a4240-c305-42fd-a5ee-42cbb99cdbaf"
     };
 
     // 고정된 UUID 배열에서 하나를 가져오는 메소드
@@ -117,15 +148,16 @@ public class UserDataInitializer implements CommandLineRunner {
         for (int i = 1; i <= 4; i++) {
             UserDto masterDto = new UserDto();
             masterDto.setUserId(getNextFixedUuid());
-            masterDto.setEmail("master" + i + "@coopang.com");
-            masterDto.setPassword("coopang");
+            masterDto.setEmail("master" + i + COOPANG_EMAIL);
+            masterDto.setPassword(COOPANG_LOWERCASE);
             masterDto.setUserName("Master" + i);
             masterDto.setPhoneNumber("010-1111-1111");
             masterDto.setRole(UserRoleEnum.MASTER.name());
             masterDto.setSlackId("master" + i);
             masterDto.setZipCode("11111");
-            masterDto.setAddress1("서울특별시");
+            masterDto.setAddress1("서울특별시 송파구 송파대로 570");
             masterDto.setAddress2("101동");
+            masterDto.setNearHubId(hubMap.get(SEOUL));
 
             createUser(masterDto);
         }
@@ -134,18 +166,20 @@ public class UserDataInitializer implements CommandLineRunner {
     // Hub Manager 11명 생성
     private void createHubManagers() {
         String[] hubRegions = getHubRegions();
-        for (int i = 1; i <= 11; i++) {
+        for (int i = 0; i < hubRegions.length; i++) {
             UserDto hubManagerDto = new UserDto();
             hubManagerDto.setUserId(getNextFixedUuid());
-            hubManagerDto.setEmail("hub_manager" + i + "@coopang.com");
-            hubManagerDto.setPassword("coopang");
-            hubManagerDto.setUserName("HubManager" + i);
+            hubManagerDto.setEmail("HubManager" + (i + 1) + COOPANG_EMAIL);
+            hubManagerDto.setPassword(COOPANG_LOWERCASE);
+            hubManagerDto.setUserName("HubManager" + (i + 1));
             hubManagerDto.setPhoneNumber("010-1111-1111");
             hubManagerDto.setRole(UserRoleEnum.HUB_MANAGER.name());
-            hubManagerDto.setSlackId("HubManager" + i);
+            hubManagerDto.setSlackId("HubManager" + (i + 1));
             hubManagerDto.setZipCode("11111");
             hubManagerDto.setAddress1(hubRegions[i]);
             hubManagerDto.setAddress2("102동");
+            hubManagerDto.setNearHubId(hubMap.get(hubRegions[i]));
+
             createUser(hubManagerDto);
         }
     }
@@ -158,8 +192,8 @@ public class UserDataInitializer implements CommandLineRunner {
 
             UserDto customerDto = new UserDto();
             customerDto.setUserId(getNextFixedUuid());
-            customerDto.setEmail("customer_" + hubName + "@coopang.com");
-            customerDto.setPassword("coopang");
+            customerDto.setEmail("customer_" + hubName + COOPANG_EMAIL);
+            customerDto.setPassword(COOPANG_LOWERCASE);
             customerDto.setUserName("Customer-" + hubRegions[i]);
             customerDto.setPhoneNumber("010-1111-1111");
             customerDto.setRole(UserRoleEnum.CUSTOMER.name());
@@ -167,6 +201,7 @@ public class UserDataInitializer implements CommandLineRunner {
             customerDto.setZipCode("11111");
             customerDto.setAddress1(hubName);
             customerDto.setAddress2("103동");
+            customerDto.setNearHubId(hubMap.get(hubRegions[i]));
 
             createUser(customerDto);
         }
@@ -182,8 +217,8 @@ public class UserDataInitializer implements CommandLineRunner {
             // Shipper Hub 생성
             UserDto shipperHubDto = new UserDto();
             shipperHubDto.setUserId(getNextFixedUuid());
-            shipperHubDto.setEmail("shipperHub_" + hubName + "@coopang.com");
-            shipperHubDto.setPassword("coopang");
+            shipperHubDto.setEmail("shipperHub_" + hubName + COOPANG_EMAIL);
+            shipperHubDto.setPassword(COOPANG_LOWERCASE);
             shipperHubDto.setUserName("ShipperHub-" + hubRegions[i]);
             shipperHubDto.setPhoneNumber("010-1111-1111");
             shipperHubDto.setRole(UserRoleEnum.SHIPPER.name());
@@ -191,6 +226,7 @@ public class UserDataInitializer implements CommandLineRunner {
             shipperHubDto.setZipCode("11111");
             shipperHubDto.setAddress1(hubName);
             shipperHubDto.setAddress2("104동");
+            shipperHubDto.setNearHubId(hubMap.get(hubRegions[i]));
 
             createUser(shipperHubDto);
 
@@ -198,8 +234,8 @@ public class UserDataInitializer implements CommandLineRunner {
             for (int j = 1; j <= 2; j++) {
                 UserDto shipperCustomerDto = new UserDto();
                 shipperCustomerDto.setUserId(getNextFixedUuid());
-                shipperCustomerDto.setEmail("shipperCustomer_" + j + "_" + hubName + "@coopang.com");
-                shipperCustomerDto.setPassword("coopang");
+                shipperCustomerDto.setEmail("shipperCustomer_" + j + "_" + hubName + COOPANG_EMAIL);
+                shipperCustomerDto.setPassword(COOPANG_LOWERCASE);
                 shipperCustomerDto.setUserName("ShipperCustomer " + j + " - " + hubRegions[i]);
                 shipperCustomerDto.setPhoneNumber("010-1111-1111");
                 shipperCustomerDto.setRole(UserRoleEnum.SHIPPER.name());
@@ -207,8 +243,34 @@ public class UserDataInitializer implements CommandLineRunner {
                 shipperCustomerDto.setZipCode("11111");
                 shipperCustomerDto.setAddress1(hubName);
                 shipperCustomerDto.setAddress2("105동");
+                shipperCustomerDto.setNearHubId(hubMap.get(hubRegions[i]));
 
                 createUser(shipperCustomerDto);
+            }
+        }
+    }
+
+    // Company 사용자 생성 (허브별 2명씩)
+    private void createCompanyUsers() {
+        String[] hubRegions = getHubRegions();
+
+        for (int i = 0; i < hubRegions.length; i++) {
+            String hubName = hubRegions[i].replaceAll("\\s", "_").toLowerCase();
+
+            for (int j = 1; j <= 2; j++) {
+                UserDto companyDto = new UserDto();
+                companyDto.setUserId(null);
+                companyDto.setEmail("company" + j + "_" + hubName + COOPANG_EMAIL);
+                companyDto.setPassword(COOPANG_LOWERCASE);
+                companyDto.setUserName("CompanyManager " + j + " - " + hubRegions[i]);
+                companyDto.setPhoneNumber("010-1111-1111");
+                companyDto.setRole(UserRoleEnum.COMPANY.name());
+                companyDto.setSlackId("CompanyManager" + j);
+                companyDto.setZipCode("11111");
+                companyDto.setAddress1(hubName);
+                companyDto.setAddress2("106동");
+
+                createUser(companyDto);
             }
         }
     }
