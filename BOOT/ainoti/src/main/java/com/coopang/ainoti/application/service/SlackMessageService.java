@@ -52,7 +52,7 @@ public class SlackMessageService {
 
     //슬랙 메시지 조회하는 공통함수
     private SlackMessageEntity findBySlackMessageId(UUID slackMessageId) {
-        return slackMessageRepository.findById(slackMessageId).orElseThrow(
+        return slackMessageRepository.findBySlackMessageIdAndIsDeletedFalse(slackMessageId).orElseThrow(
             () -> new IllegalArgumentException("존재하지 않는 슬랙메시지 아이디입니다.")
         );
     }

@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -58,7 +57,7 @@ public class SlackMessageController {
 
     //슬랙 메시지 목록 조회 - 키워드검색
     @PostMapping("/search")
-    public ResponseEntity<?> getSlackMessagesWithCondition(@ModelAttribute SlackMessageSearchConditionDto conditionDto,Pageable pageable){
+    public ResponseEntity<?> getSlackMessagesWithCondition(@RequestBody SlackMessageSearchConditionDto conditionDto,Pageable pageable){
 
         return new ResponseEntity<>(slackMessageService.searchWithCondition(conditionDto,pageable),HttpStatus.OK);
     }

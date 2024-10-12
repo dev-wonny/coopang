@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface SlackMessageRepository {
 
-    Optional<SlackMessageEntity> findById(UUID id);
+    Optional<SlackMessageEntity> findBySlackMessageIdAndIsDeletedFalse(UUID slackMessageId);
 
     Page<SlackMessageEntity> search(Pageable pageable);
 
