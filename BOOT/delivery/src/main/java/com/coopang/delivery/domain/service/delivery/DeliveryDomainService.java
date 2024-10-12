@@ -7,8 +7,10 @@ import com.coopang.delivery.application.request.delivery.DeliveryDto;
 import com.coopang.delivery.application.service.deliveryhubhistory.DeliveryHubHistoryService;
 import com.coopang.delivery.application.service.deliveryuserhistory.DeliveryUserHistoryService;
 import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;
+import com.coopang.delivery.infrastructure.messaging.delivery.DeliveryKafkaProducer;
 import com.coopang.delivery.infrastructure.repository.delivery.DeliveryJpaRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,15 +28,18 @@ public class DeliveryDomainService {
     private final DeliveryJpaRepository deliveryJpaRepository;
     private final DeliveryHubHistoryService deliveryHubHistoryService;
     private final DeliveryUserHistoryService deliveryUserHistoryService;
+    private final DeliveryKafkaProducer deliveryKafkaProducer;
 
     public DeliveryDomainService(
             DeliveryJpaRepository deliveryJpaRepository,
             DeliveryHubHistoryService deliveryHubHistoryService,
-            DeliveryUserHistoryService deliveryUserHistoryService
+            DeliveryUserHistoryService deliveryUserHistoryService,
+            DeliveryKafkaProducer deliveryKafkaProducer
             ) {
         this.deliveryJpaRepository = deliveryJpaRepository;
         this.deliveryHubHistoryService = deliveryHubHistoryService;
         this.deliveryUserHistoryService = deliveryUserHistoryService;
+        this.deliveryKafkaProducer = deliveryKafkaProducer;
     }
 
     public DeliveryEntity createDelivery(
@@ -72,6 +77,8 @@ public class DeliveryDomainService {
                 hubShipperId
         );
         deliveryJpaRepository.save(deliveryEntity);
+
+        deliveryKafkaProducer.userCompleteDelivery(deliveryEntity);
     }
     // 배송 취소
     public void cancelDelivery(CancelDelivery cancelDelivery){
@@ -111,24 +118,50 @@ public class DeliveryDomainService {
         );
     }
 
+    /*
+    < 스케줄링 >
+    16시 - 배송 상태값 : 허브 배송 배차 중
+        - 허브 배송기록 테이블에 기록
+    20시 - 배송 상태값 : 허브 배송 배차 완료
+        - 주문 상태값 : SHIPPED (주문 취소 X)
+        - Slack Message 발송
+        - 허브 배송기록 테이블에 기록
+    21시 - 배송 상태값 : 허브 이동중
+        - 허브 배송기록 테이블에 기록
+    허브 도착시 - 배송 상태값 : 허브 도착
+     */
+
     // 스케줄링 - 허브 배송 준비 : 16시
-    public void readyDelivery(List<DeliveryEntity> deliveries){
+    @Scheduled(cron = "0 0 16 * * *")
+    public void readyDelivery(){
+        List<DeliveryEntity> deliveries = findByDeliveryStatus(DeliveryStatusEnum.PENDING);
         updateStatusDeliveryHub(deliveries, DeliveryStatusEnum.HUB_DELIVERY_ASSIGNMENT_IN_PROGRESS );
     }
+
     // 스케줄링 - 허브 배송 물건 상차 및 주문 상태값 변경, slack 메세지 발송 : 20시
-    public void sendToSlackHubDelivery(List<DeliveryEntity> deliveries){
+    @Scheduled(cron = "0 0 20 * * *")
+    public void sendToSlackHubDelivery(){
+        List<DeliveryEntity> deliveries = findByDeliveryStatus(DeliveryStatusEnum.HUB_DELIVERY_ASSIGNMENT_IN_PROGRESS);
         updateStatusDeliveryHub(deliveries, DeliveryStatusEnum.HUB_DELIVERY_ASSIGNMENT_COMPLETED );
+        deliveryKafkaProducer.hubDeliveryNotification(deliveries);
     }
     // 스케줄링 - 허브 배송 출발 : 21시
-    public void hubDeliveryStart(List<DeliveryEntity> deliveries){
+    @Scheduled(cron = "0 0 21 * * *")
+    public void hubDeliveryStart(){
+        List<DeliveryEntity> deliveries = findByDeliveryStatus(DeliveryStatusEnum.HUB_DELIVERY_ASSIGNMENT_COMPLETED);
         updateStatusDeliveryHub(deliveries, DeliveryStatusEnum.MOVING_TO_HUB );
     }
     // 스케줄링 - 고객 배송 물건 상차 및 slack 메세지 발송 : 06시
-    public void sendToSlackCustomerDelivery(List<DeliveryEntity> deliveries){
+    @Scheduled(cron = "0 0 6 * * *")
+    public void sendToSlackCustomerDelivery(){
+        List<DeliveryEntity> deliveries = findByDeliveryStatus(DeliveryStatusEnum.CUSTOMER_DELIVERY_ASSIGNMENT_IN_PROGRESS);
         updateStatusDeliveryUser(deliveries, DeliveryStatusEnum.CUSTOMER_DELIVERY_ASSIGNMENT_COMPLETED );
+        deliveryKafkaProducer.userDeliveryNotification(deliveries);
     }
-    // 스케줄링 - 고객 배송 출발
-    public void userDeliveryStart(List<DeliveryEntity> deliveries){
+    // 스케줄링 - 고객 배송 출발 : 08시
+    @Scheduled(cron = "0 0 8 * * *")
+    public void userDeliveryStart(){
+        List<DeliveryEntity> deliveries = findByDeliveryStatus(DeliveryStatusEnum.CUSTOMER_DELIVERY_ASSIGNMENT_COMPLETED);
         updateStatusDeliveryUser(deliveries, DeliveryStatusEnum.MOVING_TO_CUSTOMER );
     }
 
@@ -162,5 +195,10 @@ public class DeliveryDomainService {
             );
         }
         deliveryJpaRepository.saveAll(deliveries);
+    }
+
+    // 배송 상태값으로 찾기
+    private List<DeliveryEntity> findByDeliveryStatus(DeliveryStatusEnum deliveryStatus){
+        return deliveryJpaRepository.findAllByDeliveryStatus(deliveryStatus);
     }
 }

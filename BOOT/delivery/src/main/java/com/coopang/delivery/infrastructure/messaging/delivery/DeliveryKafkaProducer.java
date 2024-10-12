@@ -92,4 +92,25 @@ public class DeliveryKafkaProducer {
             e.printStackTrace();
         }
     }
+
+    // Todo : 배송 등록 완료시 주문쪽에 업데이트 할 값 보내기
+    /*
+    <complete_delivery>
+    order_id
+    hub_id
+    near_hub_id
+     */
+    public void userCompleteDelivery(DeliveryEntity deliveryEntity){
+        try {
+            CompleteDelivery completeDelivery = new CompleteDelivery();
+            completeDelivery.setOrderId(deliveryEntity.getOrderId());
+            completeDelivery.setHubId(deliveryEntity.getDepartureHubId());
+            completeDelivery.setNearHubId(deliveryEntity.getDestinationHubId());
+
+            final String sendMessage = objectMapper.writeValueAsString(completeDelivery);
+            kafkaTemplate.send("complete_delivery", sendMessage);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }
