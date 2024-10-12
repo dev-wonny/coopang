@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -78,5 +79,12 @@ public class SlackMessageController {
     public ResponseEntity<?> deleteSlackMessageById(@PathVariable UUID slackMessageId){
         slackMessageService.deleteMessage(slackMessageId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    //슬랙메시지 보내는 것(테스트용)
+    @PostMapping("/send-slack-message")
+    public String sendSlackMessage(@RequestParam String slackId, @RequestParam String message) {
+        slackMessageService.sendSlackMessage(slackId,message);
+        return "Message sent to Slack!";
     }
 }

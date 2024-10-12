@@ -1,6 +1,7 @@
 package com.coopang.ainoti.application.kafka;
 
-import com.coopang.apicommunication.kafka.message.ProcessProduct;
+import com.coopang.ainoti.application.service.SlackMessageService;
+import com.coopang.apicommunication.kafka.message.LowStockNotification;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -14,18 +15,20 @@ import org.springframework.stereotype.Component;
 public class SlackMessageConsumer {
 
     private final ObjectMapper objectMapper;
+    private final SlackMessageService slackMessageService;
 
     @KafkaListener(topics = "low_stock_notification", groupId = "message-server-group")
     public void handleProductStockLowNotificationEvent(String message)
     {
-//        try {
-//            //메시지 변환 String -> class
-//            //LowStockNotification lowStockNotification = objectMapper.readValue(message, LowStockNotification.class);
-//
-//
-//        }catch (JsonProcessingException e)
-//        {
-//            log.error(e.getMessage());
-//        }
+        try {
+            //메시지 변환 String -> class
+            LowStockNotification lowStockNotification = objectMapper.readValue(message, LowStockNotification.class);
+
+            slackMessageService.listenerSendSlackMessage(lowStockNotification);
+
+        }catch (JsonProcessingException e)
+        {
+            log.error(e.getMessage());
+        }
     }
 }
