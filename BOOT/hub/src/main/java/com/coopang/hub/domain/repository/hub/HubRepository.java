@@ -1,6 +1,6 @@
 package com.coopang.hub.domain.repository.hub;
 
-import com.coopang.hub.application.request.hub.HubSearchCondition;
+import com.coopang.hub.application.request.hub.HubSearchConditionDto;
 import com.coopang.hub.domain.entity.hub.HubEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +14,7 @@ public interface HubRepository {
 
     Optional<HubEntity> findByHubIdAndIsDeletedFalse(UUID hubId);
 
-    List<HubEntity> findHubList(HubSearchCondition condition);
+    List<HubEntity> findHubList(HubSearchConditionDto condition);
 
-    Page<HubEntity> search(HubSearchCondition condition, Pageable pageable);
+    Page<HubEntity> search(HubSearchConditionDto condition, Pageable pageable);
 }

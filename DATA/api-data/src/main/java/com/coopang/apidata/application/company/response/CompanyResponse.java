@@ -1,4 +1,4 @@
-package com.coopang.apidata.application.hub.response;
+package com.coopang.apidata.application.company.response;
 
 import com.coopang.apidata.application.address.Address;
 import lombok.AllArgsConstructor;
@@ -10,10 +10,13 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class HubResponse {
+public class CompanyResponse {
+    private UUID companyId;
     private UUID hubId;
-    private String hubName;
-    private UUID hubManagerId;
-    private Address hubAddress;
+    private UUID companyManagerId;
+    private String companyName;
+
+    private Address address;
+
     private boolean isDeleted;
 }

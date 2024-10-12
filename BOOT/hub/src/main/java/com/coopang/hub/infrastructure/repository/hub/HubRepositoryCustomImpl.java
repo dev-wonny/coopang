@@ -3,7 +3,7 @@ package com.coopang.hub.infrastructure.repository.hub;
 import static com.coopang.hub.domain.entity.hub.QHubEntity.hubEntity;
 
 import com.coopang.apiconfig.querydsl.Querydsl4RepositorySupport;
-import com.coopang.hub.application.request.hub.HubSearchCondition;
+import com.coopang.hub.application.request.hub.HubSearchConditionDto;
 import com.coopang.hub.domain.entity.hub.HubEntity;
 import com.querydsl.core.types.Predicate;
 import org.springframework.data.domain.Page;
@@ -22,7 +22,7 @@ public class HubRepositoryCustomImpl extends Querydsl4RepositorySupport implemen
     }
 
     @Override
-    public Page<HubEntity> search(HubSearchCondition condition, Pageable pageable) {
+    public Page<HubEntity> search(HubSearchConditionDto condition, Pageable pageable) {
         return applyPagination(pageable, contentQuery -> contentQuery
                         .selectFrom(hubEntity)
                         .where(
@@ -43,7 +43,7 @@ public class HubRepositoryCustomImpl extends Querydsl4RepositorySupport implemen
     }
 
     @Override
-    public List<HubEntity> findHubList(HubSearchCondition condition) {
+    public List<HubEntity> findHubList(HubSearchConditionDto condition) {
         return selectFrom(hubEntity)
                 .where(
                         hubNameStarsWith(condition.getHubName()),
