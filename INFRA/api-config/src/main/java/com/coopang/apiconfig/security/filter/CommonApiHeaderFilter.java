@@ -1,5 +1,8 @@
 package com.coopang.apiconfig.security.filter;
 
+import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ID;
+import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ROLE;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,8 +21,7 @@ import java.util.List;
 
 @Slf4j(topic = "CommonApiHeaderFilter")
 public class CommonApiHeaderFilter extends OncePerRequestFilter {
-    private static final String USER_ID_HEADER = "X-User-Id";
-    private static final String USER_ROLE_HEADER = "X-User-Role";
+
     private final List<String> excludedPaths;
 
     public CommonApiHeaderFilter(List<String> excludedPaths) {
@@ -35,8 +37,8 @@ public class CommonApiHeaderFilter extends OncePerRequestFilter {
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        final String userId = request.getHeader(USER_ID_HEADER);
-        final String role = request.getHeader(USER_ROLE_HEADER);
+        final String userId = request.getHeader(HEADER_USER_ID);
+        final String role = request.getHeader(HEADER_USER_ROLE);
 
         if (!StringUtils.hasText(userId) || !StringUtils.hasText(role)) {
             log.warn("Missing headers: X-User-Id or X-User-Role");

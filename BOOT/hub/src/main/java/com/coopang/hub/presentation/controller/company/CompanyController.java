@@ -1,5 +1,9 @@
 package com.coopang.hub.presentation.controller.company;
 
+
+import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ID;
+import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ROLE;
+
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.apidata.application.user.enums.UserRoleEnum;
 import com.coopang.hub.application.request.company.CompanyDto;
@@ -13,7 +17,7 @@ import com.coopang.hub.presentation.request.company.CompanyAddressRequestDto;
 import com.coopang.hub.presentation.request.company.CompanyHubIdRequestDto;
 import com.coopang.hub.presentation.request.company.CompanyMangerIdRequestDto;
 import com.coopang.hub.presentation.request.company.CompanyNameRequestDto;
-import com.coopang.hub.presentation.request.company.CompanySearchConditionRequest;
+import com.coopang.hub.presentation.request.company.CompanySearchConditionRequestDto;
 import com.coopang.hub.presentation.request.company.CreateCompanyRequestDto;
 import com.coopang.hub.presentation.request.company.UpdateCompanyRequestDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -66,8 +70,8 @@ public class CompanyController {
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER, UserRoleEnum.Authority.COMPANY})
     @PostMapping
     public ResponseEntity<CompanyResponseDto> createCompany(
-            @RequestHeader("X-User-Id") String userIdHeader
-            , @RequestHeader("X-User-Role") String roleHeader
+            @RequestHeader(HEADER_USER_ID) String userIdHeader
+            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
             , @Valid @RequestBody CreateCompanyRequestDto req
     ) {
         HubPermissionValidator.validateHubManagerBelongToHub(roleHeader, req.getHubId(), UUID.fromString(userIdHeader), hubService);
@@ -88,7 +92,7 @@ public class CompanyController {
     @GetMapping("/{companyId}")
     public ResponseEntity<CompanyResponseDto> getCompanyById(
             @PathVariable UUID companyId
-            , @RequestHeader("X-User-Role") String roleHeader
+            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
     ) {
         CompanyResponseDto company;
         // 마스터면 delete도 보임, 그외 권한 delete 안 보임
@@ -101,8 +105,8 @@ public class CompanyController {
     }
 
     // todo 서버 권한
-    @GetMapping("/list")
-    public ResponseEntity<List<CompanyResponseDto>> getCompanyList(CompanySearchConditionRequest req) {
+    @PostMapping("/list")
+    public ResponseEntity<List<CompanyResponseDto>> getCompanyList(@RequestBody CompanySearchConditionRequestDto req) {
         final CompanySearchCondition condition = CompanySearchCondition.from(
                 req.getCompanyId()
                 , req.getHubId()
@@ -125,10 +129,10 @@ public class CompanyController {
      * @param pageable
      * @return
      */
-    @GetMapping("/search")
+    @PostMapping("/search")
     public ResponseEntity<Page<CompanyResponseDto>> searchCompanies(
-            @RequestHeader("X-User-Role") String roleHeader
-            , CompanySearchConditionRequest req
+            @RequestHeader(HEADER_USER_ROLE) String roleHeader
+            , @RequestBody CompanySearchConditionRequestDto req
             , Pageable pageable
     ) {
         // 마스터 권한이면 클라이언트에서 받은 isDeleted 값을 사용하고, 그외 권한은 삭제되지 않은 항목만 조회하도록 false로 설정
@@ -159,8 +163,8 @@ public class CompanyController {
     @PutMapping("/{companyId}")
     public ResponseEntity<CompanyResponseDto> updateCompany(
             @PathVariable UUID companyId
-            , @RequestHeader("X-User-Id") String userIdHeader
-            , @RequestHeader("X-User-Role") String roleHeader
+            , @RequestHeader(HEADER_USER_ID) String userIdHeader
+            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
             , @Valid @RequestBody UpdateCompanyRequestDto req
     ) {
         validateRoleHubManaagerAndCompanyAccess(companyId, UUID.fromString(userIdHeader), roleHeader);
@@ -183,8 +187,8 @@ public class CompanyController {
     @PatchMapping("/{companyId}/change-hub")
     public ResponseEntity<Void> changeHub(
             @PathVariable UUID companyId
-            , @RequestHeader("X-User-Id") String userIdHeader
-            , @RequestHeader("X-User-Role") String roleHeader
+            , @RequestHeader(HEADER_USER_ID) String userIdHeader
+            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
             , @RequestBody CompanyHubIdRequestDto req
     ) {
         validateRoleHubManaagerAndCompanyAccess(companyId, UUID.fromString(userIdHeader), roleHeader);
@@ -205,8 +209,8 @@ public class CompanyController {
     @PatchMapping("/{companyId}/change-manager")
     public ResponseEntity<Void> changeCompanyManager(
             @PathVariable UUID companyId
-            , @RequestHeader("X-User-Id") String userIdHeader
-            , @RequestHeader("X-User-Role") String roleHeader
+            , @RequestHeader(HEADER_USER_ID) String userIdHeader
+            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
             , @RequestBody CompanyMangerIdRequestDto req
     ) {
         validateRoleHubManaagerAndCompanyAccess(companyId, UUID.fromString(userIdHeader), roleHeader);
@@ -227,8 +231,8 @@ public class CompanyController {
     @PatchMapping("/{companyId}/change-name")
     public ResponseEntity<Void> changeCompanyName(
             @PathVariable UUID companyId,
-            @RequestHeader("X-User-Id") String userIdHeader,
-            @RequestHeader("X-User-Role") String roleHeader,
+            @RequestHeader(HEADER_USER_ID) String userIdHeader,
+            @RequestHeader(HEADER_USER_ROLE) String roleHeader,
             @RequestBody CompanyNameRequestDto req
     ) {
         validateRoleHubManaagerAndCompanyAccess(companyId, UUID.fromString(userIdHeader), roleHeader);
@@ -249,8 +253,8 @@ public class CompanyController {
     @PatchMapping("/{companyId}/change-address")
     public ResponseEntity<Void> changeCompanyAddress(
             @PathVariable UUID companyId
-            , @RequestHeader("X-User-Id") String userIdHeader
-            , @RequestHeader("X-User-Role") String roleHeader
+            , @RequestHeader(HEADER_USER_ID) String userIdHeader
+            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
             , @Valid @RequestBody CompanyAddressRequestDto req
     ) {
         validateRoleHubManaagerAndCompanyAccess(companyId, UUID.fromString(userIdHeader), roleHeader);
@@ -270,8 +274,8 @@ public class CompanyController {
     @DeleteMapping("/{companyId}")
     public ResponseEntity<Void> deleteCompany(
             @PathVariable UUID companyId
-            , @RequestHeader("X-User-Id") String userIdHeader
-            , @RequestHeader("X-User-Role") String roleHeader
+            , @RequestHeader(HEADER_USER_ID) String userIdHeader
+            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
     ) {
         validateRoleHubManaagerAndCompanyAccess(companyId, UUID.fromString(userIdHeader), roleHeader);
         companyService.deleteCompany(companyId);
