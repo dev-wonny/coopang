@@ -3,6 +3,7 @@ package com.coopang.apicommunication.feignclient.user;
 import com.coopang.apiconfig.feignclient.FeignConfig;
 import com.coopang.apidata.application.user.request.UserSearchConditionRequest;
 import com.coopang.apidata.application.user.response.UserResponse;
+import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,5 +19,5 @@ public interface UserClient {
     UserResponse getUserInfo(@PathVariable("userId") UUID userId);
 
     @PostMapping("/users/v1/user/list")
-    List<UserResponse> getUserList(@RequestBody UserSearchConditionRequest req);
+    List<UserResponse> getUserList(@Valid @RequestBody UserSearchConditionRequest req);
 }

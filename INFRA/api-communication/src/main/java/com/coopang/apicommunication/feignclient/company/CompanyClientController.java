@@ -18,20 +18,20 @@ import java.util.UUID;
 @Slf4j(topic = "CompanyClientController")
 @RestController
 @RequestMapping("/feignClient/v1/company")
-public class CompanyClientController {
+public abstract class CompanyClientController {
     private final CompanyClientService companyClientService;
 
-    public CompanyClientController(CompanyClientService companyClientService) {
+    protected CompanyClientController(CompanyClientService companyClientService) {
         this.companyClientService = companyClientService;
     }
 
     @GetMapping("/{companyId}")
-    CompanyResponse getCompanyInfo(@PathVariable("companyId") UUID companyId) {
+    public CompanyResponse getCompanyInfo(@PathVariable("companyId") UUID companyId) {
         return companyClientService.getCompanyInfo(companyId);
     }
 
     @PostMapping("/list")
-    List<CompanyResponse> getCompanyList(@RequestBody CompanySearchConditionRequest req) {
+    public List<CompanyResponse> getCompanyList(@RequestBody CompanySearchConditionRequest req) {
         return companyClientService.getCompanyList(req);
     }
 }
