@@ -8,7 +8,8 @@ import com.coopang.apidata.application.user.enums.UserRoleEnum.Authority;
 import com.coopang.product.application.request.product.ProductDto;
 import com.coopang.product.application.request.product.ProductHiddenAndSaleDto;
 import com.coopang.product.application.response.product.ProductResponseDto;
-import com.coopang.product.application.service.ProductProductStockService;
+import com.coopang.product.application.service.ProductWithStockAndHistoryService;
+import com.coopang.product.application.service.product.ProductService;
 import com.coopang.product.presentation.request.product.BaseSearchCondition;
 import com.coopang.product.presentation.request.product.CreateProductRequestDto;
 import com.coopang.product.presentation.request.product.ProductSearchCondition;
@@ -45,24 +46,27 @@ public class ProductController {
 
     private final ModelMapperConfig mapperConfig;
 
-    private final ProductProductStockService productStockService;
+    private final ProductWithStockAndHistoryService productWithStockAndHistoryService;
+    private final ProductService productService;
 
-    public ProductController(ModelMapperConfig mapperConfig, ProductProductStockService productStockService) {
+    public ProductController(ModelMapperConfig mapperConfig, ProductWithStockAndHistoryService productWithStockAndHistoryService,
+        ProductService productService) {
         this.mapperConfig = mapperConfig;
-        this.productStockService = productStockService;
+        this.productWithStockAndHistoryService = productWithStockAndHistoryService;
+        this.productService = productService;
     }
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PostMapping("/product")
     public ResponseEntity<ProductResponseDto> createProduct(@Valid @RequestBody CreateProductRequestDto createProductRequestDto) {
         final ProductDto productDto = mapperConfig.strictMapper().map(createProductRequestDto, ProductDto.class);
-        final ProductResponseDto productResponseDto = productStockService.createProductAndProductStock(productDto);
+        final ProductResponseDto productResponseDto = productWithStockAndHistoryService.createProductWithProductStockAndProductStockHistory(productDto);
         return new ResponseEntity<>(productResponseDto, HttpStatus.CREATED);
     }
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PutMapping("/product/{productId}")
-    public ResponseEntity<?> updateProduct(@Valid @RequestBody UpdateProductRequest updateProductRequest, @PathVariable UUID productId) {
+    public ResponseEntity<String> updateProduct(@Valid @RequestBody UpdateProductRequest updateProductRequest, @PathVariable UUID productId) {
 
         ProductDto productDto = mapperConfig.strictMapper().map(updateProductRequest, ProductDto.class);
         productService.updateProduct(productDto, productId);
