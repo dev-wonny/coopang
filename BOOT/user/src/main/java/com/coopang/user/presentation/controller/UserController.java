@@ -114,7 +114,6 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // todo 서버 권한
 
     /**
      * 관리자가 특정 사용자의 정보를 조회합니다.
@@ -122,7 +121,7 @@ public class UserController {
      * @param userId 조회할 사용자의 ID
      * @return 조회된 사용자 정보
      */
-    @Secured(UserRoleEnum.Authority.MASTER)// 로컬에서만 지움
+    @Secured({UserRoleEnum.Authority.SERVER, UserRoleEnum.Authority.MASTER})
     @GetMapping("/user/{userId}")
     public ResponseEntity<UserResponseDto> getUserInfo(@PathVariable("userId") UUID userId) {
         final UserResponseDto userInfo = userService.getUserInfoById(userId);
@@ -151,15 +150,15 @@ public class UserController {
      */
     @Secured(UserRoleEnum.Authority.MASTER)
     @PostMapping("/user/search")
-    public ResponseEntity<Page<UserResponseDto>> searchUsers(UserSearchConditionRequestDto req, Pageable pageable) {
+    public ResponseEntity<Page<UserResponseDto>> searchUsers(@Valid UserSearchConditionRequestDto req, Pageable pageable) {
         final UserSearchCondition condition = UserSearchCondition.from(req.getUserId(), req.getUserName(), req.getUserRole(), req.getEmail(), req.getIsDeleted());
         Page<UserResponseDto> users = userService.searchUsers(condition, pageable);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    // todo 서버 권한
+    @Secured(UserRoleEnum.Authority.SERVER)
     @PostMapping("/user/list")
-    public ResponseEntity<List<UserResponseDto>> getUserList(UserSearchConditionRequestDto req) {
+    public ResponseEntity<List<UserResponseDto>> getUserList(@Valid UserSearchConditionRequestDto req) {
         final UserSearchCondition condition = UserSearchCondition.from(req.getUserId(), req.getUserName(), req.getUserRole(), req.getEmail(), req.getIsDeleted());
         List<UserResponseDto> userList = userService.getUserList(condition);
         return new ResponseEntity<>(userList, HttpStatus.OK);

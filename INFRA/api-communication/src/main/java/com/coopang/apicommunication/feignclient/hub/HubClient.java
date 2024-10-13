@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 import java.util.UUID;
 
-@FeignClient(name = "hub", configuration = FeignConfig.class)
+@FeignClient(name = "hub", contextId = "hubClient", configuration = FeignConfig.class)
 public interface HubClient {
     @GetMapping("/hubs/v1/hub/{hubId}")
     HubResponse getHubInfo(@PathVariable("hubId") UUID hubId);
