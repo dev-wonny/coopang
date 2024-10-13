@@ -2,10 +2,8 @@ package com.coopang.hub.presentation.controller.hub;
 
 import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ROLE;
 
-import com.coopang.apicommunication.feignclient.user.UserClientService;
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.apidata.application.user.enums.UserRoleEnum;
-import com.coopang.apidata.application.user.response.UserResponse;
 import com.coopang.hub.application.request.hub.HubDto;
 import com.coopang.hub.application.request.hub.HubSearchConditionDto;
 import com.coopang.hub.application.response.hub.HubResponseDto;
@@ -39,14 +37,11 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/hubs/v1/hub")
 public class HubController {
-
     private final HubService hubService;
-    private final UserClientService userClientService;
     private final ModelMapperConfig mapperConfig;
 
-    public HubController(HubService hubService, UserClientService userClientService, ModelMapperConfig mapperConfig) {
+    public HubController(HubService hubService, ModelMapperConfig mapperConfig) {
         this.hubService = hubService;
-        this.userClientService = userClientService;
         this.mapperConfig = mapperConfig;
     }
 
@@ -64,9 +59,8 @@ public class HubController {
         return new ResponseEntity<>(hub, HttpStatus.CREATED);
     }
 
-    // todo 서버 권한
     //단일 허브 조회
-    @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER, UserRoleEnum.Authority.COMPANY, UserRoleEnum.Authority.SHIPPER})
+    @Secured({UserRoleEnum.Authority.SERVER, UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER, UserRoleEnum.Authority.COMPANY, UserRoleEnum.Authority.SHIPPER})
     @GetMapping("/{hubId}")
     public ResponseEntity<HubResponseDto> getHubById(@PathVariable UUID hubId, @RequestHeader(HEADER_USER_ROLE) String roleHeader) {
         HubResponseDto hubInfo;
@@ -78,7 +72,7 @@ public class HubController {
         return new ResponseEntity<>(hubInfo, HttpStatus.OK);
     }
 
-    // todo 서버 권한
+    @Secured(UserRoleEnum.Authority.SERVER)
     @PostMapping("/list")
     public ResponseEntity<List<HubResponseDto>> getHubList(@RequestBody HubSearchConditionRequestDto req) {
         final HubSearchConditionDto condition = mapperConfig.strictMapper().map(req, HubSearchConditionDto.class);
@@ -114,11 +108,5 @@ public class HubController {
     public ResponseEntity<Void> deleteHub(@PathVariable UUID hubId) {
         hubService.deleteHub(hubId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    // todo test 이동
-    @GetMapping("/test/{userId}")
-    public ResponseEntity<UserResponse> test(@PathVariable UUID userId) {
-        return new ResponseEntity<>(userClientService.getUserInfo(userId), HttpStatus.OK);
     }
 }

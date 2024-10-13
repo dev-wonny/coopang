@@ -16,7 +16,7 @@ public class CompanyClientService {
         this.companyClient = companyClient;
     }
 
-    public CompanyResponse getCompanyInfo(@PathVariable("companyId") UUID companyId) {
+    public CompanyResponse getCompanyInfo(UUID companyId) {
         return companyClient.getCompanyInfo(companyId);
     }
 
