@@ -117,8 +117,9 @@ public class ProductController {
 
     @GetMapping("/product/{productId}")
     public ResponseEntity<?> getProductById(@PathVariable UUID productId) {
+        productStockService.getProductById(productId);
 
-        return new ResponseEntity<>(productService.getProductById(productId), HttpStatus.OK);
+        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
     @GetMapping("/category/{categoryId}/product")
