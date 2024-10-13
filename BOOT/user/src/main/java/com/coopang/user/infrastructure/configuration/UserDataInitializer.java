@@ -1,18 +1,29 @@
 package com.coopang.user.infrastructure.configuration;
 
+import static com.coopang.apidata.constants.HubRegions.BUSAN;
+import static com.coopang.apidata.constants.HubRegions.CHUNGBUK;
+import static com.coopang.apidata.constants.HubRegions.DAEGU;
+import static com.coopang.apidata.constants.HubRegions.DAEJEON;
+import static com.coopang.apidata.constants.HubRegions.GANGWON;
+import static com.coopang.apidata.constants.HubRegions.GWANGJU;
+import static com.coopang.apidata.constants.HubRegions.GYEONGGI_NORTH;
+import static com.coopang.apidata.constants.HubRegions.GYEONGGI_SOUTH;
+import static com.coopang.apidata.constants.HubRegions.INCHEON;
+import static com.coopang.apidata.constants.HubRegions.SEJONG;
 import static com.coopang.apidata.constants.HubRegions.SEOUL;
+import static com.coopang.apidata.constants.HubRegions.ULSAN;
 import static com.coopang.apidata.constants.HubRegions.getHubRegions;
 import static com.coopang.apidata.constants.UserConstants.COOPANG_EMAIL;
 import static com.coopang.apidata.constants.UserConstants.COOPANG_LOWERCASE;
 
 import com.coopang.apidata.application.user.enums.UserRoleEnum;
-import com.coopang.apidata.initdata.HubMapInitializer;
 import com.coopang.user.application.request.UserDto;
 import com.coopang.user.application.service.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -20,14 +31,27 @@ import java.util.UUID;
 @ConditionalOnProperty(name = "data.init.enabled", havingValue = "true", matchIfMissing = false)
 public class UserDataInitializer implements CommandLineRunner {
     private final UserService userService;
-    private Map<String, UUID> hubMap;
+    private Map<String, UUID> hubMap = new HashMap<>();
+
+    {
+        hubMap.put(SEOUL, UUID.fromString("12fc1d66-4270-4468-b76d-93264856327b"));
+        hubMap.put(GYEONGGI_NORTH, UUID.fromString("4dd1bc35-fecf-40a6-a3cd-281a6a800752"));
+        hubMap.put(GYEONGGI_SOUTH, UUID.fromString("83f3e5ab-adda-4d53-adb1-bf2e00f80af6"));
+        hubMap.put(BUSAN, UUID.fromString("83004b5d-122a-4bab-a27c-78824da0ad77"));
+        hubMap.put(DAEGU, UUID.fromString("d25e0314-0b9d-47dc-8a35-afd4381d3a9e"));
+        hubMap.put(INCHEON, UUID.fromString("094f9450-8916-4d5d-872f-af929cba79f7"));
+        hubMap.put(GWANGJU, UUID.fromString("297e573f-a450-46c4-b0ac-3d318ae66e27"));
+        hubMap.put(DAEJEON, UUID.fromString("f2bea779-3987-474b-a044-d707551ad689"));
+        hubMap.put(ULSAN, UUID.fromString("773db62c-eae9-4d4e-9029-d24f348f8c61"));
+        hubMap.put(SEJONG, UUID.fromString("c3aebe6d-a257-4798-b3ce-b9595c3c59f3"));
+        hubMap.put(GANGWON, UUID.fromString("666278fe-006f-4895-a094-bac433c2d669"));
+        hubMap.put(CHUNGBUK, UUID.fromString("c5fb540b-63f0-464a-951c-6cd711986440"));
+    }
 
     private int uuidIndex = 0;
 
     public UserDataInitializer(UserService userService) {
         this.userService = userService;
-        HubMapInitializer hubMapInitializer = new HubMapInitializer();
-        this.hubMap = hubMapInitializer.getHubMap();
     }
 
     @Override
@@ -93,41 +117,65 @@ public class UserDataInitializer implements CommandLineRunner {
             "bbb4b3d5-ccfe-467d-a7a5-b5e8a711230a",
             "cf004528-251f-4ced-89f1-2cb6d81c9b58",
             "53e4ad5c-0a53-446b-b31a-11416a4d364e",
-            "bcdd0a57-cc4a-43ff-bb09-b6b9fb8c5d19",
-            "e1e04dd1-ce0a-4b96-85e0-540f1f72e585",
+            "bcdd0a57-cc4a-43ff-bb09-b6b9fb8c5d19",//Customer0
+            "e1e04dd1-ce0a-4b96-85e0-540f1f72e585",//Customer1
             "ede7fea2-c4dc-4d8e-a5f2-70c010d80b93",
             "4541b728-7b2e-48e6-8bd3-b336303c74d2",
             "021d9eec-6bb7-496b-a869-9b27498ba188",
             "be322296-d5b1-42cb-9502-a8dc9c42db7f",
             "a6867398-dc56-4a8f-938c-581d597a7916",
             "4d7aff3d-a455-43d8-8675-eeaab76eb5d3",
-            "c14b44a1-28f3-4c58-8700-b616ff141fc6",
+            "c14b44a1-28f3-4c58-8700-b616ff141fc6",//Customer8
             "ac9bcee5-709c-4f10-8b2c-d45418aed6de",
             "a698a623-aa8f-4137-9951-a407af4025ab",
-            "8233f07c-f3eb-44a0-9522-563304369768",
-            "ec75ee25-1ee5-404f-a156-ddeba231daae",
-            "5e69568e-9a30-442b-bcd0-a8a30a80ac0e",
+            "8233f07c-f3eb-44a0-9522-563304369768",//Customer-충북
+            "ec75ee25-1ee5-404f-a156-ddeba231daae",//CompanyManager 1 - 서울
+            "5e69568e-9a30-442b-bcd0-a8a30a80ac0e",//CompanyManager 2 - 서울
             "1f19e2ff-d270-4d55-bf82-91739bf344ab",
-            "01b5bca3-aedb-44b3-9d1a-f5fdbaca141d",
+            "01b5bca3-aedb-44b3-9d1a-f5fdbaca141d",//CompanyManager 2 - 경기북부
             "6619735d-66f2-4388-a17e-f1d6074669b3",
             "d1f7b37c-96c1-48d8-a6c8-2c6dab9545ec",
-            "58f8dd25-2383-4edf-a0a7-1a85ac312bc4",
+            "58f8dd25-2383-4edf-a0a7-1a85ac312bc4",//부산
             "2b236f99-4a5f-4542-97c3-341f0d9ebc57",
-            "7cc32daf-cd16-444c-a6a9-e5ca8923c4f5",
+            "7cc32daf-cd16-444c-a6a9-e5ca8923c4f5",//CompanyManager 1 - 대구
             "56d419ff-20cc-4469-9e17-9ae9f0735dde",
-            "dc578d2e-c850-471a-86b7-c1b760c9f35b",
+            "dc578d2e-c850-471a-86b7-c1b760c9f35b",//인천
             "10b830f1-aa78-433d-9d34-e46dc450b1ca",
-            "16ba1a03-fd9e-429b-a047-558f8c67bbe8",
+            "16ba1a03-fd9e-429b-a047-558f8c67bbe8",//광주
             "7a124a90-d15e-4e9d-b1b8-1e31e43524eb",
-            "0ea3bd2a-d202-4f9e-bade-d7f2defbf03e",
+            "0ea3bd2a-d202-4f9e-bade-d7f2defbf03e",//대전
             "735d2c64-5c0a-41ea-bf71-53e9f49b9b09",
-            "b6bdb9bc-a2e7-4da6-bc96-417a990e5cd0",
+            "b6bdb9bc-a2e7-4da6-bc96-417a990e5cd0",//울산
             "9f049e8c-d207-4dce-9fcd-dbae49432b81",
-            "372e5bb4-4d93-42a0-bf50-3f99094c35c6",
+            "372e5bb4-4d93-42a0-bf50-3f99094c35c6",//세종
             "aafba163-0224-45fe-9005-2ac36a1e5847",
-            "d44242a9-74db-4c01-8b10-8617ab1cb1ad",
+            "d44242a9-74db-4c01-8b10-8617ab1cb1ad",//강원
             "a5295c52-3dfa-467f-aafb-3f728ba2a4e5",
-            "ef7a4240-c305-42fd-a5ee-42cbb99cdbaf"
+            "ef7a4240-c305-42fd-a5ee-42cbb99cdbaf",//CompanyManager 1 - 충북
+            "17c1ba04-e7db-4f78-a8df-cfbd02582d0c"//CompanyManager 2 - 충북
+//            "814332a7-54ba-4640-bc65-6cec63c5b96b",
+//            "d5f4e84b-84c8-43d2-b2b7-27d883d7b17d",
+//            "48b50467-1bb4-42d0-a653-e753239210a3",
+//            "a7104e8e-9834-4486-94f3-c0b2db10277d",
+//            "746f8699-5753-4458-91c6-37937153cf8a",
+//            "57f7d9fd-1b80-4647-bb07-6fc454620647",
+//            "1827468a-5522-417f-9979-34ecae003e10",
+//            "4a89c46b-eaf3-49db-a0ad-862f87dc7fab",
+//            "38f078b2-d4d4-404f-a4b8-d3f5b360e63b",
+//            "15ea2d34-1d6b-4641-a014-7759e1e0062a",
+//            "3bccf246-92f1-425b-9c9a-904c5458ea1d",
+//            "118acc6b-954b-4df7-b1d8-2ecb10e62bf7",
+//            "37f487ec-675c-48de-a653-cb0c1485adc6",
+//            "2f86ccac-7800-4182-b6ec-9c489d515bfe",
+//            "2c1cafc4-4085-4ebd-9b0e-872a5b6e2031",
+//            "e9035f9e-924f-45e4-a461-b8e7e0ab651e",
+//            "fac08a5f-1039-46bb-bc62-7487e0042aa5",
+//            "903d74e4-7c0d-436a-b259-9ebe1b9c2fb7",
+//            "739586df-8dac-443a-be5a-cf4a10863c4a",
+//            "538df806-4e21-4eec-8e65-8301c3c508d3",
+//            "82cf3fdc-ab02-40ca-960f-bd6df52c85f4",
+//            "333698b2-26a0-4a39-90d5-83d3d881f0ed",
+//            "62c5850e-005f-47ae-8f0f-559df09fe681"
     };
 
     // 고정된 UUID 배열에서 하나를 가져오는 메소드
@@ -259,7 +307,7 @@ public class UserDataInitializer implements CommandLineRunner {
 
             for (int j = 1; j <= 2; j++) {
                 UserDto companyDto = new UserDto();
-                companyDto.setUserId(null);
+                companyDto.setUserId(getNextFixedUuid());
                 companyDto.setEmail("company" + j + "_" + hubName + COOPANG_EMAIL);
                 companyDto.setPassword(COOPANG_LOWERCASE);
                 companyDto.setUserName("CompanyManager " + j + " - " + hubRegions[i]);
@@ -269,6 +317,7 @@ public class UserDataInitializer implements CommandLineRunner {
                 companyDto.setZipCode("11111");
                 companyDto.setAddress1(hubName);
                 companyDto.setAddress2("106동");
+                companyDto.setNearHubId(hubMap.get(hubRegions[i]));
 
                 createUser(companyDto);
             }

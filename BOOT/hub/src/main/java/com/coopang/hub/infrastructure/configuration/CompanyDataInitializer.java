@@ -13,7 +13,6 @@ import static com.coopang.apidata.constants.HubRegions.SEJONG;
 import static com.coopang.apidata.constants.HubRegions.SEOUL;
 import static com.coopang.apidata.constants.HubRegions.ULSAN;
 
-import com.coopang.apidata.initdata.HubMapInitializer;
 import com.coopang.hub.application.request.company.CompanyDto;
 import com.coopang.hub.application.service.company.CompanyService;
 import org.springframework.boot.CommandLineRunner;
@@ -28,14 +27,29 @@ import java.util.UUID;
 @ConditionalOnProperty(name = "data.init.enabled", havingValue = "true", matchIfMissing = false)
 public class CompanyDataInitializer implements CommandLineRunner {
     private final CompanyService companyService;
-    private Map<String, UUID> hubMap;
+
+    private Map<String, UUID> hubMap = new HashMap<>();
+
+    {
+        hubMap.put(SEOUL, UUID.fromString("12fc1d66-4270-4468-b76d-93264856327b"));
+        hubMap.put(GYEONGGI_NORTH, UUID.fromString("4dd1bc35-fecf-40a6-a3cd-281a6a800752"));
+        hubMap.put(GYEONGGI_SOUTH, UUID.fromString("83f3e5ab-adda-4d53-adb1-bf2e00f80af6"));
+        hubMap.put(BUSAN, UUID.fromString("83004b5d-122a-4bab-a27c-78824da0ad77"));
+        hubMap.put(DAEGU, UUID.fromString("d25e0314-0b9d-47dc-8a35-afd4381d3a9e"));
+        hubMap.put(INCHEON, UUID.fromString("094f9450-8916-4d5d-872f-af929cba79f7"));
+        hubMap.put(GWANGJU, UUID.fromString("297e573f-a450-46c4-b0ac-3d318ae66e27"));
+        hubMap.put(DAEJEON, UUID.fromString("f2bea779-3987-474b-a044-d707551ad689"));
+        hubMap.put(ULSAN, UUID.fromString("773db62c-eae9-4d4e-9029-d24f348f8c61"));
+        hubMap.put(SEJONG, UUID.fromString("c3aebe6d-a257-4798-b3ce-b9595c3c59f3"));
+        hubMap.put(GANGWON, UUID.fromString("666278fe-006f-4895-a094-bac433c2d669"));
+        hubMap.put(CHUNGBUK, UUID.fromString("c5fb540b-63f0-464a-951c-6cd711986440"));
+    }
+
     private Map<String, UUID[]> companyManagers;
 
     public CompanyDataInitializer(CompanyService companyService) {
+        this.setCompanyManagers();
         this.companyService = companyService;
-        HubMapInitializer hubMapInitializer = new HubMapInitializer();
-        this.hubMap = hubMapInitializer.getHubMap();
-        setCompanyManagers();
     }
 
     @Override
@@ -43,52 +57,53 @@ public class CompanyDataInitializer implements CommandLineRunner {
         createCompanies();
     }
 
+
     // COMPANY 권한을 가진 user_id 매핑 (지역별)
     private void setCompanyManagers() {
         companyManagers = new HashMap<>();
         companyManagers.put(SEOUL, new UUID[] {
-                UUID.fromString("4a89c46b-eaf3-49db-a0ad-862f87dc7fab"),
-                UUID.fromString("38f078b2-d4d4-404f-a4b8-d3f5b360e63b")
+                UUID.fromString("ec75ee25-1ee5-404f-a156-ddeba231daae"),
+                UUID.fromString("5e69568e-9a30-442b-bcd0-a8a30a80ac0e")
         });
         companyManagers.put(GYEONGGI_NORTH, new UUID[] {
-                UUID.fromString("2f86ccac-7800-4182-b6ec-9c489d515bfe"),
-                UUID.fromString("2c1cafc4-4085-4ebd-9b0e-872a5b6e2031")
+                UUID.fromString("1f19e2ff-d270-4d55-bf82-91739bf344ab"),
+                UUID.fromString("01b5bca3-aedb-44b3-9d1a-f5fdbaca141d")
         });
         companyManagers.put(GYEONGGI_SOUTH, new UUID[] {
-                UUID.fromString("a7104e8e-9834-4486-94f3-c0b2db10277d"),
-                UUID.fromString("746f8699-5753-4458-91c6-37937153cf8a")
+                UUID.fromString("6619735d-66f2-4388-a17e-f1d6074669b3"),
+                UUID.fromString("d1f7b37c-96c1-48d8-a6c8-2c6dab9545ec")
         });
         companyManagers.put(BUSAN, new UUID[] {
-                UUID.fromString("118acc6b-954b-4df7-b1d8-2ecb10e62bf7"),
-                UUID.fromString("37f487ec-675c-48de-a653-cb0c1485adc6")
+                UUID.fromString("58f8dd25-2383-4edf-a0a7-1a85ac312bc4"),
+                UUID.fromString("2b236f99-4a5f-4542-97c3-341f0d9ebc57")
         });
         companyManagers.put(DAEGU, new UUID[] {
-                UUID.fromString("e9035f9e-924f-45e4-a461-b8e7e0ab651e"),
-                UUID.fromString("fac08a5f-1039-46bb-bc62-7487e0042aa5")
+                UUID.fromString("7cc32daf-cd16-444c-a6a9-e5ca8923c4f5"),
+                UUID.fromString("56d419ff-20cc-4469-9e17-9ae9f0735dde")
         });
         companyManagers.put(INCHEON, new UUID[] {
-                UUID.fromString("903d74e4-7c0d-436a-b259-9ebe1b9c2fb7"),
-                UUID.fromString("739586df-8dac-443a-be5a-cf4a10863c4a")
+                UUID.fromString("dc578d2e-c850-471a-86b7-c1b760c9f35b"),
+                UUID.fromString("10b830f1-aa78-433d-9d34-e46dc450b1ca")
         });
         companyManagers.put(GWANGJU, new UUID[] {
-                UUID.fromString("538df806-4e21-4eec-8e65-8301c3c508d3"),
-                UUID.fromString("82cf3fdc-ab02-40ca-960f-bd6df52c85f4")
+                UUID.fromString("16ba1a03-fd9e-429b-a047-558f8c67bbe8"),
+                UUID.fromString("7a124a90-d15e-4e9d-b1b8-1e31e43524eb")
         });
         companyManagers.put(DAEJEON, new UUID[] {
-                UUID.fromString("57f7d9fd-1b80-4647-bb07-6fc454620647"),
-                UUID.fromString("1827468a-5522-417f-9979-34ecae003e10")
+                UUID.fromString("0ea3bd2a-d202-4f9e-bade-d7f2defbf03e"),
+                UUID.fromString("735d2c64-5c0a-41ea-bf71-53e9f49b9b09")
         });
         companyManagers.put(ULSAN, new UUID[] {
-                UUID.fromString("17c1ba04-e7db-4f78-a8df-cfbd02582d0c"),
-                UUID.fromString("814332a7-54ba-4640-bc65-6cec63c5b96b")
+                UUID.fromString("b6bdb9bc-a2e7-4da6-bc96-417a990e5cd0"),
+                UUID.fromString("9f049e8c-d207-4dce-9fcd-dbae49432b81")
         });
         companyManagers.put(SEJONG, new UUID[] {
-                UUID.fromString("15ea2d34-1d6b-4641-a014-7759e1e0062a"),
-                UUID.fromString("3bccf246-92f1-425b-9c9a-904c5458ea1d")
+                UUID.fromString("372e5bb4-4d93-42a0-bf50-3f99094c35c6"),
+                UUID.fromString("aafba163-0224-45fe-9005-2ac36a1e5847")
         });
         companyManagers.put(GANGWON, new UUID[] {
-                UUID.fromString("333698b2-26a0-4a39-90d5-83d3d881f0ed"),
-                UUID.fromString("62c5850e-005f-47ae-8f0f-559df09fe681")
+                UUID.fromString("d44242a9-74db-4c01-8b10-8617ab1cb1ad"),
+                UUID.fromString("a5295c52-3dfa-467f-aafb-3f728ba2a4e5")
         });
         companyManagers.put(CHUNGBUK, new UUID[] {
                 UUID.fromString("d5f4e84b-84c8-43d2-b2b7-27d883d7b17d"),

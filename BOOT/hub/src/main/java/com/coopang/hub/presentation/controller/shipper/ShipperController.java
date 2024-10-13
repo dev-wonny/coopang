@@ -151,7 +151,7 @@ public class ShipperController {
         return new ResponseEntity<>(shippers, HttpStatus.OK);
     }
 
-    // todo 서버 권한
+    @Secured(UserRoleEnum.Authority.SERVER)
     @PostMapping("/list")
     public ResponseEntity<List<ShipperResponseDto>> getShipperList(@RequestBody ShipperSearchConditionRequestDto req) {
         final ShipperSearchCondition condition = ShipperSearchCondition.from(

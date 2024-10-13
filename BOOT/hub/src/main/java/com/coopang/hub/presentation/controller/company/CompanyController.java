@@ -104,7 +104,7 @@ public class CompanyController {
         return new ResponseEntity<>(company, HttpStatus.OK);
     }
 
-    // todo 서버 권한
+    @Secured(UserRoleEnum.Authority.SERVER)
     @PostMapping("/list")
     public ResponseEntity<List<CompanyResponseDto>> getCompanyList(@RequestBody CompanySearchConditionRequestDto req) {
         final CompanySearchCondition condition = CompanySearchCondition.from(

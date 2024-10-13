@@ -8,28 +8,28 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "ShipperClientController API", description = "ShipperClientController API")
 @Slf4j(topic = "ShipperClientController")
-@RestController
-public class ShipperClientController {
+@RequestMapping("/feignClient/v1/shipper")
+public abstract class ShipperClientController {
     private final ShipperClientService shipperClientService;
 
-    public ShipperClientController(ShipperClientService shipperClientService) {
+    protected ShipperClientController(ShipperClientService shipperClientService) {
         this.shipperClientService = shipperClientService;
     }
 
     @GetMapping("/{shipperId}")
-    ShipperResponse getShipperInfo(@PathVariable("shipperId") UUID shipperId) {
+    public ShipperResponse getShipperInfo(@PathVariable("shipperId") UUID shipperId) {
         return shipperClientService.getShipperInfo(shipperId);
     }
 
     @PostMapping("/list")
-    List<ShipperResponse> getShipperList(@RequestBody ShipperSearchConditionRequest req) {
+    public List<ShipperResponse> getShipperList(@RequestBody ShipperSearchConditionRequest req) {
         return shipperClientService.getShipperList(req);
     }
 }
