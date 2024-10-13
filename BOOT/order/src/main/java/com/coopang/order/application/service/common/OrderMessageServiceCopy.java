@@ -1,8 +1,8 @@
-package com.coopang.order.application.service.message;
+package com.coopang.order.application.service.common;
 
-import com.coopang.apicommunication.kafka.message.ProcessPayment;
-import com.coopang.apicommunication.kafka.message.ProcessProduct;
-import com.coopang.apicommunication.kafka.message.RollbackProduct;
+import com.coopang.apicommunication.kafka.message.*;
+import com.coopang.apidata.application.order.enums.OrderStatusEnum;
+import com.coopang.order.application.service.order.OrderService;
 import com.coopang.order.domain.entity.order.OrderEntity;
 import com.coopang.order.domain.repository.order.OrderRepository;
 import com.coopang.order.infrastructure.message.common.MessageSender;
@@ -18,20 +18,48 @@ import java.util.UUID;
 @Slf4j(topic = "OrderKafkaService")
 @Service
 @Transactional
-public class OrderMessageService {
+public class OrderMessageServiceCopy implements MessageService {
 
     private final OrderKafkaProducer orderKafkaProducer;
     private final OrderRepository orderRepository;
     private final ObjectMapper objectMapper;
+    private final OrderService orderService;
 
-    public OrderMessageService(
+    public OrderMessageServiceCopy(
             OrderKafkaProducer orderKafkaProducer,
             OrderRepository orderRepository,
-            ObjectMapper objectMapper
-    ) {
+            ObjectMapper objectMapper,
+            OrderService orderService) {
         this.orderKafkaProducer = orderKafkaProducer;
         this.orderRepository = orderRepository;
         this.objectMapper = objectMapper;
+        this.orderService = orderService;
+    }
+    /*
+        common
+         */
+    @Override
+    public void listen(String topic, String message) {
+        if (topic.equals("complete_product")) {
+            try {
+                CompleteProduct completeProduct = objectMapper.readValue(message, CompleteProduct.class);
+                log.info("Product complete received: {}", completeProduct.getOrderId());
+                // 성공에 대한 상태 값 변경
+                orderService.updateOrderStatus(completeProduct.getOrderId(), OrderStatusEnum.PENDING);
+            } catch (Exception e) {
+                log.error("Error while processing listenCompleteProduct: {}", e.getMessage());
+                throw new RuntimeException(e);// 예외 처리
+            }
+        } else if (topic.equals("error_product")) {
+            try {
+                ErrorProduct productError = objectMapper.readValue(message, ErrorProduct.class);
+                log.info("Product error received: {}", productError.getErrorMessage());
+                // Todo : 주문 상태 변경 및 결제 취소 요청
+            } catch (Exception e) {
+                log.error("Error while processing listenProductError: {}", e.getMessage());
+                throw new RuntimeException(e);// 예외 처
+            }
+        }
     }
 
     /*

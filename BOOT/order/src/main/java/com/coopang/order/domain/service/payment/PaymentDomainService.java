@@ -2,7 +2,7 @@ package com.coopang.order.domain.service.payment;
 
 import com.coopang.apicommunication.kafka.message.ProcessPayment;
 import com.coopang.apidata.application.payment.enums.PaymentStatusEnum;
-import com.coopang.order.domain.entity.payment.PaymentEntity;
+import com.coopang.order.domain.entity.paymenthistory.PaymentHistoryEntity;
 import com.coopang.order.infrastructure.repository.payment.PaymentJpaRepository;
 import com.coopang.order.presentation.request.pg.PGRequestDto;
 import lombok.extern.slf4j.Slf4j;
@@ -33,12 +33,12 @@ public class PaymentDomainService {
     }
 
     public void createPayment(ProcessPayment paymentProcessDto, PaymentStatusEnum paymentStatus ){
-        PaymentEntity paymentEntity = PaymentEntity.create(
+        PaymentHistoryEntity paymentHistoryEntity = PaymentHistoryEntity.create(
                 paymentProcessDto.getOrderId(),
                 paymentProcessDto.getOrderTotalPrice(),
                 paymentStatus
         );
-        paymentJpaRepository.save(paymentEntity);
+        paymentJpaRepository.save(paymentHistoryEntity);
     }
 
     // 결제 취소

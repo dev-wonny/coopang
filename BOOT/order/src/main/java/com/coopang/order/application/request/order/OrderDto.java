@@ -9,8 +9,6 @@ import java.util.UUID;
 @Getter
 @Setter
 public class OrderDto {
-
-
     /*
     제품의 대한 정보
      */

@@ -1,4 +1,4 @@
-package com.coopang.order.application.request.payment;
+package com.coopang.order.application.request.paymenthistory;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,10 +8,10 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class PaymentDto {
+public class PaymentHistoryDto {
 
     private UUID orderId;
+    private UUID pgPaymentId;
     private String paymentMethod;
     private BigDecimal paymentPrice;
-
 }

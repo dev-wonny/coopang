@@ -7,7 +7,6 @@ import com.coopang.order.application.service.message.OrderMessageService;
 import com.coopang.order.domain.entity.order.OrderEntity;
 import com.coopang.order.domain.repository.order.OrderRepository;
 import com.coopang.order.domain.service.order.OrderDomainService;
-import com.coopang.order.infrastructure.message.MessageSender;
 import com.coopang.order.presentation.request.order.OrderGetAllConditionDto;
 import com.coopang.order.presentation.request.order.OrderSearchConditionDto;
 import lombok.extern.slf4j.Slf4j;
@@ -47,19 +46,21 @@ public class OrderService {
     /*
     Todo : 주문 단건 조회
      */
+    @Transactional(readOnly = true)
     public OrderResponseDto findById(UUID orderId) {
         OrderEntity orderEntity = findByOrderId(orderId);
         return OrderResponseDto.fromOrder(orderEntity);
     }
 
     /*
-    Todo : 주문 전체 조회
+    주문 전체 조회
     1. CUSTOMER 용 만들기
     2. HUB_MANAGER 용 만들기
     3. COMPANY 용 만들기
     4. MASTER 용 만들기
      */
     // 1. CUSTOMER 용 만들기
+    @Transactional(readOnly = true)
     public Page<OrderResponseDto> findAllByUser(
             UUID userId,
             OrderGetAllConditionDto orderGetAllConditionDto,
@@ -69,6 +70,7 @@ public class OrderService {
         return orders.map(OrderResponseDto::fromOrder);
     }
     // 2. HUB_MANAGER 용 만들기
+    @Transactional(readOnly = true)
     public Page<OrderResponseDto> findAllByHub(
             UUID hubId,
             OrderGetAllConditionDto orderGetAllConditionDto,
@@ -78,6 +80,7 @@ public class OrderService {
         return orders.map(OrderResponseDto::fromOrder);
     }
     // 3. COMPANY 용 만들기
+    @Transactional(readOnly = true)
     public Page<OrderResponseDto> findAllByCompany(
             UUID companyId,
             OrderGetAllConditionDto orderGetAllConditionDto,
@@ -87,6 +90,7 @@ public class OrderService {
         return orders.map(OrderResponseDto::fromOrder);
     }
     // 4. MASTER 용 만들기
+    @Transactional(readOnly = true)
     public Page<OrderResponseDto> findAllByMaster(
             OrderGetAllConditionDto orderGetAllConditionDto,
             Pageable pageable
@@ -96,7 +100,7 @@ public class OrderService {
     }
 
     /*
-    Todo : 주문 검색
+    주문 검색
     1. CUSTOMER 용 만들기
     2. HUB_MANAGER 용 만들기
     3. COMPANY 용 만들기
@@ -104,7 +108,7 @@ public class OrderService {
     * RequestParam startDate, endDate 생성하기
     * keyword 는 우선 orderId
      */
-
+    @Transactional(readOnly = true)
     public Page<OrderResponseDto> findAllByUserSearch(
             UUID userId,
             OrderSearchConditionDto orderSearchConditionDto,
@@ -113,7 +117,7 @@ public class OrderService {
         Page<OrderEntity> orders = orderRepository.findAllByUserSearch(userId,orderSearchConditionDto,pageable);
         return orders.map(OrderResponseDto::fromOrder);
     }
-
+    @Transactional(readOnly = true)
     public Page<OrderResponseDto> findAllByHubSearch(
             UUID hubId,
             OrderSearchConditionDto orderSearchConditionDto,
@@ -122,7 +126,7 @@ public class OrderService {
         Page<OrderEntity> orders = orderRepository.findAllByHubSearch(hubId,orderSearchConditionDto,pageable);
         return orders.map(OrderResponseDto::fromOrder);
     }
-
+    @Transactional(readOnly = true)
     public Page<OrderResponseDto> findAllByCompanySearch(
             UUID companyId,
             OrderSearchConditionDto orderSearchConditionDto,
@@ -131,7 +135,7 @@ public class OrderService {
         Page<OrderEntity> orders = orderRepository.findAllByCompanySearch(companyId,orderSearchConditionDto,pageable);
         return orders.map(OrderResponseDto::fromOrder);
     }
-
+    @Transactional(readOnly = true)
     public Page<OrderResponseDto> findAllByMasterSearch(
             OrderSearchConditionDto orderSearchConditionDto,
             Pageable pageable
@@ -139,27 +143,39 @@ public class OrderService {
         Page<OrderEntity> orders = orderRepository.findAllByMasterSearch(orderSearchConditionDto,pageable);
         return orders.map(OrderResponseDto::fromOrder);
     }
+    /*
+    주문 수정
+     */
+    public void updateOrder(UUID orderId, OrderDto orderDto) {
+        OrderEntity orderEntity = findByOrderId(orderId);
+        orderEntity.updateOrder(
+                orderDto.getNearHubId(),
+                orderDto.getZipCode(),
+                orderDto.getAddress1(),
+                orderDto.getAddress2()
+        );
+        log.info("Order updated successfully: {}", orderId);
+    }
 
     // 주문 상태 update
     public void updateOrderStatus(UUID orderId, OrderStatusEnum orderStatusEnum) {
         OrderEntity orderEntity = findByOrderId(orderId);
+        // 검증 : 변화하기 전 상태값이 올바른지 확인
+        orderDomainService.validateOrderStatusUpdate(orderEntity.getOrderStatus(), orderStatusEnum);
+
+        // 상태 업데이트 로직
         orderEntity.setOrderStatus(orderStatusEnum);
     }
-
     /*
-    주문 상태 Update (2)
-    - Delivery 쪽에서 배송이 등록 되고 허브 정보들 가져올때
-    - near_hub_id
-    - hub_id
-    - 채워주기
+    주문 삭제
+    * 주문 상태가 Canceled / Shipped 일 경우에만 가능
      */
-    public void updateOrderInfo(
-            UUID orderId,
-            UUID productHubId,
-            UUID nearHubId
-    ) {
+    public void deleteOrder(UUID orderId) {
         OrderEntity orderEntity = findByOrderId(orderId);
-        orderEntity.updateAtCompleteDelivery(productHubId, nearHubId);
+        // 검증 주문 상태가 Canceled / Shipped 일 경우에만 가능
+        orderDomainService.validateOrderDelete(orderEntity.getOrderStatus());
+        orderEntity.setDeleted(true);
+        log.debug("deleted order: {}", orderEntity);
     }
 
     // 공통 메서드

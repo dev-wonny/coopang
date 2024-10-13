@@ -1,10 +1,9 @@
-package com.coopang.order.infrastructure.message.kafka.order;
+package com.coopang.order.infrastructure.message.common;
 
 import com.coopang.apicommunication.kafka.message.CompleteDelivery;
 import com.coopang.apicommunication.kafka.message.CompleteProduct;
 import com.coopang.apicommunication.kafka.message.ErrorProduct;
 import com.coopang.apidata.application.order.enums.OrderStatusEnum;
-import com.coopang.order.infrastructure.message.common.MessageSender;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -12,11 +11,11 @@ import org.springframework.stereotype.Component;
 
 @Slf4j(topic = "OrderKafkaConsumer")
 @Component
-public class OrderKafkaConsumer {
+public class OrderKafkaConsumerCopy {
 
     private final ObjectMapper objectMapper;
 
-    public OrderKafkaConsumer(
+    public OrderKafkaConsumerCopy(
             ObjectMapper objectMapper
     ) {
         this.objectMapper = objectMapper;

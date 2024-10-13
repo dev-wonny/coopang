@@ -7,8 +7,6 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class CompletePayment {
+public class CancelPaymentHistory {
     private UUID orderId;
-    private UUID companyId;
-    private String completeMessage;
 }

@@ -11,6 +11,7 @@ import com.coopang.order.application.service.order.OrderService;
 import com.coopang.order.presentation.request.order.OrderGetAllConditionDto;
 import com.coopang.order.presentation.request.order.OrderRequestDto;
 import com.coopang.order.presentation.request.order.OrderSearchConditionDto;
+import com.coopang.order.presentation.request.order.UpdateOrderRequestDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -46,9 +47,13 @@ public class OrderController {
         this.orderMessageService = orderMessageService;
     }
 
-    // 주문 생성 //
+    /*
+    주문 생성
+    최초 생성 : READY
+    수량 감소 & 결제 완료 : PENDING
+     */
     @PostMapping("/order")
-    @Secured("ROLE_MASTER")
+    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER,UserRoleEnum.Authority.HUB_MANAGER})
     public ResponseEntity<OrderResponseDto> createOrder(@Valid @RequestBody OrderRequestDto orderRequestDto) {
         OrderDto orderDto = mapperConfig.strictMapper().map(orderRequestDto, OrderDto.class);
         OrderResponseDto orderResponseDto = orderService.createOrder(orderDto);
@@ -67,9 +72,10 @@ public class OrderController {
 
     /*
     주문 단건 조회
-    Todo : MASTER, CUSTOMER 용 만들기
-    Todo : HUB_MANAGER 권한 체크 만들기
-    Todo : COMPANY 권한 체크 만들기
+    Todo : MASTER : 모든 주문 조회 가능
+    Todo : CUSTOMER : 자신의 주문만 조회 가능
+    Todo : HUB_MANAGER : 자신의 허브 소속 주문만 조회 가능
+    Todo : COMPANY : 자신의 소속 상품만 조회 가능
      */
     @GetMapping("order/{orderId}")
     public ResponseEntity<OrderResponseDto> getOrder(@PathVariable("orderId") UUID orderId) {
@@ -78,13 +84,13 @@ public class OrderController {
     }
     /*
     주문 전체 조회
-    Todo : CUSTOMER 용 만들기
-    Todo : HUB_MANAGER 용 만들기
-    Todo : COMPANY 용 만들기
-    Todo : MASTER 용 만들기
+    1. CUSTOMER 용 만들기
+    2. HUB_MANAGER 용 만들기
+    3. COMPANY 용 만들기
+    4. MASTER 용 만들기
     * RequestParam startDate, endDate 생성하기
      */
-    // Todo : CUSTOMER 용 만들기
+    // 1. CUSTOMER 용 만들기
     @PostMapping("/order/me/{userId}")
     @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
     public ResponseEntity<Page<OrderResponseDto>> getAllByUserOrder(
@@ -96,7 +102,7 @@ public class OrderController {
 
         return new ResponseEntity<>(orders,HttpStatus.OK);
     }
-    // Todo : HUB_MANAGER 용 만들기
+    // 2. HUB_MANAGER 용 만들기
     @PostMapping("/order/hub/{hubId}")
     @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.HUB_MANAGER})
     public ResponseEntity<Page<OrderResponseDto>> getAllByHubOrder(
@@ -108,7 +114,7 @@ public class OrderController {
 
         return new ResponseEntity<>(orders,HttpStatus.OK);
     }
-    // Todo : COMPANY 용 만들기
+    // 3. COMPANY 용 만들기
     @PostMapping("/order/CompanyId/{companyId}")
     @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.HUB_MANAGER,UserRoleEnum.Authority.COMPANY})
     public ResponseEntity<Page<OrderResponseDto>> getAllByCompanyOrder(
@@ -119,7 +125,7 @@ public class OrderController {
         Page<OrderResponseDto> orders = orderService.findAllByCompany(companyId,orderGetAllConditionDto,pageable);
         return new ResponseEntity<>(orders,HttpStatus.OK);
     }
-    // Todo : MASTER 용 만들기
+    // 4. MASTER 용 만들기
     @PostMapping("/order")
     @Secured(UserRoleEnum.Authority.MASTER)
     public ResponseEntity<Page<OrderResponseDto>> getAllByMasterOrder(
@@ -131,69 +137,105 @@ public class OrderController {
     }
     /*
     주문 검색
-    Todo : CUSTOMER 용 만들기
-    Todo : HUB_MANAGER 용 만들기
-    Todo : COMPANY 용 만들기
-    Todo : MASTER 용 만들기
+    1. CUSTOMER 용 만들기
+    2. HUB_MANAGER 용 만들기
+    3. COMPANY 용 만들기
+    4. MASTER 용 만들기
     * RequestParam startDate, endDate 생성하기
     * keyword 는 우선 orderId
      */
-    // Todo : CUSTOMER 용 만들기
+    // 1. CUSTOMER 용 만들기
     @PostMapping("/order/me/{userId}/search")
     @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
     public ResponseEntity<Page<OrderResponseDto>> getAllByUserSearchOrder(
             @PathVariable("userId") UUID userId,
-            OrderSearchConditionDto orderSearchConditionDto,
+            @RequestBody OrderSearchConditionDto orderSearchConditionDto,
             Pageable pageable
     ) {
         Page<OrderResponseDto> orders = orderService.findAllByUserSearch(userId,orderSearchConditionDto,pageable);
 
         return new ResponseEntity<>(orders,HttpStatus.OK);
     }
-    // Todo : HUB_MANAGER 용 만들기
+    // 2. HUB_MANAGER 용 만들기
     @PostMapping("/order/hub/{hubId}/search")
     @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
     public ResponseEntity<Page<OrderResponseDto>> getAllByHubSearchOrder(
             @PathVariable("hubId") UUID hubId,
-            OrderSearchConditionDto orderSearchConditionDto,
+            @RequestBody OrderSearchConditionDto orderSearchConditionDto,
             Pageable pageable
     ) {
         Page<OrderResponseDto> orders = orderService.findAllByHubSearch(hubId,orderSearchConditionDto,pageable);
         return new ResponseEntity<>(orders,HttpStatus.OK);
     }
-    // Todo : COMPANY 용 만들기
+    // 5. COMPANY 용 만들기
     @PostMapping("/order/company/{companyId}/search")
     @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
     public ResponseEntity<Page<OrderResponseDto>> getAllByCompanySearchOrder(
             @PathVariable("companyId") UUID companyId,
-            OrderSearchConditionDto orderSearchConditionDto,
+            @RequestBody OrderSearchConditionDto orderSearchConditionDto,
             Pageable pageable
     ) {
         Page<OrderResponseDto> orders = orderService.findAllByCompanySearch(companyId,orderSearchConditionDto,pageable);
         return new ResponseEntity<>(orders,HttpStatus.OK);
     }
-    // Todo : MASTER 용 만들기
+    // 4. MASTER 용 만들기
     @PostMapping("/order/search")
     @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
     public ResponseEntity<Page<OrderResponseDto>> getAllByMasterSearchOrder(
-            OrderSearchConditionDto orderSearchConditionDto,
+            @RequestBody OrderSearchConditionDto orderSearchConditionDto,
             Pageable pageable
     ) {
         Page<OrderResponseDto> orders = orderService.findAllByMasterSearch(orderSearchConditionDto,pageable);
         return new ResponseEntity<>(orders,HttpStatus.OK);
     }
 
-
+    /*
+    주문 수정
+    * 배송지 수정만 가능
+    * 수량변경을 할려면 다시 결제가 일어나기 때문에 수정이 불가능
+     */
+    @PutMapping("/order/{orderId}")
+    public ResponseEntity<OrderResponseDto> updateOrder(
+            @PathVariable("orderId") UUID orderId,
+            @Valid @RequestBody UpdateOrderRequestDto updateOrderRequestDto
+            ){
+        final OrderDto orderDto = mapperConfig.strictMapper().map(updateOrderRequestDto,OrderDto.class);
+        orderService.updateOrder(orderId,orderDto);
+        final OrderResponseDto orderInfo = orderService.findById(orderId);
+        return new ResponseEntity<>(orderInfo,HttpStatus.OK);
+    }
 
     /*
-    Todo : 주문 상태값 변경
+    주문 상태값 변경
     1. Ready -> Pending : 최초 주문 생성 -> 재고 감소 후 상태 변경
     2. Pending -> Shipped : 처음 주문 상태 -> 배송 등록 완료
-    3. Shipped -> Deliveryed : 배송 등록 완료 -> 배달 완료
+    3. Shipped -> Delivered : 배송 등록 완료 -> 배달 완료
     4. Pending -> Canceled  : 처음 주문 상태 -> 주문 취소
      */
+    // 1. Ready -> Pending : 최초 주문 생성 -> 재고 감소 후 상태 변경
+    @PatchMapping("/order/{orderId}/pending")
+    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.HUB_MANAGER})
+    public ResponseEntity<Void> pendingOrder(@PathVariable("orderId") UUID orderId) {
+        orderService.updateOrderStatus(orderId,OrderStatusEnum.PENDING);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    // 2. Pending -> Shipped : 처음 주문 상태 -> 배송 등록 완료
+    @PatchMapping("/order/{orderId}/shipped")
+    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.HUB_MANAGER})
+    public ResponseEntity<Void> shippedOrder(@PathVariable("orderId") UUID orderId) {
+        orderService.updateOrderStatus(orderId,OrderStatusEnum.SHIPPED);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    // 3. Shipped -> Delivered : 배송 등록 완료 -> 배달 완료
+    @PatchMapping("/order/{orderId}/delivered")
+    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.HUB_MANAGER})
+    public ResponseEntity<Void> deliveredOrder(@PathVariable("orderId") UUID orderId) {
+        orderService.updateOrderStatus(orderId,OrderStatusEnum.DELIVERED);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
     // 4. Pending -> Canceled  : 처음 주문 상태 -> 주문 취소
     @PatchMapping("/order/{orderId}")
+    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.HUB_MANAGER})
     public ResponseEntity<String> cancelOrder(@PathVariable("orderId") UUID orderId) {
         orderService.updateOrderStatus(orderId, OrderStatusEnum.CANCELED);
         final String message = "Order Cancelled";
@@ -205,7 +247,14 @@ public class OrderController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
     /*
-    Todo : 주문 삭제
+    주문 삭제
     * 논리적 삭제
      */
+    //단일 허브 삭제 (논리적 삭제)
+    @DeleteMapping("/order/{orderId}")
+    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.HUB_MANAGER})
+    public ResponseEntity<Void> deleteOrder(@PathVariable UUID orderId) {
+        orderService.deleteOrder(orderId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
