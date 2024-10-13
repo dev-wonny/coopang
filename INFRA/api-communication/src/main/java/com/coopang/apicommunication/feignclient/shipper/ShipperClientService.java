@@ -3,7 +3,6 @@ package com.coopang.apicommunication.feignclient.shipper;
 import com.coopang.apidata.application.shipper.request.ShipperSearchConditionRequest;
 import com.coopang.apidata.application.shipper.response.ShipperResponse;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +15,7 @@ public class ShipperClientService {
         this.shipperClient = shipperClient;
     }
 
-    public ShipperResponse getShipperInfo(@PathVariable("shipperId") UUID shipperId) {
+    public ShipperResponse getShipperInfo(UUID shipperId) {
         return shipperClient.getShipperInfo(shipperId);
     }
 
