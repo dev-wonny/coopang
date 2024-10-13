@@ -4,17 +4,19 @@ import com.coopang.product.domain.entity.product.ProductEntity;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 @Builder(access = AccessLevel.PRIVATE)
-public record ProductResponseDto(
-    UUID productId,
-    UUID categoryId,
-    String categoryName,
-    UUID companyId,
-    String productName,
-    double productPrice,
-    int productStock
-) {
+public class ProductResponseDto{
+
+    private UUID productId;
+    private UUID categoryId;
+    private String categoryName;
+    private UUID companyId;
+    private String productName;
+    private double productPrice;
+    private int productStock;
 
     public static ProductResponseDto of(ProductEntity product) {
         return ProductResponseDto.builder()
