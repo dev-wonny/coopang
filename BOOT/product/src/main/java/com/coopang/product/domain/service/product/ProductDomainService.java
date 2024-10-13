@@ -26,21 +26,10 @@ public class ProductDomainService {
 
     public ProductEntity create(ProductDto productDto) {
 
-        //1. 상품 생성
         ProductEntity productEntity = productDtoToProductEntity(productDto);
+        ProductEntity newProductEntity = productJpaRepository.save(productEntity);
 
-        //2. 재고엔티티 생성
-        ProductStock stock = new ProductStock(productDto.getProductStock());
-        ProductStockEntity productStockEntity = productDtoToProductStockEntity(productEntity,stock);
-
-        //3. 재고 기록엔티티 생성
-        ProductStockHistoryEntity productStockHistoryEntity = makeProductStockHistory(productStockEntity,stock.getValue());
-
-        //4. 연관관계 설정
-        productEntity.addProductStockEntity(productStockEntity);
-        productStockEntity.addStockHistory(productStockHistoryEntity);
-
-        return productJpaRepository.save(productEntity);
+        return newProductEntity;
     }
 
 
@@ -58,30 +47,6 @@ public class ProductDomainService {
             productDto.getProductPrice(),
             false,
             true
-        );
-    }
-
-    private ProductStockEntity productDtoToProductStockEntity(ProductEntity productEntity,ProductStock  stock) {
-
-        return ProductStockEntity.create(
-            null,
-            productEntity,
-            stock
-        );
-    }
-
-    private ProductStockHistoryEntity makeProductStockHistory(
-        ProductStockEntity productStockEntity,int stock
-    ) {
-        return ProductStockHistoryEntity.create(
-            null,
-            productStockEntity,
-            null,
-            ProductStockHistoryChangeType.INCREASE,
-            stock,
-            0,
-            stock,
-            null
         );
     }
 }

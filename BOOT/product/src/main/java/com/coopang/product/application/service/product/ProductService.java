@@ -47,11 +47,11 @@ public class ProductService {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
 
-    public ProductResponseDto createProduct(ProductDto productDto) {
+    public ProductEntity createProduct(ProductDto productDto) {
 
         ProductEntity productEntity = productDomainService.create(productDto);
 
-        return ProductResponseDto.of(productEntity);
+        return productEntity;
     }
 
     //특정 상품 조회
