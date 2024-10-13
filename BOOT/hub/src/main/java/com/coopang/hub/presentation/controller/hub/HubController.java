@@ -64,9 +64,8 @@ public class HubController {
         return new ResponseEntity<>(hub, HttpStatus.CREATED);
     }
 
-    // todo 서버 권한
     //단일 허브 조회
-    @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER, UserRoleEnum.Authority.COMPANY, UserRoleEnum.Authority.SHIPPER})
+    @Secured({UserRoleEnum.Authority.SERVER, UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER, UserRoleEnum.Authority.COMPANY, UserRoleEnum.Authority.SHIPPER})
     @GetMapping("/{hubId}")
     public ResponseEntity<HubResponseDto> getHubById(@PathVariable UUID hubId, @RequestHeader(HEADER_USER_ROLE) String roleHeader) {
         HubResponseDto hubInfo;
@@ -78,7 +77,7 @@ public class HubController {
         return new ResponseEntity<>(hubInfo, HttpStatus.OK);
     }
 
-    // todo 서버 권한
+    @Secured(UserRoleEnum.Authority.SERVER)
     @PostMapping("/list")
     public ResponseEntity<List<HubResponseDto>> getHubList(@RequestBody HubSearchConditionRequestDto req) {
         final HubSearchConditionDto condition = mapperConfig.strictMapper().map(req, HubSearchConditionDto.class);
