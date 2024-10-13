@@ -7,11 +7,13 @@ import java.util.Set;
 
 @Getter
 public enum UserRoleEnum {//역할
-    MASTER(Authority.MASTER),
-    HUB_MANAGER(Authority.HUB_MANAGER),
-    COMPANY(Authority.COMPANY),
-    SHIPPER(Authority.SHIPPER),
-    CUSTOMER(Authority.CUSTOMER);
+    MASTER(Authority.MASTER)
+    , HUB_MANAGER(Authority.HUB_MANAGER)
+    , COMPANY(Authority.COMPANY)
+    , SHIPPER(Authority.SHIPPER)
+    , CUSTOMER(Authority.CUSTOMER)
+    , SERVER(Authority.SERVER)
+    ;
 
 
     private final String authority;
@@ -26,6 +28,7 @@ public enum UserRoleEnum {//역할
         public static final String COMPANY = "ROLE_COMPANY";
         public static final String SHIPPER = "ROLE_SHIPPER";
         public static final String CUSTOMER = "ROLE_CUSTOMER";
+        public static final String SERVER = "ROLE_SERVER";
     }
 
     public static UserRoleEnum getRoleEnum(String s) {
@@ -80,5 +83,9 @@ public enum UserRoleEnum {//역할
 
     public static boolean isCustomer(String role) {
         return CUSTOMER.equals(getRoleEnum(role));
+    }
+
+    public static boolean isServer(String role) {
+        return SERVER.equals(getRoleEnum(role));
     }
 }

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 import java.util.UUID;
 
-@FeignClient(name = "hub", configuration = FeignConfig.class)
+@FeignClient(name = "hub", contextId = "companyClient", configuration = FeignConfig.class)
 public interface CompanyClient {
     @GetMapping("/companies/v1/company/{companyId}")
     CompanyResponse getCompanyInfo(@PathVariable("companyId") UUID companyId);

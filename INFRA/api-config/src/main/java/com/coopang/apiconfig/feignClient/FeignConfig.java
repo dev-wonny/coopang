@@ -39,6 +39,7 @@ public class FeignConfig {
 
     // 역할을 SERVER로 변경하는 메서드
     public void changeHeaderRoleToServer() {
+        // todo api-data가 상위로 모듈을 변경해야할듯, error 패키지를 이동해야함
         dynamicRole.set("SERVER");
     }
 
