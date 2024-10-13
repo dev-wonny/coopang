@@ -1,5 +1,6 @@
 package com.coopang.apidata.application.user.request;
 
+import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,7 @@ public class UserSearchConditionRequest {
     private UUID userId;
     private String userName;
     private String userRole;
+    @Email(message = "Email should be valid")
     private String email;
     private Boolean isDeleted;
 }
