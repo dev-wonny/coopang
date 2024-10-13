@@ -26,12 +26,12 @@ public class CompanyClientController {
     }
 
     @GetMapping("/{companyId}")
-    CompanyResponse getCompanyInfo(@PathVariable("companyId") UUID companyId) {
+    public CompanyResponse getCompanyInfo(@PathVariable("companyId") UUID companyId) {
         return companyClientService.getCompanyInfo(companyId);
     }
 
     @PostMapping("/list")
-    List<CompanyResponse> getCompanyList(@RequestBody CompanySearchConditionRequest req) {
+    public List<CompanyResponse> getCompanyList(@RequestBody CompanySearchConditionRequest req) {
         return companyClientService.getCompanyList(req);
     }
 }

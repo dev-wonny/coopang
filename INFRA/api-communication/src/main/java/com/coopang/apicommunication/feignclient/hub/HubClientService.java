@@ -16,7 +16,7 @@ public class HubClientService {
         this.hubClient = hubClient;
     }
 
-    public HubResponse getHubInfo(@PathVariable("hubId") UUID hubId) {
+    public HubResponse getHubInfo(UUID hubId) {
         return hubClient.getHubInfo(hubId);
     }
 
