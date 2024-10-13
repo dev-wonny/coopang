@@ -19,10 +19,10 @@ import java.util.UUID;
 @Slf4j(topic = "UserClientController")
 @RestController
 @RequestMapping("/feignClient/v1/user")
-public class UserClientController {
+public abstract class UserClientController {
     private final UserClientService userClientService;
 
-    public UserClientController(UserClientService userClientService) {
+    protected UserClientController(UserClientService userClientService) {
         this.userClientService = userClientService;
     }
 

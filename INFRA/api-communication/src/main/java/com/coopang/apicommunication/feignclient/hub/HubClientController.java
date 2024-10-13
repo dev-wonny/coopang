@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,10 +16,10 @@ import java.util.UUID;
 @Tag(name = "HubClientController API", description = "HubClientController API")
 @Slf4j(topic = "HubClientController")
 @RequestMapping("/feignClient/v1/hub")
-public class HubClientController {
+public abstract class HubClientController {
     private final HubClientService hubClientService;
 
-    public HubClientController(HubClientService hubClientService) {
+    protected HubClientController(HubClientService hubClientService) {
         this.hubClientService = hubClientService;
     }
 

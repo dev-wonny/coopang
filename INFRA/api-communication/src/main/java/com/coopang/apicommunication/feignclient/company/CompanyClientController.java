@@ -18,10 +18,10 @@ import java.util.UUID;
 @Slf4j(topic = "CompanyClientController")
 @RestController
 @RequestMapping("/feignClient/v1/company")
-public class CompanyClientController {
+public abstract class CompanyClientController {
     private final CompanyClientService companyClientService;
 
-    public CompanyClientController(CompanyClientService companyClientService) {
+    protected CompanyClientController(CompanyClientService companyClientService) {
         this.companyClientService = companyClientService;
     }
 
