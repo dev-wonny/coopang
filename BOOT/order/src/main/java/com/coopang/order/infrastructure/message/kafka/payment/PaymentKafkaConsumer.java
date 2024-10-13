@@ -1,4 +1,4 @@
-package com.coopang.order.infrastructure.messaging.payment;
+package com.coopang.order.infrastructure.message.kafka.payment;
 
 import com.coopang.apicommunication.kafka.message.ProcessPayment;
 import com.coopang.apidata.application.payment.enums.PaymentStatusEnum;

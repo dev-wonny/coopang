@@ -1,8 +1,7 @@
-package com.coopang.order.infrastructure.messaging.order;
+package com.coopang.order.infrastructure.message.kafka.order;
 
 import com.coopang.apicommunication.kafka.message.ProcessDelivery;
 import com.coopang.apicommunication.kafka.message.ProcessPayment;
-import com.coopang.apicommunication.kafka.message.ProcessProduct;
 import com.coopang.apicommunication.kafka.message.RollbackProduct;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -24,14 +23,9 @@ public class OrderKafkaProducer {
         this.objectMapper = objectMapper;
     }
 
-    public void sendProcessProduct(ProcessProduct processProduct) {
-        try {
-            String message = objectMapper.writeValueAsString(processProduct);
-            kafkaTemplate.send("process_product", message);
-            log.info("sendProcessProduct processing message sent: {}", message);
-        } catch (Exception e) {
-            log.error("Error while sendProcessProduct: {}", e.getMessage());
-        }
+    public void sendProcessProduct(String message) {
+        kafkaTemplate.send("process_product", message);
+        log.info("sendProcessProduct processing message sent: {}", message);
     }
 
     public void sendProcessDelivery(ProcessDelivery processDelivery) {
