@@ -24,15 +24,12 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderDomainService orderDomainService;
-    private final OrderMessageService orderMessageService;
 
     public OrderService(OrderRepository orderRepository,
-                        OrderDomainService orderDomainService,
-                        OrderMessageService orderMessageService
+                        OrderDomainService orderDomainService
     ) {
         this.orderRepository = orderRepository;
         this.orderDomainService = orderDomainService;
-        this.orderMessageService = orderMessageService;
     }
 
     // 주문 등록
@@ -66,7 +63,7 @@ public class OrderService {
             OrderGetAllConditionDto orderGetAllConditionDto,
             Pageable pageable
     ){
-        Page<OrderEntity> orders = orderRepository.findAllByUser(userId,orderGetAllConditionDto,pageable);
+        Page<OrderEntity> orders = orderRepository.findAllByUserId(userId,orderGetAllConditionDto,pageable);
         return orders.map(OrderResponseDto::fromOrder);
     }
     // 2. HUB_MANAGER 용 만들기
@@ -76,7 +73,7 @@ public class OrderService {
             OrderGetAllConditionDto orderGetAllConditionDto,
             Pageable pageable
     ){
-        Page<OrderEntity> orders = orderRepository.findAllByHub(hubId,orderGetAllConditionDto,pageable);
+        Page<OrderEntity> orders = orderRepository.findAllByProductHubId(hubId,orderGetAllConditionDto,pageable);
         return orders.map(OrderResponseDto::fromOrder);
     }
     // 3. COMPANY 용 만들기
@@ -86,7 +83,7 @@ public class OrderService {
             OrderGetAllConditionDto orderGetAllConditionDto,
             Pageable pageable
     ){
-        Page<OrderEntity> orders = orderRepository.findAllByCompany(companyId,orderGetAllConditionDto,pageable);
+        Page<OrderEntity> orders = orderRepository.findAllByCompanyId(companyId,orderGetAllConditionDto,pageable);
         return orders.map(OrderResponseDto::fromOrder);
     }
     // 4. MASTER 용 만들기
@@ -95,7 +92,7 @@ public class OrderService {
             OrderGetAllConditionDto orderGetAllConditionDto,
             Pageable pageable
     ){
-        Page<OrderEntity> orders = orderRepository.findAllByMaster(orderGetAllConditionDto,pageable);
+        Page<OrderEntity> orders = orderRepository.findAllByCondition(orderGetAllConditionDto,pageable);
         return orders.map(OrderResponseDto::fromOrder);
     }
 
@@ -114,7 +111,7 @@ public class OrderService {
             OrderSearchConditionDto orderSearchConditionDto,
             Pageable pageable
     ){
-        Page<OrderEntity> orders = orderRepository.findAllByUserSearch(userId,orderSearchConditionDto,pageable);
+        Page<OrderEntity> orders = orderRepository.SearchByUserId(userId,orderSearchConditionDto,pageable);
         return orders.map(OrderResponseDto::fromOrder);
     }
     @Transactional(readOnly = true)
@@ -123,7 +120,7 @@ public class OrderService {
             OrderSearchConditionDto orderSearchConditionDto,
             Pageable pageable
     ){
-        Page<OrderEntity> orders = orderRepository.findAllByHubSearch(hubId,orderSearchConditionDto,pageable);
+        Page<OrderEntity> orders = orderRepository.SearchByProductHubId(hubId,orderSearchConditionDto,pageable);
         return orders.map(OrderResponseDto::fromOrder);
     }
     @Transactional(readOnly = true)
@@ -132,7 +129,7 @@ public class OrderService {
             OrderSearchConditionDto orderSearchConditionDto,
             Pageable pageable
     ){
-        Page<OrderEntity> orders = orderRepository.findAllByCompanySearch(companyId,orderSearchConditionDto,pageable);
+        Page<OrderEntity> orders = orderRepository.SearchByCompanyId(companyId,orderSearchConditionDto,pageable);
         return orders.map(OrderResponseDto::fromOrder);
     }
     @Transactional(readOnly = true)
@@ -140,7 +137,7 @@ public class OrderService {
             OrderSearchConditionDto orderSearchConditionDto,
             Pageable pageable
     ){
-        Page<OrderEntity> orders = orderRepository.findAllByMasterSearch(orderSearchConditionDto,pageable);
+        Page<OrderEntity> orders = orderRepository.Search(orderSearchConditionDto,pageable);
         return orders.map(OrderResponseDto::fromOrder);
     }
     /*

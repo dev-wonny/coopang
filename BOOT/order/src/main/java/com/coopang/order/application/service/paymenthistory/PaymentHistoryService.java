@@ -48,20 +48,20 @@ public class PaymentHistoryService {
     /*
     Todo : 결제 기록 전체 조회
      */
-    @Transactional(readOnly = true)
-    public Page<PaymentHistoryResponseDto> findAllPaymentHistory(Pageable pageable) {
-        Page<PaymentHistoryEntity> paymentHistoryEntities = paymentHistoryRepository.findAllbyPaymentHistory(pageable);
-        return paymentHistoryEntities.map(PaymentHistoryResponseDto::fromPaymentHistory);
-    }
+//    @Transactional(readOnly = true)
+//    public Page<PaymentHistoryResponseDto> findAllPaymentHistory(Pageable pageable) {
+//        Page<PaymentHistoryEntity> paymentHistoryEntities = paymentHistoryRepository.findAllbyPaymentHistory(pageable);
+//        return paymentHistoryEntities.map(PaymentHistoryResponseDto::fromPaymentHistory);
+//    }
 
     /*
     Todo : 결제 기록 검색
      */
-    @Transactional(readOnly = true)
-    public Page<PaymentHistoryResponseDto> findAllSearchPaymentHistory(Pageable pageable) {
-        Page<PaymentHistoryEntity> paymentHistoryEntities = paymentHistoryRepository.findAllbyPaymentHistorySearch(pageable);
-        return paymentHistoryEntities.map(PaymentHistoryResponseDto::fromPaymentHistory);
-    }
+//    @Transactional(readOnly = true)
+//    public Page<PaymentHistoryResponseDto> findAllSearchPaymentHistory(Pageable pageable) {
+//        Page<PaymentHistoryEntity> paymentHistoryEntities = paymentHistoryRepository.findAllbyPaymentHistorySearch(pageable);
+//        return paymentHistoryEntities.map(PaymentHistoryResponseDto::fromPaymentHistory);
+//    }
 
     /*
     Todo : 결제 기록 수정

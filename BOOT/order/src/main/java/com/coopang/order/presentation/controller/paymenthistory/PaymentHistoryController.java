@@ -58,27 +58,27 @@ public class PaymentHistoryController {
     /*
     Todo : 결제기록 전체 조회
      */
-    @GetMapping("/payment-history")
-    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
-    public ResponseEntity<Page<PaymentHistoryResponseDto>> getAllPaymentHistory(
-            Pageable pageable
-    ){
-        Page<PaymentHistoryResponseDto> paymentHistoryResponseDtos = paymentHistoryService.findAllPaymentHistory(pageable);
-        return new ResponseEntity<>(paymentHistoryResponseDtos, HttpStatus.OK);
-    }
+//    @GetMapping("/payment-history")
+//    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
+//    public ResponseEntity<Page<PaymentHistoryResponseDto>> getAllPaymentHistory(
+//            Pageable pageable
+//    ){
+//        Page<PaymentHistoryResponseDto> paymentHistoryResponseDtos = paymentHistoryService.findAllPaymentHistory(pageable);
+//        return new ResponseEntity<>(paymentHistoryResponseDtos, HttpStatus.OK);
+//    }
 
 
     /*
     Todo : 결제기록 검색
      */
-    @GetMapping("/payment-history/search")
-    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
-    public ResponseEntity<Page<PaymentHistoryResponseDto>> getAllSearchPaymentHistory(
-            Pageable pageable
-    ){
-        Page<PaymentHistoryResponseDto> paymentHistoryResponseDtos = paymentHistoryService.findAllSearchPaymentHistory(pageable);
-        return new ResponseEntity<>(paymentHistoryResponseDtos, HttpStatus.OK);
-    }
+//    @GetMapping("/payment-history/search")
+//    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
+//    public ResponseEntity<Page<PaymentHistoryResponseDto>> getAllSearchPaymentHistory(
+//            Pageable pageable
+//    ){
+//        Page<PaymentHistoryResponseDto> paymentHistoryResponseDtos = paymentHistoryService.findAllSearchPaymentHistory(pageable);
+//        return new ResponseEntity<>(paymentHistoryResponseDtos, HttpStatus.OK);
+//    }
 
     /*
     Todo : 결제기록 수정

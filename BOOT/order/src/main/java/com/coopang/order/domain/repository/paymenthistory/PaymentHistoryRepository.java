@@ -10,7 +10,7 @@ import java.util.UUID;
 public interface PaymentHistoryRepository {
     Optional<PaymentHistoryEntity> findById(UUID paymentHistoryId);
 
-    Page<PaymentHistoryEntity> findAllbyPaymentHistory(Pageable pageable);
-
-    Page<PaymentHistoryEntity> findAllbyPaymentHistorySearch(Pageable pageable);
+//    Page<PaymentHistoryEntity> findAllbyPaymentHistory(Pageable pageable);
+//
+//    Page<PaymentHistoryEntity> findAllbyPaymentHistorySearch(Pageable pageable);
 }

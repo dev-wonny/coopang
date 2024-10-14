@@ -13,15 +13,15 @@ public interface OrderRepository {
     Optional<OrderEntity> findById(UUID orderId);
 
     // 전체 조회
-    Page<OrderEntity> findAllByUser(UUID userId, OrderGetAllConditionDto orderGetAllConditionDto,Pageable pageable);
-    Page<OrderEntity> findAllByHub(UUID hubId, OrderGetAllConditionDto orderGetAllConditionDto,Pageable pageable);
-    Page<OrderEntity> findAllByCompany(UUID companyId, OrderGetAllConditionDto orderGetAllConditionDto,Pageable pageable);
-    Page<OrderEntity> findAllByMaster(OrderGetAllConditionDto orderGetAllConditionDto,Pageable pageable);
+    Page<OrderEntity> findAllByUserId(UUID userId, OrderGetAllConditionDto orderGetAllConditionDto,Pageable pageable);
+    Page<OrderEntity> findAllByProductHubId(UUID hubId, OrderGetAllConditionDto orderGetAllConditionDto,Pageable pageable);
+    Page<OrderEntity> findAllByCompanyId(UUID companyId, OrderGetAllConditionDto orderGetAllConditionDto,Pageable pageable);
+    Page<OrderEntity> findAllByCondition(OrderGetAllConditionDto orderGetAllConditionDto,Pageable pageable);
 
     // 검색
-    Page<OrderEntity> findAllByUserSearch(UUID userId, OrderSearchConditionDto orderSearchConditionDto, Pageable pageable);
-    Page<OrderEntity> findAllByHubSearch(UUID hubId, OrderSearchConditionDto orderSearchConditionDto, Pageable pageable);
-    Page<OrderEntity> findAllByCompanySearch(UUID companyId, OrderSearchConditionDto orderSearchConditionDto, Pageable pageable);
-    Page<OrderEntity> findAllByMasterSearch(OrderSearchConditionDto orderSearchConditionDto, Pageable pageable);
+    Page<OrderEntity> SearchByUserId(UUID userId, OrderSearchConditionDto orderSearchConditionDto, Pageable pageable);
+    Page<OrderEntity> SearchByProductHubId(UUID hubId, OrderSearchConditionDto orderSearchConditionDto, Pageable pageable);
+    Page<OrderEntity> SearchByCompanyId(UUID companyId, OrderSearchConditionDto orderSearchConditionDto, Pageable pageable);
+    Page<OrderEntity> Search(OrderSearchConditionDto orderSearchConditionDto, Pageable pageable);
 
 }

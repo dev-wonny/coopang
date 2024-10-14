@@ -6,6 +6,7 @@ import com.coopang.apidata.application.order.enums.OrderStatusEnum;
 import com.coopang.apidata.application.user.enums.UserRoleEnum;
 import com.coopang.order.application.request.order.OrderDto;
 import com.coopang.order.application.response.order.OrderResponseDto;
+import com.coopang.order.application.service.message.TestMessageService;
 import com.coopang.order.application.service.message.order.OrderMessageService;
 import com.coopang.order.application.service.order.OrderService;
 import com.coopang.order.presentation.request.order.OrderGetAllConditionDto;
@@ -33,6 +34,7 @@ public class OrderController {
     private final ModelMapperConfig mapperConfig;
     private final OrderService orderService;
     private final OrderMessageService orderMessageService;
+    private final TestMessageService testMessageService;
 
     private static final String USER_ID_HEADER = "X-User-Id";
     private static final String USER_ROLE_HEADER = "X-User-Role";
@@ -40,10 +42,12 @@ public class OrderController {
     public OrderController(
             ModelMapperConfig mapperConfig,
             OrderService orderService,
+            TestMessageService testMessageService,
             OrderMessageService orderMessageService
     ) {
         this.mapperConfig = mapperConfig;
         this.orderService = orderService;
+        this.testMessageService = testMessageService;
         this.orderMessageService = orderMessageService;
     }
 
@@ -71,7 +75,7 @@ public class OrderController {
                 orderResponseDto.getOrderTotalPrice(),
                 orderRequestDto.getPaymentMethod()
         );
-
+        testMessageService.Test();
         return new ResponseEntity<>(orderResponseDto, HttpStatus.CREATED);
     }
 
@@ -96,11 +100,11 @@ public class OrderController {
     * RequestParam startDate, endDate 생성하기
      */
     // 1. CUSTOMER 용 만들기
-    @PostMapping("/order/me/{userId}")
+    @GetMapping("/order/me/{userId}")
     @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
     public ResponseEntity<Page<OrderResponseDto>> getAllByUserOrder(
             @PathVariable("userId") UUID userId,
-            OrderGetAllConditionDto orderGetAllConditionDto,
+            @RequestParam OrderGetAllConditionDto orderGetAllConditionDto,
             Pageable pageable
     ) {
         Page<OrderResponseDto> orders = orderService.findAllByUser(userId,orderGetAllConditionDto,pageable);
@@ -108,11 +112,11 @@ public class OrderController {
         return new ResponseEntity<>(orders,HttpStatus.OK);
     }
     // 2. HUB_MANAGER 용 만들기
-    @PostMapping("/order/hub/{hubId}")
+    @GetMapping("/order/hub/{hubId}")
     @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.HUB_MANAGER})
     public ResponseEntity<Page<OrderResponseDto>> getAllByHubOrder(
             @PathVariable("hubId") UUID hubId,
-            OrderGetAllConditionDto orderGetAllConditionDto,
+            @RequestParam OrderGetAllConditionDto orderGetAllConditionDto,
             Pageable pageable
     ) {
         Page<OrderResponseDto> orders = orderService.findAllByHub(hubId,orderGetAllConditionDto,pageable);
@@ -120,21 +124,21 @@ public class OrderController {
         return new ResponseEntity<>(orders,HttpStatus.OK);
     }
     // 3. COMPANY 용 만들기
-    @PostMapping("/order/CompanyId/{companyId}")
+    @GetMapping("/order/CompanyId/{companyId}")
     @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.HUB_MANAGER,UserRoleEnum.Authority.COMPANY})
     public ResponseEntity<Page<OrderResponseDto>> getAllByCompanyOrder(
             @PathVariable("companyId") UUID companyId,
-            OrderGetAllConditionDto orderGetAllConditionDto,
+            @RequestParam OrderGetAllConditionDto orderGetAllConditionDto,
             Pageable pageable
             ) {
         Page<OrderResponseDto> orders = orderService.findAllByCompany(companyId,orderGetAllConditionDto,pageable);
         return new ResponseEntity<>(orders,HttpStatus.OK);
     }
     // 4. MASTER 용 만들기
-    @PostMapping("/order")
+    @GetMapping("/order")
     @Secured(UserRoleEnum.Authority.MASTER)
     public ResponseEntity<Page<OrderResponseDto>> getAllByMasterOrder(
-            OrderGetAllConditionDto orderGetAllConditionDto,
+            @RequestParam OrderGetAllConditionDto orderGetAllConditionDto,
             Pageable pageable
     ) {
         Page<OrderResponseDto> orders = orderService.findAllByMaster(orderGetAllConditionDto,pageable);

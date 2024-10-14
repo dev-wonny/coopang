@@ -1,4 +1,4 @@
-package com.coopang.order.apicommnication;
+package com.coopang.order.apicommnication.message;
 
 import lombok.Getter;
 import lombok.Setter;

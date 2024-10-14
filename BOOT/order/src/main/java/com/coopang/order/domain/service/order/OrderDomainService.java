@@ -3,7 +3,6 @@ package com.coopang.order.domain.service.order;
 import com.coopang.apidata.application.order.enums.OrderStatusEnum;
 import com.coopang.order.application.request.order.OrderDto;
 import com.coopang.order.domain.entity.order.OrderEntity;
-import com.coopang.order.infrastructure.message.kafka.order.OrderKafkaProducer;
 import com.coopang.order.infrastructure.repository.order.OrderJpaRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,8 +18,7 @@ public class OrderDomainService {
     private final OrderJpaRepository orderJpaRepository;
 
     public OrderDomainService(
-            OrderJpaRepository orderJpaRepository,
-            OrderKafkaProducer orderKafkaProducer
+            OrderJpaRepository orderJpaRepository
     ) {
         this.orderJpaRepository = orderJpaRepository;
     }

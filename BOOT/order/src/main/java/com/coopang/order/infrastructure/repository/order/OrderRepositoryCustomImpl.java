@@ -29,7 +29,7 @@ public class OrderRepositoryCustomImpl extends Querydsl4RepositorySupport implem
     4. MASTER 용 만들기
      */
     @Override
-    public Page<OrderEntity> findAllByUser(UUID userId, OrderGetAllConditionDto orderGetAllConditionDto, Pageable pageable) {
+    public Page<OrderEntity> findAllByUserId(UUID userId, OrderGetAllConditionDto orderGetAllConditionDto, Pageable pageable) {
         return applyPagination(pageable, contentQuery -> contentQuery
                         .selectFrom(orderEntity)
                         .where(userIdEq(userId)
@@ -42,7 +42,7 @@ public class OrderRepositoryCustomImpl extends Querydsl4RepositorySupport implem
     }
 
     @Override
-    public Page<OrderEntity> findAllByHub(UUID hubId, OrderGetAllConditionDto orderGetAllConditionDto, Pageable pageable) {
+    public Page<OrderEntity> findAllByProductHubId(UUID hubId, OrderGetAllConditionDto orderGetAllConditionDto, Pageable pageable) {
         return applyPagination(pageable, contentQuery -> contentQuery
                         .selectFrom(orderEntity)
                         .where(hubIdEq(hubId)
@@ -55,7 +55,7 @@ public class OrderRepositoryCustomImpl extends Querydsl4RepositorySupport implem
     }
 
     @Override
-    public Page<OrderEntity> findAllByCompany(UUID companyId, OrderGetAllConditionDto orderGetAllConditionDto, Pageable pageable) {
+    public Page<OrderEntity> findAllByCompanyId(UUID companyId, OrderGetAllConditionDto orderGetAllConditionDto, Pageable pageable) {
         return applyPagination(pageable, contentQuery -> contentQuery
                         .selectFrom(orderEntity)
                         .where(companyIdEq(companyId)
@@ -68,7 +68,7 @@ public class OrderRepositoryCustomImpl extends Querydsl4RepositorySupport implem
     }
 
     @Override
-    public Page<OrderEntity> findAllByMaster(OrderGetAllConditionDto orderGetAllConditionDto, Pageable pageable) {
+    public Page<OrderEntity> findAllByCondition(OrderGetAllConditionDto orderGetAllConditionDto, Pageable pageable) {
         return applyPagination(pageable, contentQuery -> contentQuery
                         .selectFrom(orderEntity)
                         .where(orderDateBetween(orderGetAllConditionDto.getStartDate(), orderGetAllConditionDto.getEndDate())),
@@ -86,7 +86,7 @@ public class OrderRepositoryCustomImpl extends Querydsl4RepositorySupport implem
     4. MASTER 용 만들기
      */
     @Override
-    public Page<OrderEntity> findAllByUserSearch(UUID userId, OrderSearchConditionDto orderSearchConditionDto, Pageable pageable) {
+    public Page<OrderEntity> SearchByUserId(UUID userId, OrderSearchConditionDto orderSearchConditionDto, Pageable pageable) {
         return applyPagination(pageable, contentQuery -> contentQuery
                         .selectFrom(orderEntity)
                         .where(userIdEq(userId)
@@ -101,7 +101,7 @@ public class OrderRepositoryCustomImpl extends Querydsl4RepositorySupport implem
     }
 
     @Override
-    public Page<OrderEntity> findAllByHubSearch(UUID hubId, OrderSearchConditionDto orderSearchConditionDto, Pageable pageable) {
+    public Page<OrderEntity> SearchByProductHubId(UUID hubId, OrderSearchConditionDto orderSearchConditionDto, Pageable pageable) {
         return applyPagination(pageable, contentQuery -> contentQuery
                         .selectFrom(orderEntity)
                         .where(hubIdEq(hubId)
@@ -116,7 +116,7 @@ public class OrderRepositoryCustomImpl extends Querydsl4RepositorySupport implem
     }
 
     @Override
-    public Page<OrderEntity> findAllByCompanySearch(UUID companyId, OrderSearchConditionDto orderSearchConditionDto, Pageable pageable) {
+    public Page<OrderEntity> SearchByCompanyId(UUID companyId, OrderSearchConditionDto orderSearchConditionDto, Pageable pageable) {
         return applyPagination(pageable, contentQuery -> contentQuery
                         .selectFrom(orderEntity)
                         .where(companyIdEq(companyId)
@@ -131,7 +131,7 @@ public class OrderRepositoryCustomImpl extends Querydsl4RepositorySupport implem
     }
 
     @Override
-    public Page<OrderEntity> findAllByMasterSearch(OrderSearchConditionDto orderSearchConditionDto, Pageable pageable) {
+    public Page<OrderEntity> Search(OrderSearchConditionDto orderSearchConditionDto, Pageable pageable) {
         return applyPagination(pageable, contentQuery -> contentQuery
                         .selectFrom(orderEntity)
                         .where(orderIdEq(orderSearchConditionDto.getOrderId())
