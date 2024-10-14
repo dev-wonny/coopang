@@ -28,41 +28,29 @@ public class KafkaMessageConsumerService implements MessageConsumer {
     }
 
     @KafkaListener(topics = "complete_product",groupId = "order_server")
-    public void listenCompleteProduct(
-            String message,
-            @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
-        orderMessageService.listen(topic,message);
+    public void listenCompleteProduct(String message) {
+        orderMessageService.listen("complete_product",message);
     }
     @KafkaListener(topics = "error_product",groupId = "order_server")
-    public void listenErrorProduct(
-            String message,
-            @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
-        orderMessageService.listen(topic,message);
+    public void listenErrorProduct(String message) {
+        orderMessageService.listen("error_product",message);
     }
     @KafkaListener(topics = "process_change_status",groupId = "order_server")
-    public void listenProcessChangeStatus(
-            String message,
-            @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
-        orderMessageService.listen(topic,message);
+    public void listenProcessChangeStatus(String message) {
+        orderMessageService.listen("process_change_status",message);
     }
 
     @KafkaListener(topics = "complete_payment",groupId = "order_server")
-    public void listenCompletePayment(
-            String message,
-            @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
-        paymentHistoryMessageService.listen(topic,message);
+    public void listenCompletePayment(String message) {
+        paymentHistoryMessageService.listen("complete_payment",message);
     }
     @KafkaListener(topics = "cancel_payment",groupId = "order_server")
-    public void listenCancelPayment(
-            String message,
-            @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
-        paymentHistoryMessageService.listen(topic,message);
+    public void listenCancelPayment(String message) {
+        paymentHistoryMessageService.listen("cancel_payment",message);
     }
 
     @KafkaListener(topics = "test",groupId = "test")
-    public void listenTest(
-            String message,
-            @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
-        testMessageService.listen(topic,message);
+    public void listenTest(String message) {
+        testMessageService.listen("test",message);
     }
 }

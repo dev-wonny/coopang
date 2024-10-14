@@ -20,10 +20,6 @@ public class KafkaMessageProducerService implements MessageProducer{
 
     @Override
     public void send(String topic, String message) {
-        kafkaTemplate.send(
-                MessageBuilder.withPayload(message)
-                        .setHeader(KafkaHeaders.TOPIC,topic)
-                        .build()
-        );
+        kafkaTemplate.send(topic,message);
     }
 }
