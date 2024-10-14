@@ -6,5 +6,7 @@ import java.util.UUID;
 
 public interface ProductStockRepository {
 
-    Optional<ProductStockEntity> findByProductId(UUID productId);
+    Optional<ProductStockEntity> findByProductEntity_ProductId(UUID productId);
+
+    ProductStockEntity findAndLockProductStock(UUID productId);
 }

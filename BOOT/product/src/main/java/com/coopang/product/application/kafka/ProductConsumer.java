@@ -29,7 +29,7 @@ public class ProductConsumer {
             ProcessProduct processProduct = objectMapper.readValue(message, ProcessProduct.class);
 
             //재고 감소 요청
-            productService.listenerReduceProductStock(processProduct);
+            //productService.listenerReduceProductStock(processProduct);
 
         }catch (JsonProcessingException e)
         {
@@ -47,8 +47,8 @@ public class ProductConsumer {
             RollbackProduct rollbackProduct = objectMapper.readValue(message, RollbackProduct.class);
 
             //재고 증가 요청
-            productService.rollbackProduct(rollbackProduct.getOrderId(),rollbackProduct.getProductId(),
-                rollbackProduct.getOrderQuantity());
+//            productService.rollbackProduct(rollbackProduct.getOrderId(),rollbackProduct.getProductId(),
+//                rollbackProduct.getOrderQuantity());
 
         }catch (JsonProcessingException e)
         {

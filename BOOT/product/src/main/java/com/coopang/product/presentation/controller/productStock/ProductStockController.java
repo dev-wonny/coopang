@@ -4,6 +4,7 @@ import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.apidata.application.user.enums.UserRoleEnum.Authority;
 import com.coopang.product.application.request.productStock.ProductStockDto;
 import com.coopang.product.application.service.product.ProductService;
+import com.coopang.product.application.service.productstock.ProductStockService;
 import com.coopang.product.presentation.request.productStock.AddStockRequestDto;
 import com.coopang.product.presentation.request.productStock.UpdateStockRequestDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ProductStockController {
 
-    private final ProductService productService;
+    private final ProductStockService productStockService;
     private final ModelMapperConfig mapperConfig;
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
@@ -37,7 +38,7 @@ public class ProductStockController {
 
         ProductStockDto productStockDto = mapperConfig.strictMapper().map(addStockRequestDto, ProductStockDto.class);
 
-        productService.addProductStock(productId, productStockDto);
+        productStockService.addProductStock(productId, productStockDto);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -50,7 +51,7 @@ public class ProductStockController {
 
         ProductStockDto productStockDto = mapperConfig.strictMapper().map(updateStockRequestDto, ProductStockDto.class);
 
-        productService.reduceProductStock(productId, productStockDto);
+        productStockService.reduceProductStock(productId, productStockDto);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -63,7 +64,7 @@ public class ProductStockController {
 
         ProductStockDto productStockDto = mapperConfig.strictMapper().map(updateStockRequestDto, ProductStockDto.class);
 
-        productService.rollbackProduct(productStockDto.getOrderId(), productId, productStockDto.getAmount());
+        productStockService.rollbackProduct(productStockDto.getOrderId(), productId, productStockDto.getAmount());
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -76,7 +77,7 @@ public class ProductStockController {
 
         ProductStockDto productStockDto = mapperConfig.strictMapper().map(updateStockRequestDto, ProductStockDto.class);
 
-        productService.cancelProduct(productStockDto.getOrderId(), productId, productStockDto.getAmount());
+        productStockService.cancelProduct(productStockDto.getOrderId(), productId, productStockDto.getAmount());
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

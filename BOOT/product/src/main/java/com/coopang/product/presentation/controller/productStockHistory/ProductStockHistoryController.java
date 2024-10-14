@@ -3,7 +3,7 @@ package com.coopang.product.presentation.controller.productStockHistory;
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.apidata.application.user.enums.UserRoleEnum.Authority;
 import com.coopang.product.application.request.ProductStockHistory.ProductStockHistoryDto;
-import com.coopang.product.application.service.product.ProductService;
+import com.coopang.product.application.service.productStockHistory.ProductStockHistoryService;
 import com.coopang.product.presentation.request.productStockHistory.ProductStockHistorySearchConditionDto;
 import com.coopang.product.presentation.request.productStockHistory.UpdateStockHistoryRequestDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,17 +29,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ProductStockHistoryController {
 
-    private final ProductService productService;
+    private final ProductStockHistoryService productStockHistoryService;
     private final ModelMapperConfig mapperConfig;
-
-    private static final String USER_ID_HEADER = "X-User-Id";
-    private static final String USER_ROLE_HEADER = "X-User-Role";
 
     @Secured({Authority.MASTER,Authority.COMPANY,Authority.HUB_MANAGER})
     @GetMapping("/{productId}/product-stock-history")
     public ResponseEntity<?> getStockHistoriesByProductId(@PathVariable UUID productId, Pageable pageable) {
 
-        return new ResponseEntity<>(productService.getStockHistoriesByProductId(productId,pageable),HttpStatus.OK);
+        return new ResponseEntity<>(
+            productStockHistoryService.getStockHistoriesByProductId(productId,pageable),HttpStatus.OK);
     }
 
     @Secured({Authority.MASTER,Authority.COMPANY,Authority.HUB_MANAGER})
@@ -47,7 +45,8 @@ public class ProductStockHistoryController {
     public ResponseEntity<?> getStockHistoriesByProductIdWithCondition(@ModelAttribute
     ProductStockHistorySearchConditionDto condition,@PathVariable UUID productId, Pageable pageable) {
 
-        return new ResponseEntity<>(productService.getStockHistoriesByProductIdWithCondition(condition,productId,pageable),HttpStatus.OK);
+        return new ResponseEntity<>(
+            productStockHistoryService.getStockHistoriesByProductIdWithCondition(condition,productId,pageable),HttpStatus.OK);
     }
 
     @Secured({Authority.MASTER,Authority.HUB_MANAGER})
@@ -56,7 +55,7 @@ public class ProductStockHistoryController {
         @RequestBody @Valid UpdateStockHistoryRequestDto request) {
 
         ProductStockHistoryDto productStockHistoryDto = mapperConfig.strictMapper().map(request, ProductStockHistoryDto.class);
-        productService.updateProductStockHistory(productStockHistoryDto,productId,productStockHistoryId);
+        productStockHistoryService.updateProductStockHistory(productStockHistoryDto,productId,productStockHistoryId);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -65,7 +64,7 @@ public class ProductStockHistoryController {
     @DeleteMapping("/{productId}/product-stock-history/{productStockHistoryId}")
     public ResponseEntity<?> deleteProductStockHistoryById(@PathVariable UUID productId, @PathVariable UUID productStockHistoryId) {
 
-        productService.deleteProductStockHistory(productId,productStockHistoryId);
+        productStockHistoryService.deleteProductStockHistory(productId,productStockHistoryId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
