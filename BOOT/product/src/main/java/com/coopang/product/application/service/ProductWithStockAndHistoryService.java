@@ -42,10 +42,4 @@ public class ProductWithStockAndHistoryService {
         return ProductResponseDto.of(productEntity);
     }
 
-//    // 상품 인포 가져오는 것하고 상품 재고 가져오는거 분리 -> 쿼리 2개로
-//    public ProductResponseDto getProductById(UUID productId) {
-//        productService.getProductById(productId);// 애는 정보니까 캐시 가능
-//        productStockService.getProductStockId(productId); // 애는 캐시 되면 안됨
-//        return null;
-//    }
 }

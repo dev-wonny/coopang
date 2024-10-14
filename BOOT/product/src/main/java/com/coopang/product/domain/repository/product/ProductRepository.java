@@ -4,7 +4,7 @@ import com.coopang.product.domain.entity.product.ProductEntity;
 import com.coopang.product.domain.entity.productStock.ProductStockEntity;
 import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryEntity;
 import com.coopang.product.presentation.request.product.ProductSearchCondition;
-import com.coopang.product.presentation.request.productStockHistory.ProductStockHistorySearchCondition;
+import com.coopang.product.presentation.request.productStockHistory.ProductStockHistorySearchConditionDto;
 import jakarta.persistence.LockModeType;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,7 +15,12 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ProductRepository {
 
-    Optional<ProductEntity> getOneByProductId(UUID productId);
+    Optional<ProductEntity> findByProductId(UUID productId);
+
+    //카테고리와 같이 조회
+    Optional<ProductEntity> getOneByProductIdWithCategory(UUID productId);
+
+    Optional<ProductEntity> findByProductIdAndIsDeletedFalse(UUID productId);
 
     @Query("SELECT p FROM ProductEntity p JOIN FETCH p.productStockEntity s JOIN FETCH p.categoryEntity c WHERE p.isDeleted = false and p.isHidden = false and p.isSale = true and s.productStock.value > 0")
     Page<ProductEntity> findAllWithStockAndCategory(Pageable pageable);
@@ -35,7 +40,7 @@ public interface ProductRepository {
     Page<ProductStockHistoryEntity> getProductStockHistoryByProductId(UUID productId, Pageable pageable);
 
     Page<ProductStockHistoryEntity> searchProductStockHistoryByProductId(
-        ProductStockHistorySearchCondition condition,UUID productId, Pageable pageable);
+        ProductStockHistorySearchConditionDto condition,UUID productId, Pageable pageable);
 
     @Lock(LockModeType.PESSIMISTIC_READ) // 또는 PESSIMISTIC_WRITE
     @Query("SELECT p FROM ProductEntity p WHERE p.id = :productId")

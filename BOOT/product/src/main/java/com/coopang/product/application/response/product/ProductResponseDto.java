@@ -16,7 +16,6 @@ public class ProductResponseDto{
     private UUID companyId;
     private String productName;
     private double productPrice;
-    private int productStock;
 
     public static ProductResponseDto of(ProductEntity product) {
         return ProductResponseDto.builder()
@@ -26,7 +25,6 @@ public class ProductResponseDto{
             .companyId(product.getCompanyId())
             .productName(product.getProductName())
             .productPrice(product.getProductPrice())
-            .productStock(product.getProductStockEntity().getProductStock().getValue())
             .build();
     }
 }

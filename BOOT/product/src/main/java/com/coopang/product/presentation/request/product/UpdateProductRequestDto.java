@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UpdateProductRequest {
+public class UpdateProductRequestDto {
     @NotBlank(message = "product Name is required")
     private String productName;
     @NotNull(message = "company Id is required")

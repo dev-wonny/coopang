@@ -4,7 +4,9 @@ import com.coopang.product.domain.entity.product.ProductEntity;
 import com.coopang.product.domain.entity.productStock.ProductStock;
 import com.coopang.product.domain.entity.productStock.ProductStockEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @Service
 public class ProductStockDomainService {
 
