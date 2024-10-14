@@ -1,28 +1,17 @@
 package com.coopang.product.application.service.product;
 
-import com.coopang.apicommunication.kafka.message.CompleteProduct;
-import com.coopang.apicommunication.kafka.message.ErrorProduct;
-import com.coopang.apicommunication.kafka.message.ProcessProduct;
 import com.coopang.apidata.application.user.enums.UserRoleEnum;
 import com.coopang.product.application.request.product.ProductDto;
 import com.coopang.product.application.request.product.ProductHiddenAndSaleDto;
-import com.coopang.product.application.request.productStock.ProductStockDto;
-import com.coopang.product.application.request.ProductStockHistory.ProductStockHistoryDto;
 import com.coopang.product.application.response.product.ProductResponseDto;
-import com.coopang.product.application.response.ProductStockHistory.ProductStockHistoryResponseDto;
 import com.coopang.product.domain.entity.category.CategoryEntity;
 import com.coopang.product.domain.entity.product.ProductEntity;
-import com.coopang.product.domain.entity.productStock.ProductStockEntity;
-import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryChangeType;
-import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryEntity;
 import com.coopang.product.domain.repository.product.ProductRepository;
 import com.coopang.product.domain.service.product.ProductDomainService;
 import com.coopang.product.infrastructure.repository.category.CategoryJpaRepository;
 import com.coopang.product.infrastructure.repository.productStock.ProductStockJpaRepository;
 import com.coopang.product.presentation.request.product.BaseSearchConditionDto;
 import com.coopang.product.presentation.request.product.ProductSearchConditionDto;
-import com.coopang.product.presentation.request.productStockHistory.ProductStockHistorySearchConditionDto;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -55,12 +44,24 @@ public class ProductService {
         return productEntity;
     }
 
-    //특정 상품 조회
+    //특정 상품 조회 - 삭제 상품 미포함
+    @Cacheable(value = "products", key = "#productId")
+    @Transactional(readOnly = true)
+    public ProductResponseDto getValidProductById(UUID productId) {
+
+        ProductEntity productEntity = findByProductId(productId);
+
+        return ProductResponseDto.of(productEntity);
+    }
+
+    //특정 상품 조회 - 삭제 상품 포함
     @Cacheable(value = "products", key = "#productId")
     @Transactional(readOnly = true)
     public ProductResponseDto getProductById(UUID productId) {
 
-        ProductEntity productEntity = findByProductId(productId);
+        ProductEntity productEntity = productRepository.getOneByProductIdWithCategory(productId).orElseThrow(
+            () -> new IllegalArgumentException("존재하지 않는 상품입니다.")
+        );
 
         return ProductResponseDto.of(productEntity);
     }
@@ -154,14 +155,6 @@ public class ProductService {
     @CacheEvict(value = "products", key = "#productId")
     @Transactional
     public void deleteProductById(UUID userId, String role, UUID productId) {
-
-        if(UserRoleEnum.isCompany(role))
-        {
-           //TODO : 업체 관리자 조회(company와 통신)
-        }else if(UserRoleEnum.isHubManager(role))
-        {
-            //TODO : 허브 관리자 조회(hub와 통신)
-        }
 
         ProductEntity productEntity = findByProductId(productId);
 

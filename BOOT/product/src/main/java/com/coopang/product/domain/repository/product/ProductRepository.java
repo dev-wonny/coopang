@@ -1,23 +1,22 @@
 package com.coopang.product.domain.repository.product;
 
 import com.coopang.product.domain.entity.product.ProductEntity;
-import com.coopang.product.domain.entity.productStock.ProductStockEntity;
 import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryEntity;
 import com.coopang.product.presentation.request.product.ProductSearchConditionDto;
 import com.coopang.product.presentation.request.productStockHistory.ProductStockHistorySearchConditionDto;
-import jakarta.persistence.LockModeType;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
 public interface ProductRepository {
 
     Optional<ProductEntity> findByProductId(UUID productId);
 
-    //카테고리와 같이 조회
+    //카테고리와 같이 조회(삭제된것들 미포함)
+    Optional<ProductEntity> getValidOneByProductIdWithCategory(UUID productId);
+    //카테고리와 같이 조회(삭제된것들 포함)
     Optional<ProductEntity> getOneByProductIdWithCategory(UUID productId);
 
     Optional<ProductEntity> findByProductIdAndIsDeletedFalse(UUID productId);

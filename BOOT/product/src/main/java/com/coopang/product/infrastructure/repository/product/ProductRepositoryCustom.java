@@ -11,5 +11,7 @@ public interface ProductRepositoryCustom {
 
     Optional<ProductEntity> getOneByProductIdWithCategory(UUID productId);
 
+    Optional<ProductEntity> getValidOneByProductIdWithCategory(UUID productId);
+
     Page<ProductEntity> search(ProductSearchConditionDto productSearchCondition, Pageable pageable);
 }
