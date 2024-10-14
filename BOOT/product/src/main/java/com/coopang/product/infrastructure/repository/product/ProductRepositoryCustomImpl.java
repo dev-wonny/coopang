@@ -7,6 +7,7 @@ import static com.coopang.product.domain.entity.productStock.QProductStockEntity
 import com.coopang.apiconfig.querydsl.Querydsl4RepositorySupport;
 import com.coopang.product.domain.entity.product.ProductEntity;
 import com.coopang.product.presentation.request.product.ProductSearchConditionDto;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -65,9 +66,7 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
                     betweenStartDateAndEndDate(productSearchCondition.getStartDate(), productSearchCondition.getEndDate()),
                     isProductPriceGreaterThan(productSearchCondition.getMinProductPrice()),
                     isProductPricelessThan(productSearchCondition.getMaxProductPrice()),
-                    productEntity.isDeleted.eq(false),
-                    productEntity.isHidden.eq(false),
-                    productEntity.isSale.eq(true),
+                    isAbleToSearchProductIsDeleted(productSearchCondition),
                     productStockEntity.productStock.value.ne(0)
                 ),
             countQuery -> countQuery.select(
@@ -79,12 +78,26 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
                     betweenStartDateAndEndDate(productSearchCondition.getStartDate(), productSearchCondition.getEndDate()),
                     isProductPriceGreaterThan(productSearchCondition.getMinProductPrice()),
                     isProductPricelessThan(productSearchCondition.getMaxProductPrice()),
-                    productEntity.isDeleted.eq(false),
-                    productEntity.isHidden.eq(false),
-                    productEntity.isSale.eq(true),
+                    isAbleToSearchProductIsDeleted(productSearchCondition),
                     productStockEntity.productStock.value.ne(0)
                 )
         );
+    }
+
+    private Predicate isAbleToSearchProductIsDeleted(ProductSearchConditionDto productSearchCondition) {
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        // isDeleted 조건
+        if (productSearchCondition.getIsDeleted()) {
+            return null;
+        } else {
+            builder.and(productEntity.isDeleted.eq(false));
+            builder.and(productEntity.isSale.eq(true));
+            builder.and(productEntity.isHidden.eq(false));
+        }
+
+        return builder;
     }
 
     private Predicate productNameContains(String productName) {

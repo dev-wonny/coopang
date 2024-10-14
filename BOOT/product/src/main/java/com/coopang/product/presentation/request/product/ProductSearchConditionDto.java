@@ -13,4 +13,13 @@ public class ProductSearchConditionDto extends BaseSearchConditionDto {
     private double maxProductPrice;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private boolean isAbleToWatchDeleted = false;
+
+    public void setIsAbleToWatchDeleted(boolean isAbleToWatchDeleted) {
+        this.isAbleToWatchDeleted = isAbleToWatchDeleted;
+    }
+
+    public boolean getIsAbleToWatchDeleted(){
+        return this.isAbleToWatchDeleted;
+    }
 }

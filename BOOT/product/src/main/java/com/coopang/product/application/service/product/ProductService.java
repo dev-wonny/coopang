@@ -93,8 +93,8 @@ public class ProductService {
     @Transactional(readOnly = true)
     public Page<ProductResponseDto> getProductWithCategory(UUID categoryId, Pageable pageable) {
 
-        findByCategoryId(categoryId);
-        Page<ProductEntity> productEntities = productRepository.findAllWithStockAndCategoryByCategoryId(categoryId, pageable);
+        CategoryEntity categoryEntity = findByCategoryId(categoryId);
+        Page<ProductEntity> productEntities = productRepository.findAllWithStockAndCategoryByCategoryId(categoryEntity.getCategoryId(), pageable);
 
         return productEntities.map(ProductResponseDto::of);
     }
@@ -147,11 +147,8 @@ public class ProductService {
 
     }
 
-    /***
-     * 논리적 삭제 시
-     * 상품 숨김, 판매 불가능 처리
-     * @param productId
-     */
+
+    // 논리적 삭제 시 - 상품 숨김, 판매 불가능 처리
     @CacheEvict(value = "products", key = "#productId")
     @Transactional
     public void deleteProductById(UUID userId, String role, UUID productId) {
