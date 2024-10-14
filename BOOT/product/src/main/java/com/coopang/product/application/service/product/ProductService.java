@@ -19,9 +19,9 @@ import com.coopang.product.domain.repository.product.ProductRepository;
 import com.coopang.product.domain.service.product.ProductDomainService;
 import com.coopang.product.infrastructure.repository.category.CategoryJpaRepository;
 import com.coopang.product.infrastructure.repository.productStock.ProductStockJpaRepository;
-import com.coopang.product.presentation.request.product.BaseSearchCondition;
+import com.coopang.product.presentation.request.product.BaseSearchConditionDto;
 import com.coopang.product.presentation.request.product.ProductSearchCondition;
-import com.coopang.product.presentation.request.productStockHistory.ProductStockHistorySearchCondition;
+import com.coopang.product.presentation.request.productStockHistory.ProductStockHistorySearchConditionDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
@@ -47,6 +47,7 @@ public class ProductService {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
 
+    //특정 상품 생성
     public ProductEntity createProduct(ProductDto productDto) {
 
         ProductEntity productEntity = productDomainService.create(productDto);
@@ -67,7 +68,7 @@ public class ProductService {
     //모든 상품 조회
     @Cacheable(value = "Allproducts", key = "#condition")
     @Transactional(readOnly = true)
-    public Page<ProductResponseDto> getAllProducts(BaseSearchCondition condition,String role,Pageable pageable) {
+    public Page<ProductResponseDto> getAllProducts(BaseSearchConditionDto condition,String role,Pageable pageable) {
 
         /**
          * 마스터인 경우 모든 상품들을 봄
@@ -337,7 +338,8 @@ public class ProductService {
 
     //특정상품의 재고기록들을 키워드 혹은 날짜별로 조회하는 함수
     @Transactional(readOnly = true)
-    public Page<ProductStockHistoryResponseDto> getStockHistoriesByProductIdWithCondition(ProductStockHistorySearchCondition condition, UUID productId, Pageable pageable) {
+    public Page<ProductStockHistoryResponseDto> getStockHistoriesByProductIdWithCondition(
+        ProductStockHistorySearchConditionDto condition, UUID productId, Pageable pageable) {
 
         return productRepository.searchProductStockHistoryByProductId(condition,productId,pageable).map(ProductStockHistoryResponseDto::of);
     }
@@ -416,7 +418,7 @@ public class ProductService {
     }
 
     private ProductEntity findByProductId(UUID productId){
-        return productRepository.getOneByProductId(productId).orElseThrow(
+        return productRepository.getOneByProductIdWithCategory(productId).orElseThrow(
             () -> new IllegalArgumentException("존재하지 않는 상품입니다."));
     }
 

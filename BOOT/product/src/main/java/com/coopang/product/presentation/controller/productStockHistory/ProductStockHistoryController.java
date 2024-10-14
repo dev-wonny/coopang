@@ -4,8 +4,8 @@ import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.apidata.application.user.enums.UserRoleEnum.Authority;
 import com.coopang.product.application.request.ProductStockHistory.ProductStockHistoryDto;
 import com.coopang.product.application.service.product.ProductService;
-import com.coopang.product.presentation.request.productStockHistory.ProductStockHistorySearchCondition;
-import com.coopang.product.presentation.request.productStockHistory.UpdateStockHistoryRequest;
+import com.coopang.product.presentation.request.productStockHistory.ProductStockHistorySearchConditionDto;
+import com.coopang.product.presentation.request.productStockHistory.UpdateStockHistoryRequestDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.UUID;
@@ -45,7 +45,7 @@ public class ProductStockHistoryController {
     @Secured({Authority.MASTER,Authority.COMPANY,Authority.HUB_MANAGER})
     @GetMapping("/{productId}/product-stock-history/search")
     public ResponseEntity<?> getStockHistoriesByProductIdWithCondition(@ModelAttribute
-    ProductStockHistorySearchCondition condition,@PathVariable UUID productId, Pageable pageable) {
+    ProductStockHistorySearchConditionDto condition,@PathVariable UUID productId, Pageable pageable) {
 
         return new ResponseEntity<>(productService.getStockHistoriesByProductIdWithCondition(condition,productId,pageable),HttpStatus.OK);
     }
@@ -53,7 +53,7 @@ public class ProductStockHistoryController {
     @Secured({Authority.MASTER,Authority.HUB_MANAGER})
     @PutMapping("/{productId}/product-stock-history/{productStockHistoryId}")
     public ResponseEntity<?> updateProductStockHistory(@PathVariable UUID productId, @PathVariable UUID productStockHistoryId,
-        @RequestBody @Valid UpdateStockHistoryRequest request) {
+        @RequestBody @Valid UpdateStockHistoryRequestDto request) {
 
         ProductStockHistoryDto productStockHistoryDto = mapperConfig.strictMapper().map(request, ProductStockHistoryDto.class);
         productService.updateProductStockHistory(productStockHistoryDto,productId,productStockHistoryId);

@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UpdateProductSaleRequest {
+public class UpdateProductHiddenRequestDto {
     @NotNull
-    private boolean isSale;
+    private boolean isHidden;
 }

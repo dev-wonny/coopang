@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class UpdateStockHistoryRequest {
+public class UpdateStockHistoryRequestDto {
 
     @PositiveOrZero(message = "수량은 양수로 입력해야됩니다.")
     private int productStockHistoryChangeQuantity;

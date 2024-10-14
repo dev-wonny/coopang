@@ -7,17 +7,20 @@ import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.apidata.application.user.enums.UserRoleEnum.Authority;
 import com.coopang.product.application.request.product.ProductDto;
 import com.coopang.product.application.request.product.ProductHiddenAndSaleDto;
+import com.coopang.product.application.response.ProductWithStockResponseDto;
 import com.coopang.product.application.response.product.ProductResponseDto;
 import com.coopang.product.application.service.ProductWithStockAndHistoryService;
+import com.coopang.product.application.service.ProductWithStockService;
 import com.coopang.product.application.service.product.ProductService;
-import com.coopang.product.presentation.request.product.BaseSearchCondition;
+import com.coopang.product.presentation.request.product.BaseSearchConditionDto;
 import com.coopang.product.presentation.request.product.CreateProductRequestDto;
 import com.coopang.product.presentation.request.product.ProductSearchCondition;
-import com.coopang.product.presentation.request.product.UpdateProductHiddenRequest;
-import com.coopang.product.presentation.request.product.UpdateProductRequest;
-import com.coopang.product.presentation.request.product.UpdateProductSaleRequest;
+import com.coopang.product.presentation.request.product.UpdateProductHiddenRequestDto;
+import com.coopang.product.presentation.request.product.UpdateProductRequestDto;
+import com.coopang.product.presentation.request.product.UpdateProductSaleRequestDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -42,19 +45,15 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/products/v1")
 @Slf4j(topic = "ProductController")
+@RequiredArgsConstructor
 public class ProductController {
 
     private final ModelMapperConfig mapperConfig;
 
+    private final ProductWithStockService productWithStockService;
     private final ProductWithStockAndHistoryService productWithStockAndHistoryService;
     private final ProductService productService;
 
-    public ProductController(ModelMapperConfig mapperConfig, ProductWithStockAndHistoryService productWithStockAndHistoryService,
-        ProductService productService) {
-        this.mapperConfig = mapperConfig;
-        this.productWithStockAndHistoryService = productWithStockAndHistoryService;
-        this.productService = productService;
-    }
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PostMapping("/product")
@@ -66,9 +65,9 @@ public class ProductController {
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PutMapping("/product/{productId}")
-    public ResponseEntity<String> updateProduct(@Valid @RequestBody UpdateProductRequest updateProductRequest, @PathVariable UUID productId) {
+    public ResponseEntity<String> updateProduct(@Valid @RequestBody UpdateProductRequestDto updateProductRequestDto, @PathVariable UUID productId) {
 
-        ProductDto productDto = mapperConfig.strictMapper().map(updateProductRequest, ProductDto.class);
+        ProductDto productDto = mapperConfig.strictMapper().map(updateProductRequestDto, ProductDto.class);
         productService.updateProduct(productDto, productId);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -76,7 +75,7 @@ public class ProductController {
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PatchMapping("/product/{productId}/hidden")
-    public ResponseEntity<?> updateProductHidden(@Valid @RequestBody UpdateProductHiddenRequest request, @PathVariable UUID productId) {
+    public ResponseEntity<?> updateProductHidden(@Valid @RequestBody UpdateProductHiddenRequestDto request, @PathVariable UUID productId) {
 
         ProductHiddenAndSaleDto productHiddenAndSaleDto = mapperConfig.strictMapper().map(request, ProductHiddenAndSaleDto.class);
         productService.updateProductHidden(productHiddenAndSaleDto, productId);
@@ -86,7 +85,7 @@ public class ProductController {
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PatchMapping("/product/{productId}/sale")
-    public ResponseEntity<?> updateProductSale(@Valid @RequestBody UpdateProductSaleRequest request, @PathVariable UUID productId) {
+    public ResponseEntity<?> updateProductSale(@Valid @RequestBody UpdateProductSaleRequestDto request, @PathVariable UUID productId) {
 
         ProductHiddenAndSaleDto productHiddenAndSaleDto = mapperConfig.strictMapper().map(request, ProductHiddenAndSaleDto.class);
         productService.updateProductSale(productHiddenAndSaleDto, productId);
@@ -107,7 +106,7 @@ public class ProductController {
 
 
     @GetMapping("/product")
-    public ResponseEntity<?> getAllProducts(@ModelAttribute BaseSearchCondition condition,
+    public ResponseEntity<?> getAllProducts(@ModelAttribute BaseSearchConditionDto condition,
                                             @RequestHeader(HEADER_USER_ROLE) String role, Pageable pageable) {
 
         return new ResponseEntity<>(productService.getAllProducts(condition, role, pageable), HttpStatus.OK);
@@ -120,10 +119,10 @@ public class ProductController {
     }
 
     @GetMapping("/product/{productId}")
-    public ResponseEntity<?> getProductById(@PathVariable UUID productId) {
-        productStockService.getProductById(productId);
+    public ResponseEntity<ProductWithStockResponseDto> getProductById(@PathVariable UUID productId) {
+        ProductWithStockResponseDto productWithStockResponseDto = productWithStockService.getProductWithStockById(productId);
 
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return new ResponseEntity<>(productWithStockResponseDto, HttpStatus.OK);
     }
 
     @GetMapping("/category/{categoryId}/product")
