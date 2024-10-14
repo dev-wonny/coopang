@@ -42,9 +42,4 @@ public interface ProductRepository {
     Page<ProductStockHistoryEntity> searchProductStockHistoryByProductId(
         ProductStockHistorySearchConditionDto condition,UUID productId, Pageable pageable);
 
-    @Lock(LockModeType.PESSIMISTIC_READ) // 또는 PESSIMISTIC_WRITE
-    @Query("SELECT p FROM ProductEntity p WHERE p.id = :productId")
-    Optional<ProductEntity> findByProductIdWithLock(UUID productId);
-
-    ProductStockEntity findAndLockProductStock(UUID productId);
 }

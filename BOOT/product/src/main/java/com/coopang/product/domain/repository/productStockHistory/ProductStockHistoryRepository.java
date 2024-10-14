@@ -1,7 +1,9 @@
 package com.coopang.product.domain.repository.productStockHistory;
 
+import com.coopang.product.domain.entity.productStock.ProductStockEntity;
 import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryEntity;
 import com.coopang.product.presentation.request.productStockHistory.ProductStockHistorySearchConditionDto;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,4 +15,6 @@ public interface ProductStockHistoryRepository {
 
     Page<ProductStockHistoryEntity> searchProductStockHistoryByProductId(
         ProductStockHistorySearchConditionDto condition,UUID productId, Pageable pageable);
+
+    Optional<ProductStockHistoryEntity> findByProductStockHistoryIdAndProductStockEntity_ProductStockId(UUID productStockHistoryId, UUID productStockId);
 }
