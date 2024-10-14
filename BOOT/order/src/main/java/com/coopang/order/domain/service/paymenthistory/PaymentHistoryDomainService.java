@@ -1,9 +1,9 @@
-package com.coopang.order.domain.service.payment;
+package com.coopang.order.domain.service.paymenthistory;
 
 import com.coopang.apidata.application.payment.enums.PaymentMethodEnum;
 import com.coopang.order.application.request.paymenthistory.PaymentHistoryDto;
 import com.coopang.order.domain.entity.paymenthistory.PaymentHistoryEntity;
-import com.coopang.order.infrastructure.repository.payment.PaymentHistoryJpaRepository;
+import com.coopang.order.infrastructure.repository.paymenthistory.PaymentHistoryJpaRepository;
 import com.coopang.order.presentation.request.pg.PGRequestDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;

@@ -6,6 +6,7 @@ import com.coopang.order.application.request.paymenthistory.PaymentHistoryDto;
 import com.coopang.order.application.response.paymenthistory.PaymentHistoryResponseDto;
 import com.coopang.order.application.service.paymenthistory.PaymentHistoryService;
 import com.coopang.order.presentation.request.paymenthistory.PaymentHistoryRequestDto;
+import com.coopang.order.presentation.request.paymenthistory.PaymentHistorySearchConditionDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -58,27 +59,29 @@ public class PaymentHistoryController {
     /*
     Todo : 결제기록 전체 조회
      */
-//    @GetMapping("/payment-history")
-//    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
-//    public ResponseEntity<Page<PaymentHistoryResponseDto>> getAllPaymentHistory(
-//            Pageable pageable
-//    ){
-//        Page<PaymentHistoryResponseDto> paymentHistoryResponseDtos = paymentHistoryService.findAllPaymentHistory(pageable);
-//        return new ResponseEntity<>(paymentHistoryResponseDtos, HttpStatus.OK);
-//    }
+    @GetMapping("/payment-history")
+    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
+    public ResponseEntity<Page<PaymentHistoryResponseDto>> getAllPaymentHistory(
+            PaymentHistorySearchConditionDto conditionDto,
+            Pageable pageable
+    ){
+        Page<PaymentHistoryResponseDto> paymentHistoryResponseDtos = paymentHistoryService.findAllPaymentHistory(conditionDto,pageable);
+        return new ResponseEntity<>(paymentHistoryResponseDtos, HttpStatus.OK);
+    }
 
 
     /*
     Todo : 결제기록 검색
      */
-//    @GetMapping("/payment-history/search")
-//    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
-//    public ResponseEntity<Page<PaymentHistoryResponseDto>> getAllSearchPaymentHistory(
-//            Pageable pageable
-//    ){
-//        Page<PaymentHistoryResponseDto> paymentHistoryResponseDtos = paymentHistoryService.findAllSearchPaymentHistory(pageable);
-//        return new ResponseEntity<>(paymentHistoryResponseDtos, HttpStatus.OK);
-//    }
+    @GetMapping("/payment-history/search")
+    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
+    public ResponseEntity<Page<PaymentHistoryResponseDto>> getAllSearchPaymentHistory(
+            PaymentHistorySearchConditionDto conditionDto,
+            Pageable pageable
+    ){
+        Page<PaymentHistoryResponseDto> paymentHistoryResponseDtos = paymentHistoryService.findAllSearchPaymentHistory(conditionDto,pageable);
+        return new ResponseEntity<>(paymentHistoryResponseDtos, HttpStatus.OK);
+    }
 
     /*
     Todo : 결제기록 수정

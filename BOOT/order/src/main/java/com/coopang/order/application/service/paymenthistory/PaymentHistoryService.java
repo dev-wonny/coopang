@@ -4,7 +4,8 @@ import com.coopang.order.application.request.paymenthistory.PaymentHistoryDto;
 import com.coopang.order.application.response.paymenthistory.PaymentHistoryResponseDto;
 import com.coopang.order.domain.entity.paymenthistory.PaymentHistoryEntity;
 import com.coopang.order.domain.repository.paymenthistory.PaymentHistoryRepository;
-import com.coopang.order.domain.service.payment.PaymentHistoryDomainService;
+import com.coopang.order.domain.service.paymenthistory.PaymentHistoryDomainService;
+import com.coopang.order.presentation.request.paymenthistory.PaymentHistorySearchConditionDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,20 +49,20 @@ public class PaymentHistoryService {
     /*
     Todo : 결제 기록 전체 조회
      */
-//    @Transactional(readOnly = true)
-//    public Page<PaymentHistoryResponseDto> findAllPaymentHistory(Pageable pageable) {
-//        Page<PaymentHistoryEntity> paymentHistoryEntities = paymentHistoryRepository.findAllbyPaymentHistory(pageable);
-//        return paymentHistoryEntities.map(PaymentHistoryResponseDto::fromPaymentHistory);
-//    }
+    @Transactional(readOnly = true)
+    public Page<PaymentHistoryResponseDto> findAllPaymentHistory(PaymentHistorySearchConditionDto conditionDto,Pageable pageable) {
+        Page<PaymentHistoryEntity> paymentHistoryEntities = paymentHistoryRepository.findAll(conditionDto,pageable);
+        return paymentHistoryEntities.map(PaymentHistoryResponseDto::fromPaymentHistory);
+    }
 
     /*
     Todo : 결제 기록 검색
      */
-//    @Transactional(readOnly = true)
-//    public Page<PaymentHistoryResponseDto> findAllSearchPaymentHistory(Pageable pageable) {
-//        Page<PaymentHistoryEntity> paymentHistoryEntities = paymentHistoryRepository.findAllbyPaymentHistorySearch(pageable);
-//        return paymentHistoryEntities.map(PaymentHistoryResponseDto::fromPaymentHistory);
-//    }
+    @Transactional(readOnly = true)
+    public Page<PaymentHistoryResponseDto> findAllSearchPaymentHistory(PaymentHistorySearchConditionDto conditionDto,Pageable pageable) {
+        Page<PaymentHistoryEntity> paymentHistoryEntities = paymentHistoryRepository.search(conditionDto,pageable);
+        return paymentHistoryEntities.map(PaymentHistoryResponseDto::fromPaymentHistory);
+    }
 
     /*
     Todo : 결제 기록 수정
