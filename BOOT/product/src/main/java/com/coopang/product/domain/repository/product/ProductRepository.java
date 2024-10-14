@@ -4,6 +4,8 @@ import com.coopang.product.domain.entity.product.ProductEntity;
 import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryEntity;
 import com.coopang.product.presentation.request.product.ProductSearchConditionDto;
 import com.coopang.product.presentation.request.productStockHistory.ProductStockHistorySearchConditionDto;
+import feign.Param;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -26,6 +28,13 @@ public interface ProductRepository {
 
     @Query("SELECT p FROM ProductEntity p JOIN FETCH p.productStockEntity s JOIN FETCH p.categoryEntity c WHERE p.companyId = :companyId")
     Page<ProductEntity> findAllWithStockAndCategoryByCompanyId(UUID companyId,Pageable pageable);
+
+    @Query("SELECT p FROM ProductEntity p " +
+        "JOIN FETCH p.productStockEntity s " +
+        "JOIN FETCH p.categoryEntity c " +
+        "WHERE p.companyId IN :companyIds")
+    Page<ProductEntity> findAllWithStockAndCategoryByCompanyIds(@Param("companyIds") List<UUID> companyIds, Pageable pageable);
+
 
     Page<ProductEntity> search(ProductSearchConditionDto productSearchCondition, Pageable pageable);
 

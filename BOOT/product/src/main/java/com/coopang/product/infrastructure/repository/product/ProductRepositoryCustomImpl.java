@@ -1,7 +1,7 @@
 package com.coopang.product.infrastructure.repository.product;
 
-import static com.coopang.product.domain.entity.product.QProductEntity.productEntity;
 import static com.coopang.product.domain.entity.category.QCategoryEntity.categoryEntity;
+import static com.coopang.product.domain.entity.product.QProductEntity.productEntity;
 import static com.coopang.product.domain.entity.productStock.QProductStockEntity.productStockEntity;
 
 import com.coopang.apiconfig.querydsl.Querydsl4RepositorySupport;
@@ -27,7 +27,6 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
     public Optional<ProductEntity> getValidOneByProductIdWithCategory(UUID productId) {
 
         return Optional.ofNullable(selectFrom(productEntity)
-            .leftJoin(productEntity.productStockEntity,productStockEntity)
             .leftJoin(productEntity.categoryEntity,categoryEntity)
             .fetchJoin()
             .where(
@@ -42,7 +41,6 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
     public Optional<ProductEntity> getOneByProductIdWithCategory(UUID productId) {
 
         return Optional.ofNullable(selectFrom(productEntity)
-            .leftJoin(productEntity.productStockEntity,productStockEntity)
             .leftJoin(productEntity.categoryEntity,categoryEntity)
             .fetchJoin()
             .where(
@@ -89,9 +87,8 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
         BooleanBuilder builder = new BooleanBuilder();
 
         // isDeleted 조건
-        if (productSearchCondition.getIsAbleToWatchDeleted()) {
-            return null;
-        } else {
+        if (!productSearchCondition.getIsAbleToWatchDeleted()) {
+
             builder.and(productEntity.isDeleted.eq(false));
             builder.and(productEntity.isSale.eq(true));
             builder.and(productEntity.isHidden.eq(false));

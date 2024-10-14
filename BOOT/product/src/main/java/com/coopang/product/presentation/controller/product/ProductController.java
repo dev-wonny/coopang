@@ -97,25 +97,39 @@ public class ProductController {
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @DeleteMapping("/product/{productId}")
-    public ResponseEntity<?> deleteProduct(@PathVariable UUID productId,
-                                           @RequestHeader(HEADER_USER_ID) UUID userId,
-                                           @RequestHeader(HEADER_USER_ROLE) String role) {
+    public ResponseEntity<?> deleteProduct(@PathVariable UUID productId) {
 
-        productService.deleteProductById(userId, role, productId);
+        productService.deleteProductById( productId);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 
     @GetMapping("/product")
-    public ResponseEntity<?> getAllProducts(@ModelAttribute BaseSearchConditionDto condition,
+    public ResponseEntity<Page<ProductResponseDto>> getAllProducts(@ModelAttribute BaseSearchConditionDto condition,
                                             @RequestHeader(HEADER_USER_ROLE) String role, Pageable pageable) {
+        Page<ProductResponseDto> productResponseDto;
+        if(UserRoleEnum.isMaster(role))
+        {
+            productResponseDto =  productService.getAllProductsByMaster( pageable);
+        }
+        else if(UserRoleEnum.isCompany(role))
+        {
+            productResponseDto = productService.getAllProductInCompany(condition, pageable);
+        }
+        else if(UserRoleEnum.isHubManager(role))
+        {
+            productResponseDto = productService.getAllProductInHub(condition, pageable);
+        }
+        else{
+            productResponseDto =  productService.getAllProductByEvery(pageable);
+        }
 
-        return new ResponseEntity<>(productService.getAllProducts(condition, role, pageable), HttpStatus.OK);
+        return new ResponseEntity<>(productResponseDto, HttpStatus.OK);
     }
 
     @GetMapping("/product/search")
-    public ResponseEntity<?> searchProduct(@ModelAttribute ProductSearchConditionDto searchCondition,
+    public ResponseEntity<Page<ProductResponseDto>> searchProduct(@ModelAttribute ProductSearchConditionDto searchCondition,
         @RequestHeader(HEADER_USER_ROLE) String role, Pageable pageable) {
 
         //마스터인 경우 모든 상품을 봄
@@ -142,7 +156,7 @@ public class ProductController {
     }
 
     @GetMapping("/category/{categoryId}/product")
-    public ResponseEntity<?> getProductWithCategory(@RequestHeader(HEADER_USER_ROLE) String role, @PathVariable UUID categoryId, Pageable pageable) {
+    public ResponseEntity<Page<ProductResponseDto>> getProductWithCategory(@PathVariable UUID categoryId, Pageable pageable) {
 
         Page<ProductResponseDto> productResponseDtos = productService.getProductWithCategory(categoryId, pageable);
 
