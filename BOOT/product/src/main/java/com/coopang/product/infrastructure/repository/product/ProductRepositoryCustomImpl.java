@@ -6,7 +6,7 @@ import static com.coopang.product.domain.entity.productStock.QProductStockEntity
 
 import com.coopang.apiconfig.querydsl.Querydsl4RepositorySupport;
 import com.coopang.product.domain.entity.product.ProductEntity;
-import com.coopang.product.presentation.request.product.ProductSearchCondition;
+import com.coopang.product.presentation.request.product.ProductSearchConditionDto;
 import com.querydsl.core.types.Predicate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -39,7 +39,7 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
 
 
     @Override
-    public Page<ProductEntity> search(ProductSearchCondition productSearchCondition,
+    public Page<ProductEntity> search(ProductSearchConditionDto productSearchCondition,
         Pageable pageable) {
 
         return applyPagination(pageable, contentQuery ->

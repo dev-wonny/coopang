@@ -14,7 +14,7 @@ import com.coopang.product.application.service.ProductWithStockService;
 import com.coopang.product.application.service.product.ProductService;
 import com.coopang.product.presentation.request.product.BaseSearchConditionDto;
 import com.coopang.product.presentation.request.product.CreateProductRequestDto;
-import com.coopang.product.presentation.request.product.ProductSearchCondition;
+import com.coopang.product.presentation.request.product.ProductSearchConditionDto;
 import com.coopang.product.presentation.request.product.UpdateProductHiddenRequestDto;
 import com.coopang.product.presentation.request.product.UpdateProductRequestDto;
 import com.coopang.product.presentation.request.product.UpdateProductSaleRequestDto;
@@ -113,7 +113,7 @@ public class ProductController {
     }
 
     @GetMapping("/product/search")
-    public ResponseEntity<?> searchProduct(@ModelAttribute ProductSearchCondition searchCondition, Pageable pageable) {
+    public ResponseEntity<?> searchProduct(@ModelAttribute ProductSearchConditionDto searchCondition, Pageable pageable) {
 
         return new ResponseEntity<>(productService.searchProduct(searchCondition, pageable), HttpStatus.OK);
     }

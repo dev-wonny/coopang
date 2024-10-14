@@ -3,7 +3,7 @@ package com.coopang.product.domain.repository.product;
 import com.coopang.product.domain.entity.product.ProductEntity;
 import com.coopang.product.domain.entity.productStock.ProductStockEntity;
 import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryEntity;
-import com.coopang.product.presentation.request.product.ProductSearchCondition;
+import com.coopang.product.presentation.request.product.ProductSearchConditionDto;
 import com.coopang.product.presentation.request.productStockHistory.ProductStockHistorySearchConditionDto;
 import jakarta.persistence.LockModeType;
 import java.util.Optional;
@@ -28,7 +28,7 @@ public interface ProductRepository {
     @Query("SELECT p FROM ProductEntity p JOIN FETCH p.productStockEntity s JOIN FETCH p.categoryEntity c WHERE p.companyId = :companyId")
     Page<ProductEntity> findAllWithStockAndCategoryByCompanyId(UUID companyId,Pageable pageable);
 
-    Page<ProductEntity> search(ProductSearchCondition productSearchCondition, Pageable pageable);
+    Page<ProductEntity> search(ProductSearchConditionDto productSearchCondition, Pageable pageable);
 
     @Query("SELECT p FROM ProductEntity p JOIN FETCH p.productStockEntity s JOIN FETCH p.categoryEntity c "
         + "WHERE p.categoryEntity.categoryId = :categoryId and p.isDeleted = false and p.isHidden = false and p.isSale = true and s.productStock.value > 0" )

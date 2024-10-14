@@ -20,7 +20,7 @@ import com.coopang.product.domain.service.product.ProductDomainService;
 import com.coopang.product.infrastructure.repository.category.CategoryJpaRepository;
 import com.coopang.product.infrastructure.repository.productStock.ProductStockJpaRepository;
 import com.coopang.product.presentation.request.product.BaseSearchConditionDto;
-import com.coopang.product.presentation.request.product.ProductSearchCondition;
+import com.coopang.product.presentation.request.product.ProductSearchConditionDto;
 import com.coopang.product.presentation.request.productStockHistory.ProductStockHistorySearchConditionDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -174,7 +174,7 @@ public class ProductService {
     //키워드로 상품 검색
     @Cacheable(value = "Allproducts", key = "#condition")
     @Transactional(readOnly = true)
-    public Page<ProductResponseDto> searchProduct(ProductSearchCondition searchCondition, Pageable pageable) {
+    public Page<ProductResponseDto> searchProduct(ProductSearchConditionDto searchCondition, Pageable pageable) {
 
         Page <ProductEntity> productEntities = productRepository.search(searchCondition, pageable);
 
