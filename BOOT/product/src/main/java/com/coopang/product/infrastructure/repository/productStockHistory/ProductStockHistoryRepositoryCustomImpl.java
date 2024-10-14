@@ -47,15 +47,15 @@ public class ProductStockHistoryRepositoryCustomImpl extends Querydsl4Repository
                     .join(productEntity).fetchJoin()
                     .on(productStockHistoryEntity.productStockEntity.productEntity.productId.eq(productEntity.productId))
                     .where(productEntity.productId.eq(productId),
-                        isProductStockHistoryType(condition.changeType()),
-                        betweenStartDateAndEndDateByProductStockHistory(condition.startDate(),condition.endDate()))
+                        isProductStockHistoryType(condition.getChangeType()),
+                        betweenStartDateAndEndDateByProductStockHistory(condition.getStartDate(),condition.getEndDate()))
             ,countQuery -> countQuery.selectFrom(productStockHistoryEntity)
                 .join(productStockHistoryEntity.productStockEntity)
                 .join(productEntity).fetchJoin()
                 .on(productStockHistoryEntity.productStockEntity.productEntity.productId.eq(productEntity.productId))
                 .where(productEntity.productId.eq(productId),
-                    isProductStockHistoryType(condition.changeType()),
-                    betweenStartDateAndEndDateByProductStockHistory(condition.startDate(),condition.endDate()))
+                    isProductStockHistoryType(condition.getChangeType()),
+                    betweenStartDateAndEndDateByProductStockHistory(condition.getStartDate(),condition.getEndDate()))
         );
     }
 
