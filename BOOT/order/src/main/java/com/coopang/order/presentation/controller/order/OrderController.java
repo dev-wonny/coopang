@@ -6,7 +6,7 @@ import com.coopang.apidata.application.order.enums.OrderStatusEnum;
 import com.coopang.apidata.application.user.enums.UserRoleEnum;
 import com.coopang.order.application.request.order.OrderDto;
 import com.coopang.order.application.response.order.OrderResponseDto;
-import com.coopang.order.application.service.message.OrderMessageService;
+import com.coopang.order.application.service.message.order.OrderMessageService;
 import com.coopang.order.application.service.order.OrderService;
 import com.coopang.order.presentation.request.order.OrderGetAllConditionDto;
 import com.coopang.order.presentation.request.order.OrderRequestDto;
@@ -65,7 +65,12 @@ public class OrderController {
                 orderResponseDto.getOrderTotalPrice()
         );
         // 결제 기록 요청
-        orderMessageService.sendProcessPayment(orderResponseDto.getOrderId(),"SUCCESS");
+        orderMessageService.sendCompletePayment(
+                orderResponseDto.getOrderId(),
+                orderRequestDto.getPgPaymentId(),
+                orderResponseDto.getOrderTotalPrice(),
+                orderRequestDto.getPaymentMethod()
+        );
 
         return new ResponseEntity<>(orderResponseDto, HttpStatus.CREATED);
     }
@@ -240,9 +245,11 @@ public class OrderController {
         orderService.updateOrderStatus(orderId, OrderStatusEnum.CANCELED);
         final String message = "Order Cancelled";
         // 결제 취소 보내기
-        orderMessageService.sendProcessPayment(orderId,"CANCEL");
+        orderMessageService.sendCancelPayment(orderId);
         // 상품 롤백 보내기
         orderMessageService.sendRollbackProduct(orderId);
+        // 배송 취소 보내기
+        orderMessageService.sendCancelDelivery(orderId);
 
         return new ResponseEntity<>(message, HttpStatus.OK);
     }

@@ -24,9 +24,14 @@ import java.util.UUID;
 public class PaymentHistoryController {
 
     private final ModelMapperConfig mapperConfig;
+    private final PaymentHistoryService paymentHistoryService;
 
-    public PaymentHistoryController(ModelMapperConfig mapperConfig) {
+    public PaymentHistoryController(
+            ModelMapperConfig mapperConfig,
+            PaymentHistoryService paymentHistoryService
+    ) {
         this.mapperConfig = mapperConfig;
+        this.paymentHistoryService = paymentHistoryService;
     }
 
     /*

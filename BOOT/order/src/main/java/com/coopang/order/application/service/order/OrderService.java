@@ -3,7 +3,7 @@ package com.coopang.order.application.service.order;
 import com.coopang.apidata.application.order.enums.OrderStatusEnum;
 import com.coopang.order.application.request.order.OrderDto;
 import com.coopang.order.application.response.order.OrderResponseDto;
-import com.coopang.order.application.service.message.OrderMessageService;
+import com.coopang.order.application.service.message.order.OrderMessageService;
 import com.coopang.order.domain.entity.order.OrderEntity;
 import com.coopang.order.domain.repository.order.OrderRepository;
 import com.coopang.order.domain.service.order.OrderDomainService;

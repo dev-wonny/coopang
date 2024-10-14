@@ -1,9 +1,9 @@
 package com.coopang.order.domain.service.payment;
 
-import com.coopang.apicommunication.kafka.message.ProcessPayment;
-import com.coopang.apidata.application.payment.enums.PaymentStatusEnum;
+import com.coopang.apidata.application.payment.enums.PaymentMethodEnum;
+import com.coopang.order.application.request.paymenthistory.PaymentHistoryDto;
 import com.coopang.order.domain.entity.paymenthistory.PaymentHistoryEntity;
-import com.coopang.order.infrastructure.repository.payment.PaymentJpaRepository;
+import com.coopang.order.infrastructure.repository.payment.PaymentHistoryJpaRepository;
 import com.coopang.order.presentation.request.pg.PGRequestDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -19,26 +19,27 @@ import java.math.BigDecimal;
 @Slf4j(topic = "PaymentDomainService")
 @Service
 @Transactional
-public class PaymentDomainService {
+public class PaymentHistoryDomainService {
 
-    private final PaymentJpaRepository paymentJpaRepository;
+    private final PaymentHistoryJpaRepository paymentJpaRepository;
     private final RestTemplate restTemplate;
 
-    public PaymentDomainService(
-            PaymentJpaRepository paymentJpaRepository,
+    public PaymentHistoryDomainService(
+            PaymentHistoryJpaRepository paymentJpaRepository,
             RestTemplate restTemplate
     ) {
         this.paymentJpaRepository = paymentJpaRepository;
         this.restTemplate = restTemplate;
     }
 
-    public void createPayment(ProcessPayment paymentProcessDto, PaymentStatusEnum paymentStatus ){
+    public PaymentHistoryEntity createPaymentHistory(PaymentHistoryDto paymentHistoryDto){
         PaymentHistoryEntity paymentHistoryEntity = PaymentHistoryEntity.create(
-                paymentProcessDto.getOrderId(),
-                paymentProcessDto.getOrderTotalPrice(),
-                paymentStatus
+                paymentHistoryDto.getOrderId(),
+                paymentHistoryDto.getPgPaymentId(),
+                PaymentMethodEnum.CARD,
+                paymentHistoryDto.getPaymentPrice()
         );
-        paymentJpaRepository.save(paymentHistoryEntity);
+        return paymentJpaRepository.save(paymentHistoryEntity);
     }
 
     // 결제 취소
