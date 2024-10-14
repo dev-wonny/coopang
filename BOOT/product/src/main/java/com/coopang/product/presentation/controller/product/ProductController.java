@@ -23,6 +23,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -114,16 +115,24 @@ public class ProductController {
     }
 
     @GetMapping("/product/search")
-    public ResponseEntity<?> searchProduct(@ModelAttribute ProductSearchConditionDto searchCondition, Pageable pageable) {
+    public ResponseEntity<?> searchProduct(@ModelAttribute ProductSearchConditionDto searchCondition,
+        @RequestHeader(HEADER_USER_ROLE) String role, Pageable pageable) {
 
-        return new ResponseEntity<>(productService.searchProduct(searchCondition, pageable), HttpStatus.OK);
+        //마스터인 경우 모든 상품을 봄
+        if(UserRoleEnum.isMaster(role))
+        {
+            searchCondition.setIsAbleToWatchDeleted(true);
+        }
+
+        Page<ProductResponseDto> products = productService.searchProduct(searchCondition, pageable);
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @GetMapping("/product/{productId}")
-    public ResponseEntity<ProductWithStockResponseDto> getProductById(@RequestHeader(HEADER_USER_ROLE) String roleHeader, @PathVariable UUID productId) {
+    public ResponseEntity<ProductWithStockResponseDto> getProductById(@RequestHeader(HEADER_USER_ROLE) String role, @PathVariable UUID productId) {
         ProductWithStockResponseDto productWithStockResponseDto;
 
-        if(UserRoleEnum.isMaster(roleHeader))
+        if(UserRoleEnum.isMaster(role))
         {
             productWithStockResponseDto = productWithStockService.getProductWithStockById(productId);
         }else {
@@ -133,8 +142,10 @@ public class ProductController {
     }
 
     @GetMapping("/category/{categoryId}/product")
-    public ResponseEntity<?> getProductWithCategory(@PathVariable UUID categoryId, Pageable pageable) {
+    public ResponseEntity<?> getProductWithCategory(@RequestHeader(HEADER_USER_ROLE) String role, @PathVariable UUID categoryId, Pageable pageable) {
 
-        return new ResponseEntity<>(productService.getProductWithCategory(categoryId, pageable), HttpStatus.OK);
+        Page<ProductResponseDto> productResponseDtos = productService.getProductWithCategory(categoryId, pageable);
+
+        return new ResponseEntity<>(productResponseDtos, HttpStatus.OK);
     }
 }
