@@ -89,7 +89,7 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
         BooleanBuilder builder = new BooleanBuilder();
 
         // isDeleted 조건
-        if (productSearchCondition.getIsDeleted()) {
+        if (productSearchCondition.getIsAbleToWatchDeleted()) {
             return null;
         } else {
             builder.and(productEntity.isDeleted.eq(false));
