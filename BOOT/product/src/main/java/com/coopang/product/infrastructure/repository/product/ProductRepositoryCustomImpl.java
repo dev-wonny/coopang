@@ -23,7 +23,7 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
     }
 
     @Override
-    public Optional<ProductEntity> getOneByProductIdWithCategory(UUID productId) {
+    public Optional<ProductEntity> getValidOneByProductIdWithCategory(UUID productId) {
 
         return Optional.ofNullable(selectFrom(productEntity)
             .leftJoin(productEntity.productStockEntity,productStockEntity)
@@ -34,6 +34,18 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
                 productEntity.isDeleted.eq(false),
                 productEntity.isHidden.eq(false),
                 productEntity.isSale.eq(true)
+            ).fetchOne());
+    }
+
+    @Override
+    public Optional<ProductEntity> getOneByProductIdWithCategory(UUID productId) {
+
+        return Optional.ofNullable(selectFrom(productEntity)
+            .leftJoin(productEntity.productStockEntity,productStockEntity)
+            .leftJoin(productEntity.categoryEntity,categoryEntity)
+            .fetchJoin()
+            .where(
+                productEntity.productId.eq(productId)
             ).fetchOne());
     }
 

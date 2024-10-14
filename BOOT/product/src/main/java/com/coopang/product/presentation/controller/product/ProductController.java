@@ -4,6 +4,7 @@ import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ID;
 import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ROLE;
 
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
+import com.coopang.apidata.application.user.enums.UserRoleEnum;
 import com.coopang.apidata.application.user.enums.UserRoleEnum.Authority;
 import com.coopang.product.application.request.product.ProductDto;
 import com.coopang.product.application.request.product.ProductHiddenAndSaleDto;
@@ -119,9 +120,15 @@ public class ProductController {
     }
 
     @GetMapping("/product/{productId}")
-    public ResponseEntity<ProductWithStockResponseDto> getProductById(@PathVariable UUID productId) {
-        ProductWithStockResponseDto productWithStockResponseDto = productWithStockService.getProductWithStockById(productId);
+    public ResponseEntity<ProductWithStockResponseDto> getProductById(@RequestHeader(HEADER_USER_ROLE) String roleHeader, @PathVariable UUID productId) {
+        ProductWithStockResponseDto productWithStockResponseDto;
 
+        if(UserRoleEnum.isMaster(roleHeader))
+        {
+            productWithStockResponseDto = productWithStockService.getProductWithStockById(productId);
+        }else {
+            productWithStockResponseDto = productWithStockService.getValidProductWithStockById(productId);
+        }
         return new ResponseEntity<>(productWithStockResponseDto, HttpStatus.OK);
     }
 
