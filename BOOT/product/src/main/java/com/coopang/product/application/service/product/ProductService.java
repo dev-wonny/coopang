@@ -2,8 +2,6 @@ package com.coopang.product.application.service.product;
 
 import com.coopang.apidata.application.company.request.CompanySearchConditionRequest;
 import com.coopang.apidata.application.company.response.CompanyResponse;
-import com.coopang.apidata.application.hub.request.HubSearchConditionRequest;
-import com.coopang.apidata.application.hub.response.HubResponse;
 import com.coopang.product.application.request.product.ProductDto;
 import com.coopang.product.application.request.product.ProductHiddenAndSaleDto;
 import com.coopang.product.application.response.product.ProductResponseDto;
