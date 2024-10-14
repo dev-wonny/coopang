@@ -1,6 +1,6 @@
-package com.coopang.product.presentation.request.productstockhistory;
+package com.coopang.product.presentation.request.productStockHistory;
 
-import com.coopang.product.domain.entity.productstockhistory.ProductStockHistoryChangeType;
+import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryChangeType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;

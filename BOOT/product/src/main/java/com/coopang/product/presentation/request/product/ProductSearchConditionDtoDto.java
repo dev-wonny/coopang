@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class ProductSearchCondition extends BaseSearchCondition {
+public class ProductSearchConditionDtoDto extends BaseSearchConditionDto {
 
     private String productName;
     private double minProductPrice;

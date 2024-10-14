@@ -1,4 +1,4 @@
-package com.coopang.product.presentation.request.productstock;
+package com.coopang.product.presentation.request.productStock;
 
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
