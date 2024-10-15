@@ -1,13 +1,13 @@
 package com.coopang.product.application.service.productstock;
 
-import com.coopang.product.application.request.productStock.ProductStockDto;
+import com.coopang.product.application.request.productstock.ProductStockDto;
 import com.coopang.product.application.response.productStock.ProductStockResponseDto;
 import com.coopang.product.domain.entity.product.ProductEntity;
-import com.coopang.product.domain.entity.productStock.ProductStockEntity;
-import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryChangeType;
-import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryEntity;
-import com.coopang.product.domain.repository.productStock.ProductStockRepository;
-import com.coopang.product.domain.service.productStock.ProductStockDomainService;
+import com.coopang.product.domain.entity.productstock.ProductStockEntity;
+import com.coopang.product.domain.entity.productstockhistory.ProductStockHistoryChangeType;
+import com.coopang.product.domain.entity.productstockhistory.ProductStockHistoryEntity;
+import com.coopang.product.domain.repository.productstock.ProductStockRepository;
+import com.coopang.product.domain.service.productstock.ProductStockDomainService;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

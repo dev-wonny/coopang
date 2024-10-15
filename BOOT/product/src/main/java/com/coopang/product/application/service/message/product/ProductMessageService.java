@@ -8,7 +8,7 @@ import com.coopang.apicommunication.kafka.message.RollbackProduct;
 import com.coopang.apidata.application.company.response.CompanyResponse;
 import com.coopang.product.api_commnuication.MessageProducer;
 import com.coopang.product.api_commnuication.MessageService;
-import com.coopang.product.application.request.productStock.ProductStockDto;
+import com.coopang.product.application.request.productstock.ProductStockDto;
 import com.coopang.product.application.response.product.ProductResponseDto;
 import com.coopang.product.application.service.product.ProductService;
 import com.coopang.product.application.service.productstock.ProductStockService;

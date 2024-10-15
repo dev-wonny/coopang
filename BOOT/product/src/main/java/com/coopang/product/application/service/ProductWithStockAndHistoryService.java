@@ -6,12 +6,10 @@ import com.coopang.product.application.service.product.ProductService;
 import com.coopang.product.application.service.productStockHistory.ProductStockHistoryService;
 import com.coopang.product.application.service.productstock.ProductStockService;
 import com.coopang.product.domain.entity.product.ProductEntity;
-import com.coopang.product.domain.entity.productStock.ProductStockEntity;
-import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryEntity;
+import com.coopang.product.domain.entity.productstock.ProductStockEntity;
+import com.coopang.product.domain.entity.productstockhistory.ProductStockHistoryEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Service
 @Transactional
