@@ -1,12 +1,11 @@
 package com.coopang.hub.presentation.controller.shipper;
 
 
-import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ID;
-import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ROLE;
-
+import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ID;
+import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ROLE;
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.apidata.application.hub.enums.ShipperTypeEnum;
-import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.hub.application.request.shipper.ShipperDto;
 import com.coopang.hub.application.request.shipper.ShipperSearchCondition;
 import com.coopang.hub.application.response.shipper.ShipperResponseDto;
