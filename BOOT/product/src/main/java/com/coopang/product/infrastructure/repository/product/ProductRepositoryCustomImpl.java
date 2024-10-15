@@ -2,7 +2,7 @@ package com.coopang.product.infrastructure.repository.product;
 
 import static com.coopang.product.domain.entity.category.QCategoryEntity.categoryEntity;
 import static com.coopang.product.domain.entity.product.QProductEntity.productEntity;
-import static com.coopang.product.domain.entity.productStock.QProductStockEntity.productStockEntity;
+import static com.coopang.product.domain.entity.productstock.QProductStockEntity.productStockEntity;
 
 import com.coopang.apiconfig.querydsl.Querydsl4RepositorySupport;
 import com.coopang.product.domain.entity.product.ProductEntity;

@@ -1,14 +1,14 @@
 package com.coopang.product.application.service.productStockHistory;
 
-import com.coopang.product.application.request.ProductStockHistory.ProductStockHistoryDto;
+import com.coopang.product.application.request.Productstockhistory.ProductStockHistoryDto;
 import com.coopang.product.application.response.ProductStockHistory.ProductStockHistoryResponseDto;
 import com.coopang.product.application.response.productStock.ProductStockResponseDto;
 import com.coopang.product.application.service.productstock.ProductStockService;
-import com.coopang.product.domain.entity.productStock.ProductStockEntity;
-import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryEntity;
-import com.coopang.product.domain.repository.productStockHistory.ProductStockHistoryRepository;
-import com.coopang.product.domain.service.productStockHistory.ProductStockHistoryDomainService;
-import com.coopang.product.presentation.request.productStockHistory.ProductStockHistorySearchConditionDto;
+import com.coopang.product.domain.entity.productstock.ProductStockEntity;
+import com.coopang.product.domain.entity.productstockhistory.ProductStockHistoryEntity;
+import com.coopang.product.domain.repository.productstockhistory.ProductStockHistoryRepository;
+import com.coopang.product.domain.service.productstockhistory.ProductStockHistoryDomainService;
+import com.coopang.product.presentation.request.productstockhistory.ProductStockHistorySearchConditionDto;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
