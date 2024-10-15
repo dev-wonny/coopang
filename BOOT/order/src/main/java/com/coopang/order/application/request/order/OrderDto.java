@@ -1,4 +1,4 @@
-package com.coopang.apicommunication.kafka.message;
+package com.coopang.order.application.request.order;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,10 +8,13 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class ProcessPayment {
-    private UUID orderId;
+public class OrderDto {
+
     private UUID productId;
+    private String zipCode;
+    private String address1;
+    private String address2;
     private Integer orderQuantity;
+    private BigDecimal orderSinglePrice;
     private BigDecimal orderTotalPrice;
-    private String Message;
 }
