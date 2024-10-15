@@ -70,12 +70,12 @@ public class ProductStockHistoryRepositoryCustomImpl extends Querydsl4Repository
         }
 
         if (startDate == null) {
-            return productStockHistoryEntity.createdAt.before(endDate);
+            return productStockHistoryEntity.createdAt.loe(endDate);
         }
 
         if(endDate==null) {
 
-            return productStockHistoryEntity.createdAt.after(startDate);
+            return productStockHistoryEntity.createdAt.goe(startDate);
         }
 
         return productStockHistoryEntity.createdAt.between(startDate, endDate);

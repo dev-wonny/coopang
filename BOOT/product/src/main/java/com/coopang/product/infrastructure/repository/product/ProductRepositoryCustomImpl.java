@@ -112,22 +112,22 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
         }
 
         if (startDate == null) {
-            return productEntity.createdAt.before(endDate);
+            return productEntity.createdAt.loe(endDate);
         }
 
         if(endDate==null) {
 
-            return productEntity.createdAt.after(startDate);
+            return productEntity.createdAt.goe(startDate);
         }
 
         return productEntity.createdAt.between(startDate, endDate);
     }
 
     private Predicate isProductPriceGreaterThan(double minProductPrice) {
-        return Optional.ofNullable(minProductPrice).map(price ->productEntity.productPrice.goe(price)).orElse(null);
+        return Optional.ofNullable(minProductPrice).map(productEntity.productPrice::goe).orElse(null);
     }
 
     private Predicate isProductPricelessThan(double maxProductPrice) {
-        return Optional.ofNullable(maxProductPrice).map(price ->productEntity.productPrice.loe(price)).orElse(null);
+        return Optional.ofNullable(maxProductPrice).map(productEntity.productPrice::loe).orElse(null);
     }
 }
