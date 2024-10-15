@@ -15,6 +15,8 @@ public class OrderResponseDto {
     private UUID orderId;
     private UUID productId;
     private UUID userId;
+    private UUID nearHubId;
+    private UUID productHubId;
     private Address address;
     private Integer orderQuantity;
     private BigDecimal orderSinglePrice;
@@ -26,6 +28,8 @@ public class OrderResponseDto {
             UUID orderId,
             UUID userId,
             UUID productId,
+            UUID nearHubId,
+            UUID productHubId,
             Address address,
             Integer orderQuantity,
             BigDecimal orderSinglePrice,
@@ -36,6 +40,8 @@ public class OrderResponseDto {
         this.orderId = orderId;
         this.userId = userId;
         this.productId = productId;
+        this.nearHubId = nearHubId;
+        this.productHubId = productHubId;
         this.address = address;
         this.orderQuantity = orderQuantity;
         this.orderSinglePrice = orderSinglePrice;
@@ -49,6 +55,8 @@ public class OrderResponseDto {
                 orderEntity.getOrderId(),
                 orderEntity.getUserId(),
                 orderEntity.getProductId(),
+                orderEntity.getNearHubId(),
+                orderEntity.getProductHubId(),
                 new Address(orderEntity.getAddressEntity().getZipCode(),orderEntity.getAddressEntity().getAddress1(),orderEntity.getAddressEntity().getAddress2()),
                 orderEntity.getOrderQuantity(),
                 orderEntity.getOrderSinglePrice(),

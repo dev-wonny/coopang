@@ -10,8 +10,10 @@ import java.util.UUID;
 public class ProcessDelivery {
     private UUID orderId;
     private UUID userId;
-    private UUID companyId;
+    private UUID nearHubId;
+    private UUID productHubId;
     private String zipCode;
     private String address1;
     private String address2;
+
 }

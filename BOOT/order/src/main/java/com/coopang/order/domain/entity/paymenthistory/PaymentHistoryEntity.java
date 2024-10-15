@@ -1,4 +1,4 @@
-package com.coopang.order.domain.entity.payment;
+package com.coopang.order.domain.entity.paymenthistory;
 
 import com.coopang.apidata.application.payment.enums.PaymentMethodEnum;
 import com.coopang.apidata.application.payment.enums.PaymentStatusEnum;
@@ -21,12 +21,15 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-public class PaymentEntity extends BaseEntity {
+public class PaymentHistoryEntity extends BaseEntity {
 
     @Id
     @UuidGenerator
-    @Column(name = "payment_id", columnDefinition = "UUID", unique = true, nullable = false)
-    private UUID paymentId;
+    @Column(name = "payment_history_id", columnDefinition = "UUID", unique = true, nullable = false)
+    private UUID paymentHistoryId;
+
+    @Column(name = "pg_payment_id", columnDefinition = "UUID", nullable = false)
+    private UUID pgPaymentId;
 
     @Column(name = "order_id", columnDefinition = "UUID", nullable = false)
     private UUID orderId;
@@ -43,30 +46,34 @@ public class PaymentEntity extends BaseEntity {
     private PaymentStatusEnum paymentStatus;
 
     @Builder
-    private PaymentEntity(
-            UUID paymentId,
+    private PaymentHistoryEntity(
+            UUID paymentHistoryId,
+            UUID pgPaymentId,
             UUID orderId,
             PaymentMethodEnum paymentMethod,
             BigDecimal paymentPrice,
             PaymentStatusEnum paymentStatus
     ){
-        this.paymentId = paymentId;
+        this.paymentHistoryId = paymentHistoryId;
+        this.pgPaymentId = pgPaymentId;
         this.orderId = orderId;
         this.paymentMethod = paymentMethod;
         this.paymentPrice = paymentPrice;
         this.paymentStatus = paymentStatus;
     }
 
-    public static PaymentEntity create(
+    public static PaymentHistoryEntity create(
             UUID orderId,
-            BigDecimal paymentPrice,
-            PaymentStatusEnum paymentStatus
+            UUID pgPaymentId,
+            PaymentMethodEnum paymentMethod,
+            BigDecimal paymentPrice
     ){
-        return PaymentEntity.builder()
+        return PaymentHistoryEntity.builder()
                 .orderId(orderId)
-                .paymentMethod(PaymentMethodEnum.CARD)
+                .pgPaymentId(pgPaymentId)
+                .paymentMethod(paymentMethod)
                 .paymentPrice(paymentPrice)
-                .paymentStatus(paymentStatus)
+                .paymentStatus(PaymentStatusEnum.COMPLETED)
                 .build();
     }
 
