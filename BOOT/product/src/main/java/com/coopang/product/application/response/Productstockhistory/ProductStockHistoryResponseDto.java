@@ -1,7 +1,7 @@
 package com.coopang.product.application.response.ProductStockHistory;
 
-import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryChangeType;
-import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryEntity;
+import com.coopang.product.domain.entity.productstockhistory.ProductStockHistoryChangeType;
+import com.coopang.product.domain.entity.productstockhistory.ProductStockHistoryEntity;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
