@@ -1,7 +1,7 @@
 package com.coopang.apiconfig.security.filter;
 
-import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ID;
-import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ROLE;
+import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ID;
+import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ROLE;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
