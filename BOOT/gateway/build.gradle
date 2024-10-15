@@ -23,7 +23,8 @@ ext {
 
 dependencies {
     // multi module
-    implementation project(':DATA:api-data')
+    implementation project(':DATA:core-data')
+    implementation project(':INFRA:auth-common')
 
     // actuator
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
