@@ -4,7 +4,7 @@ package com.coopang.user.infrastructure.repository;
 import static com.coopang.user.domain.entity.user.QUserEntity.userEntity;
 
 import com.coopang.apiconfig.querydsl.Querydsl4RepositorySupport;
-import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.user.application.request.UserSearchCondition;
 import com.coopang.user.domain.entity.user.UserEntity;
 import com.querydsl.core.types.Predicate;
