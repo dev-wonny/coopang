@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/payments/v1/pg")
 public class PGController {
 
+    /*
+    Todo : 결제 확인을 위한 PGPaymentId 를 임의의로 생성해서 전달
+     */
     private final PGService pgService;
 
     public PGController(PGService pgService) {

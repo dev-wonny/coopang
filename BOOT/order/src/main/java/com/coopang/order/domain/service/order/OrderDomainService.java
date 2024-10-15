@@ -1,17 +1,12 @@
 package com.coopang.order.domain.service.order;
 
-import com.coopang.apicommunication.kafka.message.ProcessDelivery;
-import com.coopang.apicommunication.kafka.message.ProcessPayment;
-import com.coopang.apicommunication.kafka.message.ProcessProduct;
-import com.coopang.apicommunication.kafka.message.RollbackProduct;
+import com.coopang.apidata.application.order.enums.OrderStatusEnum;
 import com.coopang.order.application.request.order.OrderDto;
 import com.coopang.order.domain.entity.order.OrderEntity;
-import com.coopang.order.infrastructure.messaging.order.OrderKafkaProducer;
 import com.coopang.order.infrastructure.repository.order.OrderJpaRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.UUID;
 
@@ -21,14 +16,11 @@ import java.util.UUID;
 public class OrderDomainService {
 
     private final OrderJpaRepository orderJpaRepository;
-    private final OrderKafkaProducer orderKafkaProducer;
 
     public OrderDomainService(
-            OrderJpaRepository orderJpaRepository,
-            OrderKafkaProducer orderKafkaProducer
+            OrderJpaRepository orderJpaRepository
     ) {
         this.orderJpaRepository = orderJpaRepository;
-        this.orderKafkaProducer = orderKafkaProducer;
     }
 
     // 주문 생성
@@ -47,64 +39,27 @@ public class OrderDomainService {
         return orderJpaRepository.save(orderEntity);
     }
 
-    // process_product 로 전달
-    public void sendProcessProduct(UUID orderId){
-        OrderEntity orderEntity = findByOrderId(orderId);
-
-        ProcessProduct processProduct = new ProcessProduct();
-        processProduct.setOrderId(orderEntity.getOrderId());
-        processProduct.setProductId(orderEntity.getProductId());
-        processProduct.setOrderQuantity(orderEntity.getOrderQuantity());
-        processProduct.setOrderTotalPrice(orderEntity.getOrderTotalPrice());
-
-        orderKafkaProducer.sendProcessProduct(processProduct);
+    public void validateOrderStatusUpdate(OrderStatusEnum currentStatus, OrderStatusEnum newStatus) {
+        if (!isValidTransition(currentStatus, newStatus)) {
+            throw new IllegalArgumentException("Invalid status transition from " + currentStatus + " to " + newStatus);
+        }
     }
 
-    // process_delivery 로 전달
-    public void sendProcessDelivery(UUID orderId){
-        OrderEntity orderEntity = findByOrderId(orderId);
-
-        ProcessDelivery processDelivery = new ProcessDelivery();
-        processDelivery.setOrderId(orderEntity.getOrderId());
-        processDelivery.setUserId(orderEntity.getUserId());
-        processDelivery.setCompanyId(orderEntity.getCompanyId());
-        processDelivery.setZipCode(orderEntity.getAddressEntity().getZipCode());
-        processDelivery.setAddress1(orderEntity.getAddressEntity().getAddress1());
-        processDelivery.setAddress2(orderEntity.getAddressEntity().getAddress2());
-
-        orderKafkaProducer.sendProcessDelivery(processDelivery);
+    private boolean isValidTransition(OrderStatusEnum currentStatus, OrderStatusEnum orderStatusEnum) {
+        return switch (currentStatus) {
+            case READY -> orderStatusEnum == OrderStatusEnum.PENDING;
+            case PENDING -> orderStatusEnum == OrderStatusEnum.SHIPPED || orderStatusEnum == OrderStatusEnum.CANCELED;
+            case SHIPPED -> orderStatusEnum == OrderStatusEnum.DELIVERED;
+            case DELIVERED -> false; // Delivered 상태에서 더 이상 변경할 수 없음
+            case CANCELED -> false; // Canceled 상태에서 더 이상 변경할 수 없음
+            default -> false; // 유효하지 않은 상태
+        };
     }
 
-    // process_payment 로 전달
-    public void sendProcessPayment(UUID orderId, String message){
-        OrderEntity orderEntity = findByOrderId(orderId);
-
-        ProcessPayment processPayment = new ProcessPayment();
-        processPayment.setOrderId(orderEntity.getOrderId());
-        processPayment.setProductId(orderEntity.getProductId());
-        processPayment.setOrderQuantity(orderEntity.getOrderQuantity());
-        processPayment.setOrderTotalPrice(orderEntity.getOrderTotalPrice());
-        processPayment.setMessage(message);
-
-        orderKafkaProducer.sendProcessPayment(processPayment);
-    }
-
-    // rollback_product 로 전달
-    public void sendRollbackProduct(UUID orderId){
-        OrderEntity orderEntity = findByOrderId(orderId);
-
-        RollbackProduct rollbackProduct = new RollbackProduct();
-        rollbackProduct.setOrderId(orderEntity.getOrderId());
-        rollbackProduct.setProductId(orderEntity.getProductId());
-        rollbackProduct.setOrderQuantity(orderEntity.getOrderQuantity());
-        rollbackProduct.setOrderTotalPrice(orderEntity.getOrderTotalPrice());
-
-        orderKafkaProducer.sendRollbackProduct(rollbackProduct);
-    }
-
-    private OrderEntity findByOrderId(UUID orderId) {
-        return orderJpaRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found. orderId=" + orderId));
+    public void validateOrderDelete(OrderStatusEnum orderStatus) {
+        if (orderStatus != OrderStatusEnum.CANCELED && orderStatus != OrderStatusEnum.SHIPPED) {
+            throw new IllegalArgumentException("Order cannot be deleted unless it is in CANCELED or SHIPPED status. Current status: " + orderStatus);
+        }
     }
 
 }

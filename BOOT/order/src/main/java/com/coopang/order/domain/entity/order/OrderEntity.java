@@ -107,19 +107,14 @@ public class OrderEntity extends BaseEntity {
                 .build();
     }
 
-    public void updateAtOrder(
-            UUID companyId
+    public void updateOrder(
+            UUID nearHubId,
+            String zipCode,
+            String address1,
+            String address2
     ){
-        this.companyId = companyId;
-        this.orderStatus = OrderStatusEnum.PENDING;
-    }
-
-    public void updateAtCompleteDelivery(
-            UUID productHubId,
-            UUID nearHubId
-    ){
-        this.productHubId = productHubId;
         this.nearHubId = nearHubId;
+        this.addressEntity.updateAddress(zipCode,address1,address2);
     }
 
     public void setOrderStatus(OrderStatusEnum orderStatus) {

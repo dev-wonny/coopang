@@ -4,6 +4,7 @@ import com.coopang.order.presentation.request.pg.PGRequestDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j(topic = "PGService")
@@ -25,7 +26,8 @@ public class PGService {
             // 결제 성공 로그
             log.info("Payment processed successfully. Method: {}, Total Price: {}",
                     requestDto.getPaymentMethod(), requestDto.getOrderTotalPrice());
-            return "Payment processed successfully";
+            final String pgPaymentId = UUID.randomUUID().toString();
+            return "Payment processed successfully with id: " + pgPaymentId;
         } else {
             // 결제 실패 로그
             log.error("Payment processing failed. Method: {}, Total Price: {}. Reason: Random failure.",
