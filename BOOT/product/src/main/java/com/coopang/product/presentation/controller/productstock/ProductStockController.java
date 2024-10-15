@@ -33,7 +33,7 @@ public class ProductStockController {
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PatchMapping("/{productId}/restock")
-    public ResponseEntity<String> addProductStock(@PathVariable UUID productId,
+    public ResponseEntity<Void> addProductStock(@PathVariable UUID productId,
                                                   @Valid @RequestBody AddStockRequestDto addStockRequestDto) {
 
         ProductStockDto productStockDto = mapperConfig.strictMapper().map(addStockRequestDto, ProductStockDto.class);
@@ -45,7 +45,7 @@ public class ProductStockController {
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PatchMapping("/{productId}/reduce")
-    public ResponseEntity<String> reduceProductStock(
+    public ResponseEntity<Void> reduceProductStock(
             @PathVariable UUID productId,
             @Valid @RequestBody UpdateStockRequestDto updateStockRequestDto) {
 
@@ -58,7 +58,7 @@ public class ProductStockController {
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PatchMapping("/{productId}/rollback-increase")
-    public ResponseEntity<String> rollbackProductStock(
+    public ResponseEntity<Void> rollbackProductStock(
             @PathVariable UUID productId,
             @Valid @RequestBody UpdateStockRequestDto updateStockRequestDto) {
 
@@ -71,7 +71,7 @@ public class ProductStockController {
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PatchMapping("/{productId}/cancel-increase")
-    public ResponseEntity<String> cancelProductStock(
+    public ResponseEntity<Void> cancelProductStock(
             @PathVariable UUID productId,
             @Valid @RequestBody UpdateStockRequestDto updateStockRequestDto) {
 
