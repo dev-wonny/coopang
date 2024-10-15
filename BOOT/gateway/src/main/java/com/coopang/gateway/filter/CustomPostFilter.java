@@ -1,6 +1,8 @@
 package com.coopang.gateway.filter;
 
-import static com.coopang.apidata.constants.UserConstants.HEADER_USER_ID;
+
+import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ID;
+import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ROLE;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -30,11 +32,11 @@ public class CustomPostFilter implements GlobalFilter, Ordered {
     private void setResponseHeader(ServerWebExchange exchange, ServerHttpResponse response) {
         // 응답 헤더에 사용자 ID와 역할을 추가
         final String userId = exchange.getRequest().getHeaders().getFirst(HEADER_USER_ID);
-        final String role = exchange.getRequest().getHeaders().getFirst("X-Role");
+        final String role = exchange.getRequest().getHeaders().getFirst(HEADER_USER_ROLE);
 
         if (userId != null && role != null) {
             response.getHeaders().add(HEADER_USER_ID, userId);
-            response.getHeaders().add("X-Role", role);
+            response.getHeaders().add(HEADER_USER_ROLE, role);
         }
     }
 
