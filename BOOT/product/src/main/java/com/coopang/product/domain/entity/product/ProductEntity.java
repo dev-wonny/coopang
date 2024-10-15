@@ -1,7 +1,7 @@
 package com.coopang.product.domain.entity.product;
 
 import com.coopang.apidata.jpa.entity.base.BaseEntity;
-import com.coopang.product.domain.entity.productStock.ProductStockEntity;
+import com.coopang.product.domain.entity.productstock.ProductStockEntity;
 import com.coopang.product.domain.entity.category.CategoryEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -17,7 +17,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter

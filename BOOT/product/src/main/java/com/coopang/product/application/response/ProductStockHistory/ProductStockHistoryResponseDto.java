@@ -1,22 +1,25 @@
 package com.coopang.product.application.response.ProductStockHistory;
 
-import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryChangeType;
-import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryEntity;
+import com.coopang.product.domain.entity.productstockhistory.ProductStockHistoryChangeType;
+import com.coopang.product.domain.entity.productstockhistory.ProductStockHistoryEntity;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 @Builder(access = AccessLevel.PRIVATE)
-public record ProductStockHistoryResponseDto(
-    UUID productStockHistoryId,
-    UUID productStockId,
-    UUID orderId,
-    int productStockHistoryChangeQuantity,
-    int productStockHistoryPreviousQuantity,
-    int productStockHistoryCurrentQuantity,
-    String productStockHistoryAdditionalInfo,
-    ProductStockHistoryChangeType productStockHistoryChangeType
-) {
+public class ProductStockHistoryResponseDto
+{
+    private UUID productStockHistoryId;
+    private UUID productStockId;
+    private UUID orderId;
+    private int productStockHistoryChangeQuantity;
+    private int productStockHistoryPreviousQuantity;
+    private int productStockHistoryCurrentQuantity;
+    private String productStockHistoryAdditionalInfo;
+    private ProductStockHistoryChangeType productStockHistoryChangeType;
+
 
     public static ProductStockHistoryResponseDto of(ProductStockHistoryEntity entity){
         return ProductStockHistoryResponseDto.builder()
