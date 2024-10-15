@@ -1,5 +1,6 @@
 package com.coopang.user.presentation.controller;
 
+import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_TOKEN;
 import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ID;
 
 import com.coopang.apiconfig.error.AccessDeniedException;
@@ -99,13 +100,13 @@ public class AuthController {
      * * - 클라이언트에서 jwt 토큰 쿠키 삭제
      *
      * @param userIdHeader the user ID extracted from the request header (HEADER_USER_ID).
-     * @param tokenHeader  the JWT token extracted from the request header ("X-Token").
+     * @param tokenHeader  the JWT token extracted from the request header (HEADER_TOKEN).
      * @return a response indicating that the logout was successful.
      */
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
-            @RequestHeader(value = HEADER_USER_ID, required = true) UUID userIdHeader,
-            @RequestHeader(value = "X-Token", required = true) String tokenHeader) {
+        @RequestHeader(value = HEADER_USER_ID, required = true) UUID userIdHeader,
+        @RequestHeader(value = HEADER_TOKEN, required = true) String tokenHeader) {
         authService.logout(userIdHeader, tokenHeader);
         return new ResponseEntity<>(HttpStatus.OK);
     }
