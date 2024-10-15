@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ModelMapperConfig {
+    private final ModelMapper modelMapper = new ModelMapper();
 
     @Bean
     public ModelMapper modelMapper() {
@@ -15,25 +16,22 @@ public class ModelMapperConfig {
 
     @Bean
     public ModelMapper strictMapper() {
-        ModelMapper strictMapper = new ModelMapper();
-        strictMapper.getConfiguration()
+        modelMapper.getConfiguration()
                 .setMatchingStrategy(MatchingStrategies.STRICT);
-        return strictMapper;
+        return modelMapper;
     }
 
     @Bean
     public ModelMapper standardMapper() {
-        ModelMapper standardMapper = new ModelMapper();
-        standardMapper.getConfiguration()
+        modelMapper.getConfiguration()
                 .setMatchingStrategy(MatchingStrategies.STANDARD);
-        return standardMapper;
+        return modelMapper;
     }
 
     @Bean
     public ModelMapper looseMapper() {
-        ModelMapper looseMapper = new ModelMapper();
-        looseMapper.getConfiguration()
+        modelMapper.getConfiguration()
                 .setMatchingStrategy(MatchingStrategies.LOOSE);
-        return looseMapper;
+        return modelMapper;
     }
 }

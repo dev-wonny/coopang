@@ -1,6 +1,5 @@
 package com.coopang.apidata.application.user.response;
 
-import com.coopang.apidata.application.address.Address;
 import com.coopang.apidata.application.user.enums.UserRoleEnum;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +16,9 @@ public class UserResponse {
     private UserRoleEnum role;
     private String slackId;
 
-    private Address address;
+    private String zipCode;
+    private String address1;
+    private String address2;
     private UUID nearHubId;
 
     private boolean isBlock;

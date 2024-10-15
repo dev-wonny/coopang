@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.UUID;
@@ -26,6 +27,7 @@ import java.util.UUID;
 public class HubEntity extends BaseEntity {
 
     @Id
+    @UuidGenerator
     @Column(name = "hub_id", columnDefinition = "UUID", nullable = false, unique = true)
     private UUID hubId;
 
@@ -39,23 +41,14 @@ public class HubEntity extends BaseEntity {
     private AddressEntity addressEntity;
 
     @Builder
-    private HubEntity(UUID hubId, String hubName, UUID hubManagerId, AddressEntity addressEntity) {
-        this.hubId = hubId;
+    private HubEntity(String hubName, UUID hubManagerId, AddressEntity addressEntity) {
         this.hubName = hubName;
         this.hubManagerId = hubManagerId;
         this.addressEntity = addressEntity;
     }
 
-    public static HubEntity create(
-            UUID hubId,
-            String hubName,
-            UUID hubManagerId,
-            String zipCode,
-            String address1,
-            String address2
-    ) {
+    public static HubEntity create(String hubName, UUID hubManagerId, String zipCode, String address1, String address2) {
         return HubEntity.builder()
-                .hubId(hubId)
                 .hubName(hubName)
                 .hubManagerId(hubManagerId)
                 .addressEntity(AddressEntity.create(zipCode, address1, address2))

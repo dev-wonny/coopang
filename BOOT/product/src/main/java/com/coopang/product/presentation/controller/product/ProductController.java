@@ -1,8 +1,6 @@
 package com.coopang.product.presentation.controller.product;
 
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
-import com.coopang.apidata.application.user.enums.UserRoleEnum;
-import com.coopang.apidata.application.user.enums.UserRoleEnum.Authority;
 import com.coopang.product.application.request.product.ProductDto;
 import com.coopang.product.application.request.product.ProductHiddenAndSaleDto;
 import com.coopang.product.application.service.product.ProductService;
@@ -50,7 +48,7 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @Secured({Authority.MASTER,Authority.COMPANY,Authority.HUB_MANAGER})
+    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @PostMapping("/product")
     public ResponseEntity<?> createProduct(@Valid @RequestBody CreateProductRequestDto createProductRequestDto) {
 
@@ -59,7 +57,7 @@ public class ProductController {
         return new ResponseEntity<>(productService.createProduct(productDto),HttpStatus.CREATED);
     }
 
-    @Secured({Authority.MASTER,Authority.COMPANY,Authority.HUB_MANAGER})
+    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @PutMapping("/product/{productId}")
     public ResponseEntity<?> updateProduct(@Valid @RequestBody UpdateProductRequest updateProductRequest,@PathVariable UUID productId) {
 
@@ -69,7 +67,7 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Secured({Authority.MASTER,Authority.COMPANY,Authority.HUB_MANAGER})
+    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @PatchMapping("/product/{productId}/hidden")
     public ResponseEntity<?> updateProductHidden(@Valid @RequestBody UpdateProductHiddenRequest request,@PathVariable UUID productId) {
 
@@ -79,7 +77,7 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Secured({Authority.MASTER,Authority.COMPANY,Authority.HUB_MANAGER})
+    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @PatchMapping("/product/{productId}/sale")
     public ResponseEntity<?> updateProductSale(@Valid @RequestBody UpdateProductSaleRequest request, @PathVariable UUID productId) {
 
@@ -89,7 +87,7 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Secured({Authority.MASTER,Authority.COMPANY,Authority.HUB_MANAGER})
+    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @DeleteMapping("/product/{productId}")
     public ResponseEntity<?> deleteProduct(@PathVariable UUID productId,
         @RequestHeader(USER_ID_HEADER) UUID userId,

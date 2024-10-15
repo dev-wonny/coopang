@@ -3,55 +3,55 @@ global:
     evaluation_interval: 15s
 
 rule_files:
-scrape_configs:
-    -   job_name: "prometheus"
-        static_configs:
-            -   targets: [ "localhost:9090" ] # prometheus 자체 메트릭 수집
+    scrape_configs:
+        -   job_name: "prometheus"
+            static_configs:
+                -   targets: [ "localhost:9090" ] # prometheus 자체 메트릭 수집
 
-    -   job_name: 'eureka'
-        metrics_path: '/actuator/prometheus'
-        static_configs:
-            #                -   targets: [ 'host.docker.internal:19090' ]  # docker Eureka 애플리케이션
-            -   targets: [ 'localhost:19090' ]  # local Eureka 애플리케이션
+        -   job_name: 'eureka'
+            metrics_path: '/actuator/prometheus'
+            static_configs:
+                -   targets: [ 'host.docker.internal:19090' ]  # docker Eureka 애플리케이션
+#                -   targets: [ 'localhost:19090' ]  # local Eureka 애플리케이션
 
-    -   job_name: 'gateway'
-        metrics_path: '/actuator/prometheus'
-        static_configs:
-            #                -   targets: [ 'host.docker.internal:19091' ]  # docker Gateway 애플리케이션
-            -   targets: [ 'localhost:19091' ]  # local Gateway 애플리케이션
+        -   job_name: 'gateway'
+            metrics_path: '/actuator/prometheus'
+            static_configs:
+                -   targets: [ 'host.docker.internal:19091' ]  # docker Gateway 애플리케이션
+#                -   targets: [ 'localhost:19091' ]  # local Gateway 애플리케이션
 
-    -   job_name: 'user'
-        metrics_path: '/actuator/prometheus'
-        static_configs:
-            #                -   targets: [ 'host.docker.internal:19092' ]  # docker User 애플리케이션
-            -   targets: [ 'localhost:19092' ]  # local User 애플리케이션
+        -   job_name: 'user'
+            metrics_path: '/actuator/prometheus'
+            static_configs:
+                -   targets: [ 'host.docker.internal:19092' ]  # docker User 애플리케이션
+#                -   targets: [ 'localhost:19092' ]  # local User 애플리케이션
 
-    -   job_name: 'hub'
-        metrics_path: '/actuator/prometheus'
-        static_configs:
-            #                -   targets: [ 'host.docker.internal:19093' ]  # docker Hub 애플리케이션
-            -   targets: [ 'localhost:19093' ]  # local Hub 애플리케이션
+        -   job_name: 'hub'
+            metrics_path: '/actuator/prometheus'
+            static_configs:
+                -   targets: [ 'host.docker.internal:19093' ]  # docker Hub 애플리케이션
+#                -   targets: [ 'localhost:19093' ]  # local Hub 애플리케이션
 
-    -   job_name: 'product'
-        metrics_path: '/actuator/prometheus'
-        static_configs:
-            #                -   targets: [ 'host.docker.internal:19094' ]  # docker Product 애플리케이션
-            -   targets: [ 'localhost:19094' ]  # local Product 애플리케이션
+        -   job_name: 'product'
+            metrics_path: '/actuator/prometheus'
+            static_configs:
+                -   targets: [ 'host.docker.internal:19094' ]  # docker Product 애플리케이션
+#                -   targets: [ 'localhost:19094' ]  # local Product 애플리케이션
 
-    -   job_name: 'order'
-        metrics_path: '/actuator/prometheus'
-        static_configs:
-            #                -   targets: [ 'host.docker.internal:19095' ]  # docker Order 애플리케이션
-            -   targets: [ 'localhost:19095' ]  # local Order 애플리케이션
+        -   job_name: 'order'
+            metrics_path: '/actuator/prometheus'
+            static_configs:
+                -   targets: [ 'host.docker.internal:19095' ]  # docker Order 애플리케이션
+#                -   targets: [ 'localhost:19095' ]  # local Order 애플리케이션
 
-    -   job_name: 'delivery'
-        metrics_path: '/actuator/prometheus'
-        static_configs:
-            #                -   targets: [ 'host.docker.internal:19096' ]  # docker Delivery 애플리케이션
-            -   targets: [ 'localhost:19096' ]  # local Delivery 애플리케이션
+        -   job_name: 'delivery'
+            metrics_path: '/actuator/prometheus'
+            static_configs:
+                -   targets: [ 'host.docker.internal:19096' ]  # docker Delivery 애플리케이션
+#                -   targets: [ 'localhost:19096' ]  # local Delivery 애플리케이션
 
-    -   job_name: 'ainoti '
-        metrics_path: '/actuator/prometheus'
-        static_configs:
-            #                -   targets: [ 'host.docker.internal:19097' ]  # docker Ai-Noti 애플리케이션
-            -   targets: [ 'localhost:19097' ]  # local Ai-Noti 애플리케이션
+        -   job_name: 'ainoti '
+            metrics_path: '/actuator/prometheus'
+            static_configs:
+                -   targets: [ 'host.docker.internal:19097' ]  # docker Ai-Noti 애플리케이션
+#                -   targets: [ 'localhost:19097' ]  # local Ai-Noti 애플리케이션

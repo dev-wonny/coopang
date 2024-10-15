@@ -27,8 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -54,8 +53,6 @@ public class ProductService {
         return ProductResponseDto.of(productEntity);
     }
 
-    //특정 상품 조회
-    @Cacheable(value = "products", key = "#productId")
     @Transactional(readOnly = true)
     public ProductResponseDto getProductById(UUID productId) {
 
@@ -64,21 +61,19 @@ public class ProductService {
         return ProductResponseDto.of(productEntity);
     }
 
-    //모든 상품 조회
-    @Cacheable(value = "Allproducts", key = "#condition")
     @Transactional(readOnly = true)
     public Page<ProductResponseDto> getAllProducts(BaseSearchCondition condition,String role,Pageable pageable) {
 
         /**
          * 마스터인 경우 모든 상품들을 봄
          */
-        if(UserRoleEnum.isMaster(role)){
+        if(isMaster(role)){
             return productRepository.findAll(pageable).map(ProductResponseDto::of);
-        }else if(UserRoleEnum.isHubManager(role)){
+        }else if(isHubManager(role)){
             //허브에 소속된 업체들의 상품 리스트
             //TODO : 내부통신으로 업체리스트들을 조회
             return null;
-        }else if(UserRoleEnum.isCompany(role)){
+        }else if(isCompany(role)){
             //내 업체들의 상품들만 조회
             return productRepository.findAllWithStockAndCategoryByCompanyId(condition.getCompanyId(), pageable).map(ProductResponseDto::of);
         }else{
@@ -86,8 +81,6 @@ public class ProductService {
         }
     }
 
-    //카테고리별로 상품 조회
-    @Cacheable(value = "Allproducts", key = "#pageable.pageNumber+ '-' + #pageable.pageSize")
     @Transactional(readOnly = true)
     public Page<ProductResponseDto> getProductWithCategory(UUID categoryId, Pageable pageable) {
 
@@ -97,8 +90,6 @@ public class ProductService {
         return productEntities.map(ProductResponseDto::of);
     }
 
-    //특정 상품 변경
-    @CacheEvict(value = "products", key = "#productId")
     @Transactional
     public void updateProduct(ProductDto productDto, UUID productId) {
 
@@ -108,8 +99,6 @@ public class ProductService {
 
     }
 
-    //특정 상품에 대한 숨김처리
-    @CacheEvict(value = "products", key = "#productId")
     @Transactional
     public void updateProductHidden(ProductHiddenAndSaleDto productHiddenAndSaleDto, UUID productId) {
 
@@ -126,8 +115,6 @@ public class ProductService {
 
     }
 
-    //특정 상품에 대한 판매가능 여부 처리
-    @CacheEvict(value = "products", key = "#productId")
     @Transactional
     public void updateProductSale(ProductHiddenAndSaleDto productHiddenAndSaleDto, UUID productId) {
 
@@ -150,14 +137,13 @@ public class ProductService {
      * 상품 숨김, 판매 불가능 처리
      * @param productId
      */
-    @CacheEvict(value = "products", key = "#productId")
     @Transactional
     public void deleteProductById(UUID userId, String role, UUID productId) {
 
-        if(UserRoleEnum.isCompany(role))
+        if(isCompany(role))
         {
            //TODO : 업체 관리자 조회(company와 통신)
-        }else if(UserRoleEnum.isHubManager(role))
+        }else if(isHubManager(role))
         {
             //TODO : 허브 관리자 조회(hub와 통신)
         }
@@ -170,14 +156,24 @@ public class ProductService {
 
     }
 
-    //키워드로 상품 검색
-    @Cacheable(value = "Allproducts", key = "#condition")
     @Transactional(readOnly = true)
     public Page<ProductResponseDto> searchProduct(ProductSearchCondition searchCondition, Pageable pageable) {
 
         Page <ProductEntity> productEntities = productRepository.search(searchCondition, pageable);
 
         return productEntities.map(ProductResponseDto::of);
+    }
+
+    private boolean isMaster(String role){
+        return role.equals(UserRoleEnum.MASTER);
+    }
+
+    private boolean isHubManager(String role){
+        return role.equals(UserRoleEnum.HUB_MANAGER);
+    }
+
+    private boolean isCompany(String role){
+        return role.equals(UserRoleEnum.COMPANY);
     }
 
     //상품의 재고 수량을 증가시키는 함수

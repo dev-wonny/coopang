@@ -1,7 +1,6 @@
 package com.coopang.product.presentation.controller.productStock;
 
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
-import com.coopang.apidata.application.user.enums.UserRoleEnum.Authority;
 import com.coopang.product.application.request.productStock.ProductStockDto;
 import com.coopang.product.application.service.product.ProductService;
 import com.coopang.product.presentation.request.productStock.AddStockRequest;
@@ -28,7 +27,7 @@ public class ProductStockController {
     private final ProductService productService;
     private final ModelMapperConfig mapperConfig;
 
-    @Secured({Authority.MASTER,Authority.COMPANY,Authority.HUB_MANAGER})
+    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @PatchMapping("/{productId}/restock")
     public ResponseEntity<String> addProductStock(@PathVariable UUID productId,
         @Valid @RequestBody AddStockRequest addStockRequest) {
@@ -40,7 +39,7 @@ public class ProductStockController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Secured({Authority.MASTER,Authority.COMPANY,Authority.HUB_MANAGER})
+    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @PatchMapping("/{productId}/reduce")
     public ResponseEntity<String> reduceProductStock(
         @PathVariable UUID productId,
@@ -53,7 +52,7 @@ public class ProductStockController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Secured({Authority.MASTER,Authority.COMPANY,Authority.HUB_MANAGER})
+    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @PatchMapping("/{productId}/rollback-increase")
     public ResponseEntity<String> rollbackProductStock(
         @PathVariable UUID productId,
@@ -65,8 +64,7 @@ public class ProductStockController {
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
-    @Secured({Authority.MASTER,Authority.COMPANY,Authority.HUB_MANAGER})
+    @Secured({"ROLE_MASTER","ROLE_HUB_MANAGER","ROLE_COMPANY"})
     @PatchMapping("/{productId}/cancel-increase")
     public ResponseEntity<String> cancelProductStock(
         @PathVariable UUID productId,

@@ -28,7 +28,6 @@ public class FeignConfig {
 //        };
 //    }
 
-    // todo 서버 권한
     @Bean
     public RequestInterceptor requestInterceptor() {
         return requestTemplate -> {
