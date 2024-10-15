@@ -1,6 +1,5 @@
 package com.coopang.product.presentation.controller.product;
 
-import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ID;
 import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ROLE;
 
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
@@ -67,7 +66,7 @@ public class ProductController {
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PutMapping("/product/{productId}")
-    public ResponseEntity<String> updateProduct(@Valid @RequestBody UpdateProductRequestDto updateProductRequestDto, @PathVariable UUID productId) {
+    public ResponseEntity<Void> updateProduct(@Valid @RequestBody UpdateProductRequestDto updateProductRequestDto, @PathVariable UUID productId) {
 
         ProductDto productDto = mapperConfig.strictMapper().map(updateProductRequestDto, ProductDto.class);
         productService.updateProduct(productDto, productId);
@@ -77,7 +76,7 @@ public class ProductController {
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PatchMapping("/product/{productId}/hidden")
-    public ResponseEntity<?> updateProductHidden(@Valid @RequestBody UpdateProductHiddenRequestDto request, @PathVariable UUID productId) {
+    public ResponseEntity<Void> updateProductHidden(@Valid @RequestBody UpdateProductHiddenRequestDto request, @PathVariable UUID productId) {
 
         ProductHiddenAndSaleDto productHiddenAndSaleDto = mapperConfig.strictMapper().map(request, ProductHiddenAndSaleDto.class);
         productService.updateProductHidden(productHiddenAndSaleDto, productId);
@@ -87,7 +86,7 @@ public class ProductController {
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PatchMapping("/product/{productId}/sale")
-    public ResponseEntity<?> updateProductSale(@Valid @RequestBody UpdateProductSaleRequestDto request, @PathVariable UUID productId) {
+    public ResponseEntity<Void> updateProductSale(@Valid @RequestBody UpdateProductSaleRequestDto request, @PathVariable UUID productId) {
 
         ProductHiddenAndSaleDto productHiddenAndSaleDto = mapperConfig.strictMapper().map(request, ProductHiddenAndSaleDto.class);
         productService.updateProductSale(productHiddenAndSaleDto, productId);
@@ -97,7 +96,7 @@ public class ProductController {
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @DeleteMapping("/product/{productId}")
-    public ResponseEntity<?> deleteProduct(@PathVariable UUID productId) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable UUID productId) {
 
         productService.deleteProductById( productId);
 
