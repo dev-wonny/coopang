@@ -81,7 +81,7 @@ public class JwtCommonUtil {
         }
     }
 
-    // JWT 검증 - 비동기
+    // 토큰 검증 & Claims 추출 - 비동기
     public Mono<Claims> getValidateClaimsFromTokenAsync(String token) {
         return Mono.defer(() -> Mono.just(getValidateClaimsFromToken(token)));
     }
