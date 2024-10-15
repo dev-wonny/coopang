@@ -31,6 +31,9 @@ tasks.named('jar') {
 }
 
 dependencies {
+    // multi module
+    implementation project(':DATA:core-data')
+
     // validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
