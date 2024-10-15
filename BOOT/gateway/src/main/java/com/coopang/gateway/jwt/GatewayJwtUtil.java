@@ -8,6 +8,7 @@ import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -35,6 +36,9 @@ public class GatewayJwtUtil {
         return Mono.defer(() -> {
             try {
                 final String token = jwtCommonUtil.extractTokenFromExchange(exchange);
+                if (!StringUtils.hasText(token)) {
+                    return Mono.error(new JwtValidationException("JWT token is empty"));
+                }
                 return Mono.just(token);
             } catch (Exception e) {
                 return Mono.error(new JwtValidationException("Error extracting JWT token: " + e.getMessage()));
