@@ -1,5 +1,5 @@
 package com.coopang.order.apicommnication;
 
 public interface MessageService {
-    void listen(String topic, String Message);
+    void processMessage(String topic, String Message);
 }

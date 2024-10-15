@@ -5,8 +5,6 @@ import com.coopang.order.apicommnication.MessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -28,29 +26,29 @@ public class KafkaMessageConsumerService implements MessageConsumer {
     }
 
     @KafkaListener(topics = "complete_product",groupId = "order_server")
-    public void listenCompleteProduct(String message) {
-        orderMessageService.listen("complete_product",message);
+    public void consumeCompleteProduct(String message) {
+        orderMessageService.processMessage("complete_product",message);
     }
     @KafkaListener(topics = "error_product",groupId = "order_server")
-    public void listenErrorProduct(String message) {
-        orderMessageService.listen("error_product",message);
+    public void consumeErrorProduct(String message) {
+        orderMessageService.processMessage("error_product",message);
     }
     @KafkaListener(topics = "process_change_status",groupId = "order_server")
-    public void listenProcessChangeStatus(String message) {
-        orderMessageService.listen("process_change_status",message);
+    public void consumeProcessChangeStatus(String message) {
+        orderMessageService.processMessage("process_change_status",message);
     }
 
     @KafkaListener(topics = "complete_payment",groupId = "order_server")
-    public void listenCompletePayment(String message) {
-        paymentHistoryMessageService.listen("complete_payment",message);
+    public void consumeCompletePayment(String message) {
+        paymentHistoryMessageService.processMessage("complete_payment",message);
     }
     @KafkaListener(topics = "cancel_payment",groupId = "order_server")
-    public void listenCancelPayment(String message) {
-        paymentHistoryMessageService.listen("cancel_payment",message);
+    public void consumeCancelPayment(String message) {
+        paymentHistoryMessageService.processMessage("cancel_payment",message);
     }
 
     @KafkaListener(topics = "test",groupId = "test")
-    public void listenTest(String message) {
-        testMessageService.listen("test",message);
+    public void consumeTest(String message) {
+        testMessageService.processMessage("test",message);
     }
 }

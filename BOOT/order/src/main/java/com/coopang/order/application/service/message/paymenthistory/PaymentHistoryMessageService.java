@@ -20,7 +20,7 @@ public class PaymentHistoryMessageService implements MessageService {
     }
 
     @Override
-    public void listen(String topic, String message) {
+    public void processMessage(String topic, String message) {
         switch (topic) {
             case "complete_payment":
                 listenCompletePayment(message);

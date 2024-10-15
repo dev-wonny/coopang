@@ -22,14 +22,14 @@ import java.util.UUID;
 @Transactional
 public class OrderMessageService implements MessageService {
     /*
-    * send
+    * sendMessage
     Todo : 주문 등록 후 상품에게 전달 (process_product) - OK
     Todo : 배송쪽에 정보 전달 (process_delivery) - OK
     Todo : 결제 성공 후 정보 전달 (complete_payment) - OK
     Todo : 결제 취소 정보 전달 (cancel_payment) - OK
     Todo : 배송 취소 정보 전달 (cancel_delivery) - OK
     Todo : 상품 롤백 정보 전달 (rollback_product) - OK
-    * listen
+    * processMessage
     Todo : 재고 감소 성공 수신 (complete_product) - OK
     Todo : 재고 감소 실패 수신 (error_product) - OK
     Todo : 배송 상태 변경으로 주문 상태 변경 수신 (process_change_status) - OK
@@ -48,7 +48,7 @@ public class OrderMessageService implements MessageService {
         this.messageProducer = messageProducer;
     }
     @Override
-    public void listen(String topic, String message) {
+    public void processMessage(String topic, String message) {
         switch (topic) {
             case "complete_product":
                 listenCompleteProduct(message);
@@ -115,7 +115,7 @@ public class OrderMessageService implements MessageService {
 
 
     /*
-    * send
+    * sendMessage
     Todo : 주문 등록 후 상품에게 전달 (process_product)
     Todo : 배송쪽에 정보 전달 (process_delivery)
     Todo : 결제 성공 후 정보 전달 (complete_payment)
@@ -234,7 +234,7 @@ public class OrderMessageService implements MessageService {
     private void sendMessage(String topic, Object payload) {
         try {
             final String message = objectMapper.writeValueAsString(payload);
-            messageProducer.send(topic, message);
+            messageProducer.sendMessage(topic, message);
         } catch (Exception e) {
             log.error("Error while sending message to topic {}: {}", topic, e.getMessage(), e);
         }

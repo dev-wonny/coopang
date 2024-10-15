@@ -21,7 +21,7 @@ public class TestMessageService implements MessageService {
     }
 
     @Override
-    public void listen(String topic, String message) {
+    public void processMessage(String topic, String message) {
         if (topic.equals("test")) {
             listenTest(message);
         } else {
@@ -46,7 +46,7 @@ public class TestMessageService implements MessageService {
     //1. 메세지 보내기
     private void sendMessage(String topic, String message) {
         try {
-            messageProducer.send(topic, message);
+            messageProducer.sendMessage(topic, message);
         } catch (Exception e) {
             log.error("Error while sending message to topic {}: {}", topic, e.getMessage(), e);
         }
