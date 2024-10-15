@@ -3,7 +3,7 @@ package com.coopang.user;
 import static com.coopang.apidata.application.user.enums.UserRoleEnum.Authority.MASTER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.user.application.request.UserDto;
 import com.coopang.user.domain.entity.user.QUserEntity;
 import com.coopang.user.domain.entity.user.UserEntity;

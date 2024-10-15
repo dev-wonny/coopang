@@ -1,6 +1,6 @@
 package com.coopang.user.presentation.controller;
 
-import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ID;
+import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ID;
 
 import com.coopang.apiconfig.error.AccessDeniedException;
 import com.coopang.user.application.response.LoginResponseDto;
@@ -11,6 +11,7 @@ import com.coopang.user.infrastructure.security.UserDetailsImpl;
 import com.coopang.user.presentation.request.LoginRequestDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +54,7 @@ public class AuthController {
      * @throws IllegalArgumentException if the email or password is incorrect.
      */
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto requestDto, HttpServletResponse res) {
+    public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto requestDto, HttpServletResponse res) {
         final LoginResponseDto responseDto = authService.login(requestDto.getEmail(), requestDto.getPassword(), res);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
