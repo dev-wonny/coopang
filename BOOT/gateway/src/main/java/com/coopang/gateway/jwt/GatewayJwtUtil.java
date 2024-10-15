@@ -3,6 +3,7 @@ package com.coopang.gateway.jwt;
 import static com.coopang.authcommon.constants.AuthConstants.ROLE_KEY;
 
 import com.coopang.authcommon.jwt.JwtCommonUtil;
+import com.coopang.gateway.error.JwtValidationException;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
@@ -27,6 +28,28 @@ public class GatewayJwtUtil {
     // 헤더에서 JWT 추출 - WebFlux
     public String getTokenFromHeader(ServerWebExchange exchange) {
         return jwtCommonUtil.extractTokenFromExchange(exchange);
+    }
+
+    // 헤더에서 JWT 추출 - WebFlux (비동기 방식으로 개선)
+    public Mono<String> getTokenFromHeaderAsync(ServerWebExchange exchange) {
+        return Mono.defer(() -> {
+            try {
+                final String token = jwtCommonUtil.extractTokenFromExchange(exchange);
+                return Mono.just(token);
+            } catch (Exception e) {
+                return Mono.error(new JwtValidationException("Error extracting JWT token: " + e.getMessage()));
+            }
+        });
+    }
+
+    // 토큰에서 Claims 추출 - 비동기
+    public Mono<Claims> getClaimsAsync(String token) {
+        return jwtCommonUtil.getClaimsAsync(token);
+    }
+
+    // 토큰 검증 & Claims 추출 - 비동기
+    public Mono<Claims> getValidateClaimsFromTokenAsync(String token) {
+        return jwtCommonUtil.getValidateClaimsFromTokenAsync(token);
     }
 
     // 헤더의 JWT에서 Claims 추출 - 비동기
