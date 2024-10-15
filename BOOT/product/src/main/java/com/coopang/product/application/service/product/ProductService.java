@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class ProductService {
-    //TODO : 내부통신 연결해야된다.
+
     private final ProductRepository productRepository;
     private final ProductDomainService productDomainService;
     private final CategoryJpaRepository categoryJpaRepository;
@@ -111,7 +111,7 @@ public class ProductService {
     }
 
     //모든 상품들을 조회
-    @Cacheable(value = "Allproducts", key = "#pageable.pageNumber")
+    @Cacheable(value = "Allproducts", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
     @Transactional(readOnly = true)
     public Page<ProductResponseDto> getAllProductByEvery(Pageable pageable) {
         return productRepository.findAllWithStockAndCategory(pageable).map(ProductResponseDto::of);
