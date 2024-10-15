@@ -1,13 +1,13 @@
 package com.coopang.ainoti.application.service;
 
 import com.coopang.ainoti.application.request.SlackMessageDto;
-import com.coopang.ainoti.application.response.SlackMessageResponseDto;
-import com.coopang.ainoti.domain.entitiy.slackMessage.SlackMessageEntity;
-import com.coopang.ainoti.domain.entitiy.slackMessage.SlackMessageStatus;
-import com.coopang.ainoti.domain.repository.slackMessage.SlackMessageRepository;
-import com.coopang.ainoti.domain.service.SlackMessageDomainService;
+import com.coopang.ainoti.application.response.SlackNotificationResponseDto;
+import com.coopang.ainoti.domain.entitiy.slacknotification.SlackNotificationEntity;
+import com.coopang.ainoti.domain.entitiy.slacknotification.SlackNotificationStatus;
+import com.coopang.ainoti.domain.repository.slacknotification.SlackNotificationRepository;
+import com.coopang.ainoti.domain.service.SlackNotificationDomainService;
 import com.coopang.ainoti.presentation.request.SlackMessageSearchConditionDto;
-import com.coopang.ainoti.presentation.request.UpdateSlackMessageRequestDto;
+import com.coopang.ainoti.presentation.request.UpdateSlackNotificationRequestDto;
 import com.coopang.apicommunication.feignClient.user.UserClient;
 import com.coopang.apicommunication.kafka.message.LowStockNotification;
 import com.coopang.apidata.application.user.response.UserResponse;
@@ -28,65 +28,66 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class SlackMessageService {
+public class SlackNotificationService {
 
-    private final SlackMessageRepository slackMessageRepository;
-    private final SlackMessageDomainService slackMessageDomainService;
+    private final SlackNotificationRepository slackNotificationRepository;
+    private final SlackNotificationDomainService slackNotificationDomainService;
     private final WebClient webClient;
     private final UserClient userClient;
 
     //슬랙 메시지 생성
-    public SlackMessageResponseDto createMessage(SlackMessageDto dto) {
+    public SlackNotificationResponseDto createMessage(SlackMessageDto dto) {
 
-        return SlackMessageResponseDto.of(slackMessageDomainService.createMessage(dto));
+        return SlackNotificationResponseDto.of(slackNotificationDomainService.createMessage(dto));
     }
 
     //슬랙 메시지 논리적 삭제
     @Transactional
     public void deleteMessage(UUID slackMessageId) {
 
-        SlackMessageEntity slackMessageEntity = findBySlackMessageId(slackMessageId);
+        SlackNotificationEntity slackNotificationEntity = findBySlackMessageId(slackMessageId);
 
-        slackMessageEntity.setDeleted(true);
+        slackNotificationEntity.setDeleted(true);
     }
 
     //슬랙 메시지 업데이트
     @Transactional
-    public void updateMessage(UpdateSlackMessageRequestDto updateSlackMessageRequestDto, UUID slackMessageId) {
-        SlackMessageEntity slackMessageEntity = findBySlackMessageId(slackMessageId);
+    public void updateMessage(UpdateSlackNotificationRequestDto updateSlackNotificationRequestDto, UUID slackMessageId) {
+        SlackNotificationEntity slackNotificationEntity = findBySlackMessageId(slackMessageId);
 
-        slackMessageEntity.update(
-            updateSlackMessageRequestDto.getReceiveSlackId(),
-            updateSlackMessageRequestDto.getReceiveUserId(),
-            updateSlackMessageRequestDto.getSlackMessageStatus(),
-            updateSlackMessageRequestDto.getSlackMessage(),
-            updateSlackMessageRequestDto.getSlackMessageSenderId()
+        slackNotificationEntity.update(
+            updateSlackNotificationRequestDto.getReceiveSlackId(),
+            updateSlackNotificationRequestDto.getReceiveUserId(),
+            updateSlackNotificationRequestDto.getSlackNotificationStatus(),
+            updateSlackNotificationRequestDto.getSlackMessage(),
+            updateSlackNotificationRequestDto.getSlackMessageSenderId()
         );
     }
 
     //슬랙 메시지 조회하는 공통함수
-    private SlackMessageEntity findBySlackMessageId(UUID slackMessageId) {
-        return slackMessageRepository.findBySlackMessageIdAndIsDeletedFalse(slackMessageId).orElseThrow(
+    private SlackNotificationEntity findBySlackMessageId(UUID slackMessageId) {
+        return slackNotificationRepository.findBySlackMessageIdAndIsDeletedFalse(slackMessageId).orElseThrow(
             () -> new IllegalArgumentException("존재하지 않는 슬랙메시지 아이디입니다.")
         );
     }
 
     //슬렉 메시지 단일조회
     @Transactional(readOnly = true)
-    public SlackMessageResponseDto getSlackMessage(UUID slackMessageId) {
+    public SlackNotificationResponseDto getSlackMessage(UUID slackMessageId) {
 
-        return SlackMessageResponseDto.of(findBySlackMessageId(slackMessageId));
+        return SlackNotificationResponseDto.of(findBySlackMessageId(slackMessageId));
     }
 
     //슬랙 메시지 목록 조회 - 페이징 지원
-    public Page<SlackMessageResponseDto> getSlackMessagesWithPageable(Pageable pageable) {
+    public Page<SlackNotificationResponseDto> getSlackMessagesWithPageable(Pageable pageable) {
 
-        return slackMessageRepository.search(pageable).map(SlackMessageResponseDto::of);
+        return slackNotificationRepository.search(pageable).map(SlackNotificationResponseDto::of);
     }
 
     //슬랙 메시지 목록 조회 - 페이징 지원,키워드 검색
-    public Page<SlackMessageResponseDto> searchWithCondition(SlackMessageSearchConditionDto conditionDto, Pageable pageable) {
-        return slackMessageRepository.searchWithCondition(conditionDto, pageable).map(SlackMessageResponseDto::of);
+    public Page<SlackNotificationResponseDto> searchWithCondition(SlackMessageSearchConditionDto conditionDto, Pageable pageable) {
+        return slackNotificationRepository.searchWithCondition(conditionDto, pageable).map(
+            SlackNotificationResponseDto::of);
     }
 
     //재고 부족 알림 전송
@@ -123,11 +124,11 @@ public class SlackMessageService {
             SlackMessageDto slackMessageDto = new SlackMessageDto();
             slackMessageDto.setSlackMessage(message);
             slackMessageDto.setReceiveSlackId(slackId);
-            slackMessageDto.setSlackMessageStatus(SlackMessageStatus.SUCCESS);
+            slackMessageDto.setSlackNotificationStatus(SlackNotificationStatus.SUCCESS);
             slackMessageDto.setReceiveUserId(userResponse.getUserId());
             slackMessageDto.setSlackMessageSenderId("test senderId");
 
-            slackMessageDomainService.createMessage(slackMessageDto);
+            slackNotificationDomainService.createMessage(slackMessageDto);
 
         }catch (JsonProcessingException e){
             log.error(e.getMessage());

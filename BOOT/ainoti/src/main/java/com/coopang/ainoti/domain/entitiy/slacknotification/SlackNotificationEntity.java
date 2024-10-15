@@ -1,4 +1,4 @@
-package com.coopang.ainoti.domain.entitiy.slackMessage;
+package com.coopang.ainoti.domain.entitiy.slacknotification;
 
 import com.coopang.apidata.jpa.entity.base.BaseEntity;
 import jakarta.persistence.Column;
@@ -14,7 +14,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.hc.core5.http.Message;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
@@ -22,7 +21,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(value = {AuditingEntityListener.class})
-public class SlackMessageEntity extends BaseEntity {
+public class SlackNotificationEntity extends BaseEntity {
 
     @Id
     @Column(name = "slack_message_id",nullable = false)
@@ -36,7 +35,7 @@ public class SlackMessageEntity extends BaseEntity {
 
     @Column(name = "slack_message_status",nullable = false)
     @Enumerated(EnumType.STRING)
-    public SlackMessageStatus slackMessageStatus;
+    public SlackNotificationStatus slackNotificationStatus;
 
     @Column(name = "slack_message")
     public String slackMessage;
@@ -48,28 +47,28 @@ public class SlackMessageEntity extends BaseEntity {
     public String slackMessageSenderId;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public SlackMessageEntity(UUID slackMessageId,String receiveSlackId,
-        UUID receiveUserId,SlackMessageStatus slackMessageStatus,String slackMessage,
+    public SlackNotificationEntity(UUID slackMessageId,String receiveSlackId,
+        UUID receiveUserId, SlackNotificationStatus slackNotificationStatus,String slackMessage,
         LocalDateTime sentTime,String slackMessageSenderId)
     {
         this.slackMessageId = slackMessageId;
         this.receiveSlackId = receiveSlackId;
         this.receiveUserId = receiveUserId;
-        this.slackMessageStatus = slackMessageStatus;
+        this.slackNotificationStatus = slackNotificationStatus;
         this.slackMessage = slackMessage;
         this.sentTime = sentTime;
         this.slackMessageSenderId = slackMessageSenderId;
     }
 
 
-    public static SlackMessageEntity create(UUID slackMessageId,String receiveSlackId,
-        UUID receiveUserId,SlackMessageStatus slackMessageStatus,String slackMessage,String slackMessageSenderId) {
+    public static SlackNotificationEntity create(UUID slackMessageId,String receiveSlackId,
+        UUID receiveUserId, SlackNotificationStatus slackNotificationStatus,String slackMessage,String slackMessageSenderId) {
 
-        return SlackMessageEntity.builder()
+        return SlackNotificationEntity.builder()
             .slackMessageId(slackMessageId == null ? UUID.randomUUID() : slackMessageId)
             .receiveSlackId(receiveSlackId)
             .receiveUserId(receiveUserId)
-            .slackMessageStatus(slackMessageStatus)
+            .slackMessageStatus(slackNotificationStatus)
             .slackMessage(slackMessage)
             .sentTime(LocalDateTime.now())
             .slackMessageSenderId(slackMessageSenderId)
@@ -77,11 +76,11 @@ public class SlackMessageEntity extends BaseEntity {
     }
 
     public void update(String receiveSlackId,
-        UUID receiveUserId,SlackMessageStatus slackMessageStatus,String slackMessage,String slackMessageSenderId) {
+        UUID receiveUserId, SlackNotificationStatus slackNotificationStatus,String slackMessage,String slackMessageSenderId) {
 
         this.receiveSlackId = receiveSlackId;
         this.receiveUserId = receiveUserId;
-        this.slackMessageStatus = slackMessageStatus;
+        this.slackNotificationStatus = slackNotificationStatus;
         this.slackMessage = slackMessage;
         this.slackMessageSenderId = slackMessageSenderId;
 

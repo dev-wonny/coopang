@@ -1,8 +1,8 @@
 package com.coopang.ainoti.domain.service;
 
 import com.coopang.ainoti.application.request.SlackMessageDto;
-import com.coopang.ainoti.domain.entitiy.slackMessage.SlackMessageEntity;
-import com.coopang.ainoti.infrastructure.repository.slackMessage.SlackMessageJpaRepository;
+import com.coopang.ainoti.domain.entitiy.slacknotification.SlackNotificationEntity;
+import com.coopang.ainoti.infrastructure.repository.slacknotification.SlackNotificationJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,21 +10,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class SlackMessageDomainService {
+public class SlackNotificationDomainService {
 
-    private final SlackMessageJpaRepository slackMessageRepository;
+    private final SlackNotificationJpaRepository slackMessageRepository;
 
-    public SlackMessageEntity createMessage(SlackMessageDto slackMessageDto){
+    public SlackNotificationEntity createMessage(SlackMessageDto slackMessageDto){
 
         return slackMessageRepository.save( slackMessageDtoToEntity(slackMessageDto));
     }
 
-    private SlackMessageEntity slackMessageDtoToEntity(SlackMessageDto slackMessageDto){
-        return SlackMessageEntity.create(
+    private SlackNotificationEntity slackMessageDtoToEntity(SlackMessageDto slackMessageDto){
+        return SlackNotificationEntity.create(
             null,
             slackMessageDto.getReceiveSlackId(),
             slackMessageDto.getReceiveUserId(),
-            slackMessageDto.getSlackMessageStatus(),
+            slackMessageDto.getSlackNotificationStatus(),
             slackMessageDto.getSlackMessage(),
             slackMessageDto.getSlackMessageSenderId()
 

@@ -1,9 +1,9 @@
-package com.coopang.ainoti.infrastructure.repository.slackMessage;
+package com.coopang.ainoti.infrastructure.repository.slacknotification;
 
 
-import static com.coopang.ainoti.domain.entitiy.slackMessage.QSlackMessageEntity.slackMessageEntity;
+import static com.coopang.ainoti.domain.entitiy.slacknotification.QSlackMessageEntity.slackMessageEntity;
 
-import com.coopang.ainoti.domain.entitiy.slackMessage.SlackMessageEntity;
+import com.coopang.ainoti.domain.entitiy.slacknotification.SlackNotificationEntity;
 import com.coopang.ainoti.presentation.request.SlackMessageSearchConditionDto;
 import com.coopang.apiconfig.querydsl.Querydsl4RepositorySupport;
 import com.querydsl.core.types.Predicate;
@@ -12,14 +12,15 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public class SlackMessageRepositoryCustomImpl extends Querydsl4RepositorySupport implements SlackMessageRepositoryCustom{
+public class SlackNotificationRepositoryCustomImpl extends Querydsl4RepositorySupport implements
+    SlackNotificationRepositoryCustom {
 
-    public SlackMessageRepositoryCustomImpl() {
-        super(SlackMessageEntity.class);
+    public SlackNotificationRepositoryCustomImpl() {
+        super(SlackNotificationEntity.class);
     }
 
     @Override
-    public Page<SlackMessageEntity> search(Pageable pageable) {
+    public Page<SlackNotificationEntity> search(Pageable pageable) {
         return applyPagination(pageable,contentQuery ->
             contentQuery.selectFrom(slackMessageEntity)
                 .where(slackMessageEntity.isDeleted.eq(false))
@@ -30,7 +31,7 @@ public class SlackMessageRepositoryCustomImpl extends Querydsl4RepositorySupport
     }
 
     @Override
-    public Page<SlackMessageEntity> searchWithCondition(SlackMessageSearchConditionDto conditionDto,
+    public Page<SlackNotificationEntity> searchWithCondition(SlackMessageSearchConditionDto conditionDto,
         Pageable pageable) {
 
         return applyPagination(pageable,contentQuery ->

@@ -1,18 +1,20 @@
 package com.coopang.ainoti.presentation.request;
 
-import com.coopang.ainoti.domain.entitiy.slackMessage.SlackMessageStatus;
+import com.coopang.ainoti.domain.entitiy.slacknotification.SlackNotificationStatus;
+import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
-public class UpdateSlackMessageRequestDto {
+public class CreateSlackNotificationRequestDto {
 
     private String receiveSlackId;
+    @NotNull
     private UUID receiveUserId;
-    private SlackMessageStatus slackMessageStatus;
     private String slackMessage;
     private String slackMessageSenderId;
+    private SlackNotificationStatus slackNotificationStatus;
 
 }
