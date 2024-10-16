@@ -76,15 +76,13 @@ public class DeliveryEntity extends BaseEntity {
             UUID destinationHubId,
             String zipCode,
             String address1,
-            String address2,
-            UUID hubShipperId
+            String address2
     ){
         return DeliveryEntity.builder()
                 .orderId(orderId)
                 .departureHubId(departureHubId)
                 .destinationHubId(destinationHubId)
                 .addressEntity(AddressEntity.create(zipCode,address1,address2))
-                .hubShipperId(hubShipperId)
                 .deliveryStatus(DeliveryStatusEnum.PENDING)
                 .build();
     }
@@ -92,4 +90,6 @@ public class DeliveryEntity extends BaseEntity {
     public void setDeliveryStatus(DeliveryStatusEnum deliveryStatus) {
         this.deliveryStatus = deliveryStatus;
     }
+
+    public void setHubShipperId(UUID hubShipperId) {this.hubShipperId = hubShipperId;}
 }
