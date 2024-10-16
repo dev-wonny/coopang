@@ -33,14 +33,4 @@ public class AuthService {
             .doOnNext(role -> log.info("Fetched role from auth server for user_id {}: {}", userId, role))
             .doOnError(error -> log.error("Error fetching role from auth server", error));
     }
-
-    public ServerWebExchange setCustomHeader(ServerWebExchange exchange, HeaderResponseDto responseDto) {
-        return exchange.mutate()
-            .request(exchange.getRequest().mutate()
-                .header(HEADER_TOKEN, responseDto.getToken())
-                .header(HEADER_USER_ID, responseDto.getUserId())
-                .header(HEADER_USER_ROLE, responseDto.getUserRole())
-                .build())
-            .build();
-    }
 }

@@ -14,7 +14,6 @@ public class RedisService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final AuthService authService;
 
-
     public RedisService(RedisTemplate<String, Object> redisTemplate, AuthService authService) {
         this.redisTemplate = redisTemplate;
         this.authService = authService;

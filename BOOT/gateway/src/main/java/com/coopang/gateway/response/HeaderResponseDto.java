@@ -5,10 +5,10 @@ import lombok.Getter;
 
 @Getter
 public class HeaderResponseDto {
-    private String token;
-    private String userEmail;
-    private String userId;
-    private String userRole;
+    private final String token;
+    private final String userEmail;
+    private final String userId;
+    private final String userRole;
 
     @Builder
     private HeaderResponseDto(String token, String userEmail, String userId, String userRole) {
@@ -18,12 +18,12 @@ public class HeaderResponseDto {
         this.userRole = userRole;
     }
 
-    public static HeaderResponseDto of(String token, String userEmail, String userId, String role) {
+    public static HeaderResponseDto of(String token, String userEmail, String userId, String userRole) {
         return HeaderResponseDto.builder()
-                .token(token)
-                .userId(userId)
-                .userEmail(userEmail)
-                .userRole(role)
-                .build();
+            .token(token)
+            .userId(userId)
+            .userEmail(userEmail)
+            .userRole(userRole)
+            .build();
     }
 }
