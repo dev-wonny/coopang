@@ -1,4 +1,4 @@
-package com.coopang.product.application.response.ProductStockHistory;
+package com.coopang.product.application.response.Productstockhistory;
 
 import com.coopang.product.domain.entity.productstockhistory.ProductStockHistoryChangeType;
 import com.coopang.product.domain.entity.productstockhistory.ProductStockHistoryEntity;
