@@ -1,4 +1,4 @@
-package com.coopang.product.application.response.productStock;
+package com.coopang.product.application.response.productstock;
 
 import com.coopang.product.domain.entity.productstock.ProductStockEntity;
 import java.util.UUID;
