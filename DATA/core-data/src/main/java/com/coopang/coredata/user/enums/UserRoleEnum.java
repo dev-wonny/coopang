@@ -1,6 +1,5 @@
-package com.coopang.apidata.application.user.enums;
+package com.coopang.coredata.user.enums;
 
-import com.coopang.apiconfig.error.AccessDeniedException;
 import lombok.Getter;
 
 import java.util.Set;
@@ -14,7 +13,6 @@ public enum UserRoleEnum {//역할
     , CUSTOMER(Authority.CUSTOMER)
     , SERVER(Authority.SERVER)
     ;
-
 
     private final String authority;
 
@@ -41,7 +39,7 @@ public enum UserRoleEnum {//역할
 
     public static void validateRole(UserRoleEnum role, Set<UserRoleEnum> allowedRoles, String errorMessage) {
         if (!allowedRoles.contains(role)) {
-            throw new AccessDeniedException(errorMessage);
+            throw new SecurityException(errorMessage);
         }
     }
 

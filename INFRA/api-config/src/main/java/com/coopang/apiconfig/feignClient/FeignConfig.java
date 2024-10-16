@@ -1,8 +1,7 @@
 package com.coopang.apiconfig.feignclient;
 
-import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ID;
-import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ROLE;
-
+import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ID;
+import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ROLE;
 import feign.RequestInterceptor;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
