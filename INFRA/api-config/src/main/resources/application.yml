@@ -8,7 +8,7 @@ spring:
 common:
     api:
         filter:
-            enabled: false
+            enabled: true
             paths:
                 - /swagger-ui
                 - /v3/api-docs
