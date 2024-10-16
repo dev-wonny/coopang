@@ -1,10 +1,10 @@
 package com.coopang.product.presentation.controller.product;
 
-import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ROLE;
+import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ROLE;
 
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
-import com.coopang.apidata.application.user.enums.UserRoleEnum;
-import com.coopang.apidata.application.user.enums.UserRoleEnum.Authority;
+import com.coopang.coredata.user.enums.UserRoleEnum;
+import com.coopang.coredata.user.enums.UserRoleEnum.Authority;
 import com.coopang.product.application.request.product.ProductDto;
 import com.coopang.product.application.request.product.ProductHiddenAndSaleDto;
 import com.coopang.product.application.response.ProductWithStockResponseDto;
@@ -20,6 +20,7 @@ import com.coopang.product.presentation.request.product.UpdateProductRequestDto;
 import com.coopang.product.presentation.request.product.UpdateProductSaleRequestDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -38,8 +39,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.UUID;
 
 
 @Tag(name = "ProductController API", description = "ProductController API")
