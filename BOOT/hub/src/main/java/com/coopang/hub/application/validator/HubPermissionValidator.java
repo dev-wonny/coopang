@@ -1,7 +1,7 @@
 package com.coopang.hub.application.validator;
 
 import com.coopang.apiconfig.error.AccessDeniedException;
-import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.hub.application.response.hub.HubResponseDto;
 import com.coopang.hub.application.service.hub.HubService;
 

@@ -1,0 +1,85 @@
+server:
+    port: 19093
+
+spring:
+    #    profiles:
+    #        active: local
+    application:
+        name: hub
+    datasource:
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:5432/coopang_hub
+        username: coopang
+        password: q1w2e3r4!!
+
+    jpa:
+        hibernate:
+            ddl-auto: create
+        properties:
+            hibernate:
+                format_sql: true
+                use_sql_comments: true
+    jackson:
+        serialization:
+            write-dates-as-timestamps: false
+    data:
+        redis:
+            host: localhost
+            port: 6379
+            password: q1w2e3r4!!
+    cache:
+        type: caffeine
+        cache-names: hubs
+        caffeine:
+            spec: maximumSize=500,expireAfterAccess=60m
+
+springdoc:
+    api-docs:
+        path: /v3/api-docs
+    packages-to-scan: com.coopang.hub.presentation.controller
+    default-consumes-media-type: application/json;charset=UTF-8
+    default-produces-media-type: application/json;charset=UTF-8
+    swagger-ui:
+        path: /swagger-ui.html
+        disable-swagger-default-url: true
+        display-request-duration: true
+        operations-sorter: alpha
+
+logging:
+    level:
+        org.hibernate.SQL: debug
+        org.hibernate.type: trace
+        org.springframework.cache: debug
+
+service:
+    jwt:
+        secret-key: "7Iqk7YyM66W07YOA7L2U65Sp7YG065+9U3ByaW5n6rCV7J2Y7Yqc7YSw7LWc7JuQ67mI7J6F64uI64ukLg=="
+        expiration-time: 3600000
+        token-prefix: "Bearer "
+        header-string: "Authorization"
+
+eureka:
+    client:
+        service-url:
+            defaultZone: http://localhost:19090/eureka/
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: prometheus
+    prometheus:
+        metrics:
+            export:
+                enabled: true
+common:
+    api:
+        filter:
+            enabled: true
+            paths:
+                - /swagger-ui
+                - /v3/api-docs
+                - /actuator
+data:
+    init:
+        enabled: true  # 초기화 작업을 실행하려면 true, 비활성화하려면 false로 설정

@@ -1,6 +1,9 @@
 package com.coopang.user.application.service;
 
-import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import static com.coopang.authcommon.constants.RedisConstants.REDIS_BLACKLIST_KEY;
+import static com.coopang.authcommon.constants.RedisConstants.REDIS_USER_ROLE_KEY;
+
+import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.user.application.response.UserResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,9 +19,6 @@ public class RedisService {
 
     private final UserService userService;
     private final RedisTemplate<String, Object> redisTemplate;
-
-    private final String REDIS_USER_ROLE_KEY = "user:role:";
-    private final String REDIS_BLACKLIST_KEY = "blacklist:";
 
     public RedisService(UserService usersService, RedisTemplate<String, Object> redisTemplate) {
         this.userService = usersService;
@@ -94,5 +94,13 @@ public class RedisService {
         // Redis에 토큰을 블랙리스트로 저장 (예: 토큰 만료 시간만큼)
         redisTemplate.opsForValue().set(redisKey, "blacklisted", 1, TimeUnit.HOURS);
         log.info("Token added to blacklist in Redis: {}", token);
+    }
+
+    public Boolean isBlacklistedToken(String token) {
+        Boolean isBlacklisted = redisTemplate.hasKey(REDIS_BLACKLIST_KEY + token);
+        if (Boolean.TRUE.equals(isBlacklisted)) {
+            log.warn("Token is blacklisted: {}", token);
+        }
+        return isBlacklisted;
     }
 }

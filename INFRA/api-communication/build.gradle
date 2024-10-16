@@ -27,6 +27,7 @@ tasks.named('jar') {
 
 dependencies {
 	// multi module
+	implementation project(':DATA:core-data')
 	implementation project(':DATA:api-data')
 	implementation project(':INFRA:api-config')
 
