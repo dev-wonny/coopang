@@ -34,6 +34,8 @@ public class SlackNotificationService {
     private final SlackNotificationDomainService slackNotificationDomainService;
     private final WebClient webClient;
     private final UserClient userClient;
+    private static final String CHANNEL = "channel";
+    private static final String TEXT = "text";
 
     //슬랙 메시지 생성
     public SlackNotificationResponseDto createMessage(SlackMessageDto dto) {
@@ -103,8 +105,8 @@ public class SlackNotificationService {
 
             //DM 보낼 값 생성
             Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("channel", channelId);
-            requestBody.put("text", message);
+            requestBody.put(CHANNEL, channelId);
+            requestBody.put(TEXT, message);
 
             String response = webClient.post()
                 .uri("api/chat.postMessage")
@@ -145,8 +147,8 @@ public class SlackNotificationService {
 
             //2. DM 보낼 값 생성
             Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("channel", channelId);
-            requestBody.put("text", message);
+            requestBody.put(CHANNEL, channelId);
+            requestBody.put(TEXT, message);
 
             String response = webClient.post()
                 .uri("api/chat.postMessage")
@@ -185,10 +187,14 @@ public class SlackNotificationService {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(response);
         // 요청이 성공했는지 확인
-        isOk(jsonNode);
+        try {
+            isOk(jsonNode);
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+        }
 
         // "channel"의 "id" 값을 가져오기
-        String channelId = jsonNode.path("channel").path("id").asText();
+        String channelId = jsonNode.path(CHANNEL).path("id").asText();
 
         log.info("Slack Channel ID: " + channelId);
 
@@ -201,7 +207,7 @@ public class SlackNotificationService {
         if (!isOk) {
             String error = jsonNode.path("error").asText();
             log.error("Slack API Error: " + error);
-            throw new RuntimeException("Failed to open DM channel: " + error);
+            throw new IllegalArgumentException("Failed to open DM channel: " + error);
         }
     }
 
