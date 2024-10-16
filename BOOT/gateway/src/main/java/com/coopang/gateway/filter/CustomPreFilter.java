@@ -13,7 +13,6 @@ import reactor.core.publisher.Mono;
 @Component
 public class CustomPreFilter implements GlobalFilter, Ordered {
 
-
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest response = exchange.getRequest();
