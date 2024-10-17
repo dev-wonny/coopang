@@ -10,37 +10,29 @@ import com.coopang.apicommunication.kafka.producer.MessageProducer;
 import com.coopang.apidata.application.company.response.CompanyResponse;
 import com.coopang.product.application.request.productstock.ProductStockDto;
 import com.coopang.product.application.response.product.ProductResponseDto;
+import com.coopang.product.application.service.feignclient.CompanyFeignClientService;
+import com.coopang.product.application.service.feignclient.UserFeignClientService;
 import com.coopang.product.application.service.product.ProductService;
 import com.coopang.product.application.service.productstock.ProductStockService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Slf4j(topic = "ProductMessageService")
 @Service("productMessageService")
+@RequiredArgsConstructor
 public class ProductMessageService implements MessageService {
 
     private final ObjectMapper objectMapper;
     private final MessageProducer messageProducer;
     private final ProductStockService productStockService;
     private final ProductService productService;
-    private final com.coopang.apicommunication.feignclient.company.CompanyClient companyClient;
-    private final com.coopang.apiconfig.feignclient.FeignConfig feignConfig;
-
-    public ProductMessageService(ObjectMapper objectMapper, MessageProducer messageProducer,
-        ProductStockService productStockService, ProductService productService,
-        com.coopang.apicommunication.feignclient.company.CompanyClient companyClient,
-        com.coopang.apiconfig.feignclient.FeignConfig feignConfig) {
-        this.objectMapper = objectMapper;
-        this.messageProducer = messageProducer;
-        this.productStockService = productStockService;
-        this.productService = productService;
-        this.companyClient = companyClient;
-        this.feignConfig = feignConfig;
-    }
+    private final CompanyFeignClientService companyFeignClientService;
+    private final UserFeignClientService userFeignClientService;
 
     /* listener
      * 재고 감소 요청 process_product
@@ -144,14 +136,15 @@ public class ProductMessageService implements MessageService {
         ProductResponseDto productResponseDto = productService.getProductById(productId);
 
         //업체의 관리자 조회 - 내부통신이용
-        feignConfig.changeHeaderRoleToServer();
-        CompanyResponse companyResponse = companyClient.getCompanyInfo(productResponseDto.getCompanyId());
-        feignConfig.resetRole();
+        CompanyResponse companyResponse = companyFeignClientService.getCompanyById(productResponseDto.getCompanyId());
+        //슬랙 아이디 조회 - 내부통신
+        String slackId = userFeignClientService.getSlackIdByUserId(companyResponse.getCompanyManagerId());
 
         LowStockNotification lowStockNotification = new LowStockNotification();
         lowStockNotification.setProductId(productId);
         lowStockNotification.setQuantity(quantity);
-        lowStockNotification.setManagerId(companyResponse.getCompanyManagerId());
+        //TODO : 추후 UUID -> String 으로 이름 변경 data
+        lowStockNotification.setManagerId(UUID.fromString(slackId));
 
         sendMessage("low_stock_notification",lowStockNotification);
     }
@@ -165,4 +158,5 @@ public class ProductMessageService implements MessageService {
             log.error("Error while sending message to topic {}: {}", topic, e.getMessage(), e);
         }
     }
+    
 }

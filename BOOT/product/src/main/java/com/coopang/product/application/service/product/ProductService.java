@@ -1,10 +1,9 @@
 package com.coopang.product.application.service.product;
 
-import com.coopang.apidata.application.company.request.CompanySearchConditionRequest;
-import com.coopang.apidata.application.company.response.CompanyResponse;
 import com.coopang.product.application.request.product.ProductDto;
 import com.coopang.product.application.request.product.ProductHiddenAndSaleDto;
 import com.coopang.product.application.response.product.ProductResponseDto;
+import com.coopang.product.application.service.feignclient.CompanyFeignClientService;
 import com.coopang.product.domain.entity.category.CategoryEntity;
 import com.coopang.product.domain.entity.product.ProductEntity;
 import com.coopang.product.domain.repository.product.ProductRepository;
@@ -14,7 +13,6 @@ import com.coopang.product.presentation.request.product.ProductBaseSearchConditi
 import com.coopang.product.presentation.request.product.ProductSearchConditionDto;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -33,8 +31,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductDomainService productDomainService;
     private final CategoryJpaRepository categoryJpaRepository;
-    private final com.coopang.apicommunication.feignclient.company.CompanyClient companyClient;
-    private final com.coopang.apiconfig.feignclient.FeignConfig feignConfig;
+    private final CompanyFeignClientService companyFeignClientService;
 
     //특정 상품 생성
     public ProductEntity createProduct(ProductDto productDto) {
@@ -72,35 +69,18 @@ public class ProductService {
     public Page<ProductResponseDto> getAllProductsByMaster(Pageable pageable) {
 
         return productRepository.findAll(pageable).map(ProductResponseDto::of);
-
     }
 
     //허브 관리자일 경우 소속된 업체들의 상품들 조회
     @Cacheable(value = "Allproducts", key = "#condition")
     @Transactional(readOnly = true)
     public Page<ProductResponseDto> getAllProductInHub(ProductBaseSearchConditionDto condition,Pageable pageable) {
-        try{
 
-            UUID hubId = condition.getHubId();
-            CompanySearchConditionRequest req = new CompanySearchConditionRequest();
-            req.setHubId(hubId);
-            req.setIsDeleted(false);
-            //역할을 SERVER로 변경
-            feignConfig.changeHeaderRoleToServer();
-            //허브에 소속된 업체들 조회
-            List<CompanyResponse> companyLists = companyClient.getCompanyList(req);
-            //업체에 포함된 업체들의 ID 추출
-            List<UUID> companyIds = companyLists.stream()
-                .map(CompanyResponse::getCompanyId)
-                .collect(Collectors.toList());
+        UUID hubId = condition.getHubId();
 
-            return productRepository.findAllWithStockAndCategoryByCompanyIds(companyIds, pageable).map(ProductResponseDto::of);
+        List<UUID> companyIds = companyFeignClientService.getCompanyIdsInFeignClient(hubId);
 
-        } finally {
-            // 역할을 초기화
-            feignConfig.resetRole();
-        }
-
+        return productRepository.findAllWithStockAndCategoryByCompanyIds(companyIds, pageable).map(ProductResponseDto::of);
     }
 
     //업체 관리자일 경우 자신의 상품들만 조회
