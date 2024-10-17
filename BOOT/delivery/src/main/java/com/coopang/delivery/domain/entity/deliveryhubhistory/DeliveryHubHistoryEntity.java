@@ -17,7 +17,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_delivery_hub_route_histories")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @EntityListeners(value = {AuditingEntityListener.class})
 public class DeliveryHubHistoryEntity extends BaseEntity {
 
@@ -51,7 +51,7 @@ public class DeliveryHubHistoryEntity extends BaseEntity {
             UUID arrivalHubId,
             UUID hubShipperId,
             DeliveryStatusEnum deliveryRouteHistoryStatus
-    ){
+    ) {
         this.deliveryHubRouteHistoryId = deliveryHubRouteHistoryId;
         this.deliveryId = deliveryId;
         this.departureHubId = departureHubId;
@@ -66,7 +66,7 @@ public class DeliveryHubHistoryEntity extends BaseEntity {
             UUID arrivalHubId,
             UUID hubShipperId,
             DeliveryStatusEnum deliveryRouteHistoryStatus
-    ){
+    ) {
         return DeliveryHubHistoryEntity.builder()
                 .deliveryId(deliveryId)
                 .departureHubId(departureHubId)

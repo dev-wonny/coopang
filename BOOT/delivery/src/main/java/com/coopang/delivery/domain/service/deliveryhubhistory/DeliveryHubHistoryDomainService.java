@@ -26,7 +26,7 @@ public class DeliveryHubHistoryDomainService {
             UUID arrivalHubId,
             UUID hubShipperId,
             DeliveryStatusEnum deliveryRouteHistoryStatus
-    ){
+    ) {
         DeliveryHubHistoryEntity deliveryHubHistoryEntity = DeliveryHubHistoryEntity.create(
                 deliveryId,
                 departureHubId,

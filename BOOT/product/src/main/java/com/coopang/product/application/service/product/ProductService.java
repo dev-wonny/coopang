@@ -1,6 +1,5 @@
 package com.coopang.product.application.service.product;
 
-import com.coopang.apicommunication.kafka.message.CompleteProduct;
 import com.coopang.apicommunication.kafka.message.ErrorProduct;
 import com.coopang.apidata.application.user.enums.UserRoleEnum;
 import com.coopang.product.application.request.product.ProductDto;
@@ -26,7 +25,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;

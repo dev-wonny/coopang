@@ -60,7 +60,7 @@ public class DeliveryEntity extends BaseEntity {
             UUID hubShipperId,
             UUID userShipperId,
             DeliveryStatusEnum deliveryStatus
-    ){
+    ) {
         this.orderId = orderId;
         this.departureHubId = departureHubId;
         this.destinationHubId = destinationHubId;
@@ -78,18 +78,22 @@ public class DeliveryEntity extends BaseEntity {
             String address1,
             String address2,
             UUID hubShipperId
-    ){
+    ) {
         return DeliveryEntity.builder()
                 .orderId(orderId)
                 .departureHubId(departureHubId)
                 .destinationHubId(destinationHubId)
-                .addressEntity(AddressEntity.create(zipCode,address1,address2))
+                .addressEntity(AddressEntity.create(zipCode, address1, address2))
+                .deliveryStatus(DeliveryStatusEnum.HUB_DELIVERY_ASSIGNMENT_IN_PROGRESS)
                 .hubShipperId(hubShipperId)
-                .deliveryStatus(DeliveryStatusEnum.PENDING)
                 .build();
     }
 
     public void setDeliveryStatus(DeliveryStatusEnum deliveryStatus) {
         this.deliveryStatus = deliveryStatus;
+    }
+
+    public void setHubShipperId(UUID hubShipperId) {
+        this.hubShipperId = hubShipperId;
     }
 }

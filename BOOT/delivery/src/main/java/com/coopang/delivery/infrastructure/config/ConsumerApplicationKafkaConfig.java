@@ -39,7 +39,8 @@ public class ConsumerApplicationKafkaConfig {
     /**
      * 지수 백오프 전략 생각
      * ExponentialBackOff backOff = new ExponentialBackOff(1000L, 2.0);
-     *     backOff.setMaxInterval(30000L); // 최대 대기 시간 설정
+     * backOff.setMaxInterval(30000L); // 최대 대기 시간 설정
+     *
      * @param template
      * @return
      */

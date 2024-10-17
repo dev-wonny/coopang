@@ -1,4 +1,4 @@
-package com.coopang.order.apicommnication.message;
+package com.coopang.apicommunication.kafka.message;
 
 import lombok.Getter;
 import lombok.Setter;

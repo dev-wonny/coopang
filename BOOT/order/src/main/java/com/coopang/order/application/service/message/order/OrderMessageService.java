@@ -1,12 +1,9 @@
 package com.coopang.order.application.service.message.order;
 
+import com.coopang.apicommunication.kafka.consumer.MessageService;
 import com.coopang.apicommunication.kafka.message.*;
+import com.coopang.apicommunication.kafka.producer.MessageProducer;
 import com.coopang.apidata.application.order.enums.OrderStatusEnum;
-import com.coopang.order.apicommnication.*;
-import com.coopang.order.apicommnication.message.CancelPayment;
-import com.coopang.order.apicommnication.message.CompletePayment;
-import com.coopang.order.apicommnication.MessageService;
-import com.coopang.order.apicommnication.message.ProcessChangeStatus;
 import com.coopang.order.application.response.order.OrderResponseDto;
 import com.coopang.order.application.service.order.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,16 +20,16 @@ import java.util.UUID;
 public class OrderMessageService implements MessageService {
     /*
     * sendMessage
-    Todo : 주문 등록 후 상품에게 전달 (process_product) - OK
-    Todo : 배송쪽에 정보 전달 (process_delivery) - OK
-    Todo : 결제 성공 후 정보 전달 (complete_payment) - OK
-    Todo : 결제 취소 정보 전달 (cancel_payment) - OK
-    Todo : 배송 취소 정보 전달 (cancel_delivery) - OK
-    Todo : 상품 롤백 정보 전달 (rollback_product) - OK
+     주문 등록 후 상품에게 전달 (process_product) - OK
+     배송쪽에 정보 전달 (process_delivery) - OK
+     결제 성공 후 정보 전달 (complete_payment) - OK
+     결제 취소 정보 전달 (cancel_payment) - OK
+     배송 취소 정보 전달 (cancel_delivery) - OK
+     상품 롤백 정보 전달 (rollback_product) - OK
     * processMessage
-    Todo : 재고 감소 성공 수신 (complete_product) - OK
-    Todo : 재고 감소 실패 수신 (error_product) - OK
-    Todo : 배송 상태 변경으로 주문 상태 변경 수신 (process_change_status) - OK
+     재고 감소 성공 수신 (complete_product) - OK
+     재고 감소 실패 수신 (error_product) - OK
+     배송 상태 변경으로 주문 상태 변경 수신 (process_change_status) - OK
      */
     private final ObjectMapper objectMapper;
     private final OrderService orderService;
@@ -116,17 +113,17 @@ public class OrderMessageService implements MessageService {
 
     /*
     * sendMessage
-    Todo : 주문 등록 후 상품에게 전달 (process_product)
-    Todo : 배송쪽에 정보 전달 (process_delivery)
-    Todo : 결제 성공 후 정보 전달 (complete_payment)
-    Todo : 결제 취소 정보 전달 (cancel_payment)
-    Todo : 배송 취소 정보 전달 (cancel_delivery)
-    Todo : 상품 롤백 정보 전달 (rollback_product)
+     주문 등록 후 상품에게 전달 (process_product)
+     배송쪽에 정보 전달 (process_delivery)
+     결제 성공 후 정보 전달 (complete_payment)
+     결제 취소 정보 전달 (cancel_payment)
+     배송 취소 정보 전달 (cancel_delivery)
+     상품 롤백 정보 전달 (rollback_product)
      */
 
     /*
     <process_product> 로 전달하기 위한 세팅
-    Todo : sendProcessProduct
+     sendProcessProduct
     - 제품 수량 검증을 위한 카프카 토픽
      */
     public void sendProcessProduct(
@@ -145,7 +142,7 @@ public class OrderMessageService implements MessageService {
     }
     /*
     <process_delivery> 로 전달하기 위한 세팅
-    Todo : sendProcessDelivery
+     sendProcessDelivery
     Delete : 현재는 RequestDto에서 받는걸로 진행 다른 방법으로 수신할 예정
      */
     public void sendProcessDelivery(UUID orderId){
@@ -164,7 +161,7 @@ public class OrderMessageService implements MessageService {
     }
     /*
     <complete_payment> 로 전달하기 위한 세팅
-    Todo : sendCompletePayment
+     sendCompletePayment
     - 결제 기록 등록을 위한 카프카 토픽
      */
     public void sendCompletePayment(
@@ -184,7 +181,7 @@ public class OrderMessageService implements MessageService {
     }
     /*
     <cancel_payment> 로 전달하기 위한 세팅
-    Todo : sendCancelPayment
+     sendCancelPayment
     - 결제 취소을 위한 카프카 토픽
      */
     public void sendCancelPayment(UUID orderId)
@@ -196,7 +193,7 @@ public class OrderMessageService implements MessageService {
     }
     /*
     <cancel_delivery> 로 전달하기 위한 세팅
-    Todo : sendCancelDelivery
+     sendCancelDelivery
     - 결제 기록 등록을 위한 카프카 토픽
      */
     public void sendCancelDelivery(UUID orderId)
@@ -208,7 +205,7 @@ public class OrderMessageService implements MessageService {
     }
     /*
     <rollback_product> 로 전달하기 위한 세팅
-    Todo : sendRollbackProduct
+     sendRollbackProduct
     - 상품 롤백을 위한 카프카 토픽
     * 사용처
     - 주문 취소 진행시에만 사용

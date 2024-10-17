@@ -1,8 +1,8 @@
 package com.coopang.order.application.service.message.paymenthistory;
 
-import com.coopang.order.apicommnication.message.CancelPayment;
-import com.coopang.order.apicommnication.message.CompletePayment;
-import com.coopang.order.apicommnication.MessageService;
+import com.coopang.apicommunication.kafka.consumer.MessageService;
+import com.coopang.apicommunication.kafka.message.CancelPayment;
+import com.coopang.apicommunication.kafka.message.CompletePayment;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

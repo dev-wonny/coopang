@@ -6,7 +6,6 @@ import com.coopang.apidata.application.order.enums.OrderStatusEnum;
 import com.coopang.apidata.application.user.enums.UserRoleEnum;
 import com.coopang.order.application.request.order.OrderDto;
 import com.coopang.order.application.response.order.OrderResponseDto;
-import com.coopang.order.application.service.message.TestMessageService;
 import com.coopang.order.application.service.message.order.OrderMessageService;
 import com.coopang.order.application.service.order.OrderService;
 import com.coopang.order.presentation.request.order.OrderGetAllConditionDto;
@@ -34,7 +33,6 @@ public class OrderController {
     private final ModelMapperConfig mapperConfig;
     private final OrderService orderService;
     private final OrderMessageService orderMessageService;
-    private final TestMessageService testMessageService;
 
     private static final String USER_ID_HEADER = "X-User-Id";
     private static final String USER_ROLE_HEADER = "X-User-Role";
@@ -42,12 +40,10 @@ public class OrderController {
     public OrderController(
             ModelMapperConfig mapperConfig,
             OrderService orderService,
-            TestMessageService testMessageService,
             OrderMessageService orderMessageService
     ) {
         this.mapperConfig = mapperConfig;
         this.orderService = orderService;
-        this.testMessageService = testMessageService;
         this.orderMessageService = orderMessageService;
     }
 
@@ -75,7 +71,6 @@ public class OrderController {
                 orderResponseDto.getOrderTotalPrice(),
                 orderRequestDto.getPaymentMethod()
         );
-        testMessageService.Test();
         return new ResponseEntity<>(orderResponseDto, HttpStatus.CREATED);
     }
 
