@@ -2,6 +2,7 @@ package com.coopang.apiconfig.error;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -65,7 +66,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<RestApiException> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         String errorMessage = ex.getBindingResult().getAllErrors().stream()
-                .map(error -> error.getDefaultMessage())
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.joining(", "));
         RestApiException restApiException = new RestApiException(errorMessage, HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(restApiException, HttpStatus.BAD_REQUEST);

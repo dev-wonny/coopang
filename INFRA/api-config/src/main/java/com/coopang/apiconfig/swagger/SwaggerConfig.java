@@ -1,8 +1,7 @@
 package com.coopang.apiconfig.swagger;
 
-import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ID;
-import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ROLE;
-
+import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ID;
+import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ROLE;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

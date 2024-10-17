@@ -13,7 +13,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @EnableCaching
 @EnableJpaAuditing(auditorAwareRef = "auditorAwareImpl")
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.coopang.user", "com.coopang.apiconfig"})
+@ComponentScan(basePackages = {"com.coopang.user", "com.coopang.apiconfig", "com.coopang.authcommon.jwt"})
 @EnableMethodSecurity(securedEnabled = true)
 public class UserApplication {
     public static void main(String[] args) {

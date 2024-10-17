@@ -1,9 +1,8 @@
 package com.coopang.hub.presentation.controller.hub;
 
-import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ROLE;
-
+import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ROLE;
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
-import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.hub.application.request.hub.HubDto;
 import com.coopang.hub.application.request.hub.HubSearchConditionDto;
 import com.coopang.hub.application.response.hub.HubResponseDto;
