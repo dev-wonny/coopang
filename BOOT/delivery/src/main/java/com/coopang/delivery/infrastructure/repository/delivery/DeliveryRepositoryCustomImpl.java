@@ -10,12 +10,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 import com.querydsl.core.types.Predicate;
+
 import java.util.UUID;
 
 @Repository
 public class DeliveryRepositoryCustomImpl extends Querydsl4RepositorySupport implements DeliveryRepositoryCustom {
 
-    public DeliveryRepositoryCustomImpl() {super(DeliveryEntity.class);}
+    public DeliveryRepositoryCustomImpl() {
+        super(DeliveryEntity.class);
+    }
 
     @Override
     public Page<DeliveryEntity> search(DeliverySearchCondition condition, Pageable pageable) {

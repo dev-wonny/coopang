@@ -17,15 +17,17 @@ public class KafkaDeliveryMessageConsumerService {
     ) {
         this.deliveryMessageService = deliveryMessageService;
     }
+
     @KafkaListener(topics = "complete_delivery", groupId = "delivery_server")
     public void consumeCompleteDelivery(String message) {
         log.info("consume complete delivery message: {}", message);
-        deliveryMessageService.processMessage("complete_delivery",message);
+        deliveryMessageService.processMessage("complete_delivery", message);
     }
+
     @KafkaListener(topics = "cancel_delivery", groupId = "delivery_server")
     public void consumeCancelDelivery(String message) {
         log.info("consume cancel delivery message: {}", message);
-        deliveryMessageService.processMessage("cancel_delivery",message);
+        deliveryMessageService.processMessage("cancel_delivery", message);
     }
 
 }

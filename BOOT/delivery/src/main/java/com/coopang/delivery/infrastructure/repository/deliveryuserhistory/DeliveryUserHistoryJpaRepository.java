@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface DeliveryUserHistoryJpaRepository extends JpaRepository<DeliveryUserHistoryEntity, UUID> ,DeliveryUserHistoryRepositoryCustom, DeliveryUserHistoryRepository {
+public interface DeliveryUserHistoryJpaRepository extends JpaRepository<DeliveryUserHistoryEntity, UUID>, DeliveryUserHistoryRepositoryCustom, DeliveryUserHistoryRepository {
 }

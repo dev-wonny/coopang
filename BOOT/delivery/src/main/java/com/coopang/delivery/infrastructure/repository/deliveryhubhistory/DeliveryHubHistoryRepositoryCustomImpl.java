@@ -22,10 +22,13 @@ public class DeliveryHubHistoryRepositoryCustomImpl extends Querydsl4RepositoryS
     @Override
     public List<DeliveryHubHistoryEntity> findByDeliveryId(UUID deliveryId) {
         return select(Projections.fields(DeliveryHubHistoryEntity.class, // 필요한 필드만 선택
-                        deliveryHubHistoryEntity.deliveryId,
-                        deliveryHubHistoryEntity.deliveryRouteHistoryStatus,
-                        deliveryHubHistoryEntity.createdAt
-                ))
+                deliveryHubHistoryEntity.deliveryId,
+                deliveryHubHistoryEntity.departureHubId,
+                deliveryHubHistoryEntity.arrivalHubId,
+                deliveryHubHistoryEntity.deliveryRouteHistoryStatus,
+                deliveryHubHistoryEntity.createdAt,
+                deliveryHubHistoryEntity.hubShipperId
+        ))
                 .from(deliveryHubHistoryEntity)
                 .where(deliveryIdEq(deliveryId))
                 .fetch(); // 결과를 리스트로 가져오기

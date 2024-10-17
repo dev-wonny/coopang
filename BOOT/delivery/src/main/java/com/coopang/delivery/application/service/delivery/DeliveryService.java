@@ -40,12 +40,6 @@ public class DeliveryService {
         return DeliveryResponseDto.fromDelivery(deliveryEntity);
     }
 
-    // 배송 등록 기본적인 흐름
-    public void processCreateDelivery(ProcessDelivery processDelivery) {
-        deliveryDomainService.createProcessDelivery(processDelivery);
-        log.info("processCreateDelivery");
-    }
-
     // 조회 //
 
     // 특정 배송 조회
@@ -101,7 +95,7 @@ public class DeliveryService {
     // 배송 상태 변경 - 목적지 허브 도착 : 허브 배송 기사님 용
     public void arrivedHub(UUID destinationHubId, UUID hubSipperId) {
         List<DeliveryEntity> deliveries = deliveryRepository.findAllByDestinationHubIdAndHubShipperId(destinationHubId, hubSipperId);
-        deliveryDomainService.arrivedHub(deliveries,destinationHubId);
+        deliveryDomainService.arrivedHub(deliveries, destinationHubId);
     }
 
     // 배송 상태 변경 - 목적지 도착 : 고객 배송 기사님 용

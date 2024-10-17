@@ -21,7 +21,7 @@ public interface DeliveryRepository {
 
     Page<DeliveryEntity> findAll(Pageable pageable);
 
-    Page<DeliveryEntity> findAllByDepartureHubId(Pageable pageable,UUID departureHubId);
+    Page<DeliveryEntity> findAllByDepartureHubId(Pageable pageable, UUID departureHubId);
 
     Page<DeliveryEntity> search(DeliverySearchCondition condition, Pageable pageable);
 

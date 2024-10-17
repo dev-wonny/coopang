@@ -28,7 +28,7 @@ public class DeliveryUserHistoryDomainService {
             String address2,
             UUID userShipperId,
             DeliveryStatusEnum deliveryRouteHistoryStatus
-    ){
+    ) {
         DeliveryUserHistoryEntity deliveryUserHistoryEntity = DeliveryUserHistoryEntity.create(
                 deliveryId,
                 departureHubId,

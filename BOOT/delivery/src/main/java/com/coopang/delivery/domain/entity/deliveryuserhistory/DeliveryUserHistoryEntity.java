@@ -52,7 +52,7 @@ public class DeliveryUserHistoryEntity extends BaseEntity {
             AddressEntity addressEntity,
             UUID userShipperId,
             DeliveryStatusEnum deliveryRouteHistoryStatus
-    ){
+    ) {
         this.deliveryUserRouteHistoryId = deliveryUserRouteHistoryId;
         this.deliveryId = deliveryId;
         this.departureHubId = departureHubId;
@@ -69,11 +69,11 @@ public class DeliveryUserHistoryEntity extends BaseEntity {
             String address2,
             UUID userShipperId,
             DeliveryStatusEnum deliveryRouteHistoryStatus
-    ){
+    ) {
         return DeliveryUserHistoryEntity.builder()
                 .deliveryId(deliveryId)
                 .departureHubId(departureHubId)
-                .addressEntity(AddressEntity.create(zipCode,address1,address2))
+                .addressEntity(AddressEntity.create(zipCode, address1, address2))
                 .userShipperId(userShipperId)
                 .deliveryRouteHistoryStatus(deliveryRouteHistoryStatus)
                 .build();

@@ -38,7 +38,7 @@ public class DeliveryMessageService implements MessageService {
     }
 
     @Override
-    public void processMessage(String topic, String message){
+    public void processMessage(String topic, String message) {
         log.info("Processing delivery topic {} message {}", topic, message);
         switch (topic) {
             case "complete_delivery":
@@ -52,16 +52,16 @@ public class DeliveryMessageService implements MessageService {
         }
     }
 
-    private void handleCompleteDelivery(String message){
+    private void handleCompleteDelivery(String message) {
         try {
             ProcessDelivery processDelivery = objectMapper.readValue(message, ProcessDelivery.class);
             deliveryService.processCreateDelivery(processDelivery);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void handleCancelDelivery(String message){
+    private void handleCancelDelivery(String message) {
         try {
             CancelDelivery cancelDelivery = objectMapper.readValue(message, CancelDelivery.class);
             deliveryDomainService.cancelDelivery(cancelDelivery);
@@ -76,7 +76,7 @@ public class DeliveryMessageService implements MessageService {
     order_id
     delivery_status
      */
-    public void processUserChangeStatus(UUID deliveryId){
+    public void processUserChangeStatus(UUID deliveryId) {
         DeliveryResponseDto deliveryResponseDto = deliveryService.getDeliveryById(deliveryId);
 
         ProcessChangeStatus processChangeStatus = new ProcessChangeStatus();
@@ -86,20 +86,21 @@ public class DeliveryMessageService implements MessageService {
         sendMessage("process_change_status", processChangeStatus);
     }
 
-    public void processHubChangeStatus(UUID orderId,String deliveryStatus){
+    public void processHubChangeStatus(UUID orderId, String deliveryStatus) {
         ProcessChangeStatus processChangeStatus = new ProcessChangeStatus();
         processChangeStatus.setOrderId(orderId);
         processChangeStatus.setDeliveryStatus(deliveryStatus);
 
         sendMessage("process_change_status", processChangeStatus);
     }
+
     /*
      slack 쪽으로 메세지 정보 보내기 (허브 배송)
     <hub_delivery_notification>
     delivery_shipper_id
     message (배송 건 리스트에 담아서 보내기)
      */
-    public void hubDeliveryNotification(List<DeliveryEntity> deliveries){
+    public void hubDeliveryNotification(List<DeliveryEntity> deliveries) {
         StringBuilder messageBuilder = new StringBuilder();
         for (DeliveryEntity deliveryEntity : deliveries) {
             messageBuilder.append(deliveryEntity.toString()).append("\n"); // 각 배송 정보를 줄 바꿈으로 구분
@@ -118,7 +119,7 @@ public class DeliveryMessageService implements MessageService {
     delivery_shipper_id
     message (배송 건 리스트에 담아서 보내기)
      */
-    public void userDeliveryNotification(List<DeliveryEntity> deliveries){
+    public void userDeliveryNotification(List<DeliveryEntity> deliveries) {
 
         StringBuilder messageBuilder = new StringBuilder();
         for (DeliveryEntity deliveryEntity : deliveries) {

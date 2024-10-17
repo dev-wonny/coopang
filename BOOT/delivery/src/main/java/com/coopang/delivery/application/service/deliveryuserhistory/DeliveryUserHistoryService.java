@@ -35,7 +35,7 @@ public class DeliveryUserHistoryService {
             String address2,
             UUID userShipperId,
             DeliveryStatusEnum deliveryRouteHistoryStatus
-    ){
+    ) {
         deliveryUserHistoryDomainService.createUserHistory(
                 deliveryId,
                 departureHubId,
@@ -46,7 +46,8 @@ public class DeliveryUserHistoryService {
                 deliveryRouteHistoryStatus
         );
     }
-    public List<DeliveryUserHistoryEntity> getHubHistoryById(UUID deliveryId){
+
+    public List<DeliveryUserHistoryEntity> getHubHistoryById(UUID deliveryId) {
         return deliveryUserHistoryRepository.findByDeliveryId(deliveryId);
     }
 }

@@ -24,9 +24,14 @@ public class DeliveryUserHistoryRepositoryCustomImpl extends Querydsl4Repository
     public List<DeliveryUserHistoryEntity> findByDeliveryId(UUID deliveryId) {
         return select(Projections.fields(DeliveryUserHistoryEntity.class, // 필요한 필드만 선택
                 deliveryUserHistoryEntity.deliveryId,
+                deliveryUserHistoryEntity.departureHubId,
+                deliveryUserHistoryEntity.addressEntity.zipCode,
+                deliveryUserHistoryEntity.addressEntity.address1,
+                deliveryUserHistoryEntity.addressEntity.address2,
                 deliveryUserHistoryEntity.deliveryRouteHistoryStatus,
-                deliveryUserHistoryEntity.createdAt
-                ))
+                deliveryUserHistoryEntity.createdAt,
+                deliveryUserHistoryEntity.userShipperId
+        ))
                 .from(deliveryUserHistoryEntity)
                 .where(deliveryIdEq(deliveryId))
                 .fetch(); // 결과를 리스트로 가져오기

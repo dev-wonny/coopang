@@ -57,22 +57,32 @@ public class DeliveryDomainService {
                 deliveryDto.getDestinationHubId(),
                 deliveryDto.getZipCode(),
                 deliveryDto.getAddress1(),
-                deliveryDto.getAddress2()
+                deliveryDto.getAddress2(),
+                deliveryDto.getHubShipperId()
         );
 
         return deliveryJpaRepository.save(deliveryEntity);
     }
 
     // 배송 등록 - 주문 등록 후 바로 이어지는..
-    public void createProcessDelivery(ProcessDelivery processDelivery) {
+    public void createProcessDelivery(
+            UUID orderId,
+            UUID productHubId,
+            UUID nearHubId,
+            String zipCode,
+            String address1,
+            String address2,
+            UUID hubShipperId
+    ) {
         // 배송 정보 생성하기
         DeliveryEntity deliveryEntity = DeliveryEntity.create(
-                processDelivery.getOrderId(),
-                processDelivery.getProductHubId(),
-                processDelivery.getNearHubId(),
-                processDelivery.getZipCode(),
-                processDelivery.getAddress1(),
-                processDelivery.getAddress2()
+                orderId,
+                productHubId,
+                nearHubId,
+                zipCode,
+                address1,
+                address2,
+                hubShipperId
         );
         deliveryJpaRepository.save(deliveryEntity);
     }
@@ -86,62 +96,63 @@ public class DeliveryDomainService {
 
     // 배송 상태 변경 - 목적지 허브 도착 : 허브 배송 기사님 용
     public void arrivedHub(List<DeliveryEntity> deliveries, UUID hubId) {
-            for (DeliveryEntity hubDelivery : deliveries) {
-                hubDelivery.setDeliveryStatus(DeliveryStatusEnum.ARRIVED_AT_DESTINATION_HUB);
+        for (DeliveryEntity hubDelivery : deliveries) {
+            hubDelivery.setDeliveryStatus(DeliveryStatusEnum.ARRIVED_AT_DESTINATION_HUB);
 
-                // 허브 배송 기록 채우기
-                deliveryHubHistoryService.createHubHistory(
-                        hubDelivery.getDeliveryId(),
-                        hubDelivery.getDepartureHubId(),
-                        hubDelivery.getDestinationHubId(),
-                        hubDelivery.getHubShipperId(),
-                        hubDelivery.getDeliveryStatus()
-                );
-            }
-            // 1. 고객 배송기사님 정보 가져오기
-            ShipperSearchConditionRequest shipperSearchConditionRequest = new ShipperSearchConditionRequest();
-            shipperSearchConditionRequest.setHubId(hubId);
-            shipperSearchConditionRequest.setShipperType("SHIPPER_CUSTOMER");
-            feignConfig.changeHeaderRoleToServer();
-            List<ShipperResponse> shippers = shipperClientService.getShipperList(shipperSearchConditionRequest);
-            feignConfig.resetRole();
-
-            int index = 0;
-
-
-            for (DeliveryEntity userDelivery : deliveries) {
-
-                // 배달기사님 순차적으로 매핑
-                userDelivery.setHubShipperId(shippers.get(index).getShipperId());
-
-                // 인덱스 업데이트 (2명 순환)
-                index = (index + 1) % shippers.size();
-
-                // 고객 배송 기록 채우기
-                userDelivery.setDeliveryStatus(DeliveryStatusEnum.CUSTOMER_DELIVERY_ASSIGNMENT_IN_PROGRESS);
-                deliveryUserHistoryService.createUserHistory(
-                        userDelivery.getDeliveryId(),
-                        userDelivery.getDepartureHubId(),
-                        userDelivery.getAddressEntity().getZipCode(),
-                        userDelivery.getAddressEntity().getAddress1(),
-                        userDelivery.getAddressEntity().getAddress2(),
-                        userDelivery.getUserShipperId(),
-                        userDelivery.getDeliveryStatus()
-                );
-            }
+            // 허브 배송 기록 채우기
+            deliveryHubHistoryService.createHubHistory(
+                    hubDelivery.getDeliveryId(),
+                    hubDelivery.getDepartureHubId(),
+                    hubDelivery.getDestinationHubId(),
+                    hubDelivery.getHubShipperId(),
+                    hubDelivery.getDeliveryStatus()
+            );
         }
-        // 배송 상태 변경 - 목적지 도착 : 고객 배송 기사님 용
-        public void arrivedDelivery (DeliveryEntity deliveryEntity){
-            deliveryEntity.setDeliveryStatus(DeliveryStatusEnum.DELIVERY_COMPLETED_TO_CUSTOMER);
+        // 1. 고객 배송기사님 정보 가져오기
+        ShipperSearchConditionRequest shipperSearchConditionRequest = new ShipperSearchConditionRequest();
+        shipperSearchConditionRequest.setHubId(hubId);
+        shipperSearchConditionRequest.setShipperType("SHIPPER_CUSTOMER");
+        feignConfig.changeHeaderRoleToServer();
+        List<ShipperResponse> shippers = shipperClientService.getShipperList(shipperSearchConditionRequest);
+        feignConfig.resetRole();
 
+        int index = 0;
+
+
+        for (DeliveryEntity userDelivery : deliveries) {
+
+            // 배달기사님 순차적으로 매핑
+            userDelivery.setHubShipperId(shippers.get(index).getShipperId());
+
+            // 인덱스 업데이트 (2명 순환)
+            index = (index + 1) % shippers.size();
+
+            // 고객 배송 기록 채우기
+            userDelivery.setDeliveryStatus(DeliveryStatusEnum.CUSTOMER_DELIVERY_ASSIGNMENT_IN_PROGRESS);
             deliveryUserHistoryService.createUserHistory(
-                    deliveryEntity.getDeliveryId(),
-                    deliveryEntity.getDepartureHubId(),
-                    deliveryEntity.getAddressEntity().getZipCode(),
-                    deliveryEntity.getAddressEntity().getAddress1(),
-                    deliveryEntity.getAddressEntity().getAddress2(),
-                    deliveryEntity.getUserShipperId(),
-                    DeliveryStatusEnum.DELIVERY_COMPLETED_TO_CUSTOMER
+                    userDelivery.getDeliveryId(),
+                    userDelivery.getDepartureHubId(),
+                    userDelivery.getAddressEntity().getZipCode(),
+                    userDelivery.getAddressEntity().getAddress1(),
+                    userDelivery.getAddressEntity().getAddress2(),
+                    userDelivery.getUserShipperId(),
+                    userDelivery.getDeliveryStatus()
             );
         }
     }
+
+    // 배송 상태 변경 - 목적지 도착 : 고객 배송 기사님 용
+    public void arrivedDelivery(DeliveryEntity deliveryEntity) {
+        deliveryEntity.setDeliveryStatus(DeliveryStatusEnum.DELIVERY_COMPLETED_TO_CUSTOMER);
+
+        deliveryUserHistoryService.createUserHistory(
+                deliveryEntity.getDeliveryId(),
+                deliveryEntity.getDepartureHubId(),
+                deliveryEntity.getAddressEntity().getZipCode(),
+                deliveryEntity.getAddressEntity().getAddress1(),
+                deliveryEntity.getAddressEntity().getAddress2(),
+                deliveryEntity.getUserShipperId(),
+                DeliveryStatusEnum.DELIVERY_COMPLETED_TO_CUSTOMER
+        );
+    }
+}

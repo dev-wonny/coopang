@@ -29,7 +29,7 @@ public class DeliveryHistoryController {
     }
 
     @GetMapping("/delivery/{deliveryId}")
-    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER,UserRoleEnum.Authority.HUB_MANAGER,UserRoleEnum.Authority.SHIPPER})
+    @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.CUSTOMER, UserRoleEnum.Authority.HUB_MANAGER, UserRoleEnum.Authority.SHIPPER})
     public ResponseEntity<List<DeliveryHistoryResponseDto>> getDeliveryHistory(
             @PathVariable("deliveryId") UUID deliveryId) {
         List<DeliveryHistoryResponseDto> deliveryHistoryResponseDto = deliveryHistoryService.findByDeliveryId(deliveryId);

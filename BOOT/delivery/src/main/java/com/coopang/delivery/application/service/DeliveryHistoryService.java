@@ -33,25 +33,38 @@ public class DeliveryHistoryService {
         List<DeliveryHubHistoryEntity> hubHistory = deliveryHubHistoryService.getHubHistoryById(deliveryId);
 
         // 두 리스트에서 DTO 생성 후 합침
-        List<DeliveryHistoryResponseDto> userHistoryList = new java.util.ArrayList<>(userHistory.stream()
-                .map(userDeliveryHistory -> new DeliveryHistoryResponseDto(
-                        userDeliveryHistory.getDeliveryId(),
-                        userDeliveryHistory.getDeliveryRouteHistoryStatus(),
-                        userDeliveryHistory.getCreatedAt()
+        List<DeliveryHistoryResponseDto> hubHistoryList = new java.util.ArrayList<>(hubHistory.stream()
+                .map(hubDeliveryHistory -> new DeliveryHistoryResponseDto(
+                        hubDeliveryHistory.getDeliveryId(),
+                        hubDeliveryHistory.getDepartureHubId(),
+                        hubDeliveryHistory.getArrivalHubId(),
+                        null,
+                        null,
+                        null,
+                        hubDeliveryHistory.getDeliveryRouteHistoryStatus(), // DeliveryEntity의 상태 가져오기
+                        hubDeliveryHistory.getCreatedAt(),
+                        hubDeliveryHistory.getHubShipperId()
+
                 ))
                 .toList());
 
-        List<DeliveryHistoryResponseDto> hubHistoryList = hubHistory.stream()
-                .map(hubDeliveryHistory -> new DeliveryHistoryResponseDto(
-                        hubDeliveryHistory.getDeliveryId(), // DeliveryEntity에서 ID 가져오기
-                        hubDeliveryHistory.getDeliveryRouteHistoryStatus(), // DeliveryEntity의 상태 가져오기
-                        hubDeliveryHistory.getCreatedAt() // DeliveryEntity의 생성 시간 가져오기
+        List<DeliveryHistoryResponseDto> userHistoryList = userHistory.stream()
+                .map(userDeliveryHistory -> new DeliveryHistoryResponseDto(
+                        userDeliveryHistory.getDeliveryId(),
+                        userDeliveryHistory.getDepartureHubId(),
+                        null,
+                        userDeliveryHistory.getAddressEntity().getZipCode(),
+                        userDeliveryHistory.getAddressEntity().getAddress1(),
+                        userDeliveryHistory.getAddressEntity().getAddress2(),
+                        userDeliveryHistory.getDeliveryRouteHistoryStatus(),
+                        userDeliveryHistory.getCreatedAt(),
+                        userDeliveryHistory.getUserShipperId()
                 ))
                 .toList();
 
         // 두 리스트를 합쳐서 반환
-        userHistoryList.addAll(hubHistoryList);
-        return userHistoryList;
+        hubHistoryList.addAll(userHistoryList);
+        return hubHistoryList;
     }
 }
 
