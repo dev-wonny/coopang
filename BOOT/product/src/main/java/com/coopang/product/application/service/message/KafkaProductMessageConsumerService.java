@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class KafkaProductMessageConsumerService extends MessageConsumer {
+public class KafkaProductMessageConsumerService implements MessageConsumer {
 
     private final ProductMessageService productMessageService;
 
