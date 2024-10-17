@@ -18,5 +18,4 @@ public class UpdateProductRequestDto {
     private UUID categoryId;
     @Positive(message = "product Price must be positive")
     private double productPrice;
-    private int productStock;
 }

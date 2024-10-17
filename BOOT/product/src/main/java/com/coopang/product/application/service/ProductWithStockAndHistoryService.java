@@ -25,6 +25,7 @@ public class ProductWithStockAndHistoryService {
         this.productStockHistoryService = productStockHistoryService;
     }
 
+    //상품, 상품 재고, 상품 재고 기록을 같이 생성 - 하나의 트랜잭션으로 관리
     public ProductResponseDto createProductWithProductStockAndProductStockHistory(ProductDto productDto) {
         ProductEntity productEntity = productService.createProduct(productDto);
 

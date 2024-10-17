@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class BaseSearchConditionDto {
+public class ProductBaseSearchConditionDto {
     private UUID hubId;
     private UUID companyId;
 }

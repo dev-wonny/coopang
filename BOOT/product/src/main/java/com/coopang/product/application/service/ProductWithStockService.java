@@ -9,6 +9,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+//상품과 재고를 함께 관리하는 서비스
 @Service
 @RequiredArgsConstructor
 public class ProductWithStockService {

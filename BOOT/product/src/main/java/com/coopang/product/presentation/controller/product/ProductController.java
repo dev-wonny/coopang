@@ -12,7 +12,7 @@ import com.coopang.product.application.response.product.ProductResponseDto;
 import com.coopang.product.application.service.ProductWithStockAndHistoryService;
 import com.coopang.product.application.service.ProductWithStockService;
 import com.coopang.product.application.service.product.ProductService;
-import com.coopang.product.presentation.request.product.BaseSearchConditionDto;
+import com.coopang.product.presentation.request.product.ProductBaseSearchConditionDto;
 import com.coopang.product.presentation.request.product.CreateProductRequestDto;
 import com.coopang.product.presentation.request.product.ProductSearchConditionDto;
 import com.coopang.product.presentation.request.product.UpdateProductHiddenRequestDto;
@@ -115,7 +115,7 @@ public class ProductController {
 
     @GetMapping("/product")
     public ResponseEntity<Page<ProductResponseDto>> getAllProducts(
-        @ModelAttribute BaseSearchConditionDto condition,
+        @ModelAttribute ProductBaseSearchConditionDto condition,
         @RequestHeader(HEADER_USER_ROLE) String role, Pageable pageable) {
         Page<ProductResponseDto> productResponseDto;
         if (UserRoleEnum.isMaster(role)) {
@@ -131,9 +131,9 @@ public class ProductController {
         return new ResponseEntity<>(productResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/product/search")
+    @PostMapping("/product/search")
     public ResponseEntity<Page<ProductResponseDto>> searchProduct(
-        @ModelAttribute ProductSearchConditionDto searchCondition,
+        @RequestBody ProductSearchConditionDto searchCondition,
         @RequestHeader(HEADER_USER_ROLE) String role, Pageable pageable) {
 
         //마스터인 경우 모든 상품을 봄

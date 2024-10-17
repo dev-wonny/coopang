@@ -10,7 +10,7 @@ import com.coopang.product.domain.entity.product.ProductEntity;
 import com.coopang.product.domain.repository.product.ProductRepository;
 import com.coopang.product.domain.service.product.ProductDomainService;
 import com.coopang.product.infrastructure.repository.category.CategoryJpaRepository;
-import com.coopang.product.presentation.request.product.BaseSearchConditionDto;
+import com.coopang.product.presentation.request.product.ProductBaseSearchConditionDto;
 import com.coopang.product.presentation.request.product.ProductSearchConditionDto;
 import java.util.List;
 import java.util.UUID;
@@ -78,7 +78,7 @@ public class ProductService {
     //허브 관리자일 경우 소속된 업체들의 상품들 조회
     @Cacheable(value = "Allproducts", key = "#condition")
     @Transactional(readOnly = true)
-    public Page<ProductResponseDto> getAllProductInHub(BaseSearchConditionDto condition,Pageable pageable) {
+    public Page<ProductResponseDto> getAllProductInHub(ProductBaseSearchConditionDto condition,Pageable pageable) {
         try{
 
             UUID hubId = condition.getHubId();
@@ -106,7 +106,7 @@ public class ProductService {
     //업체 관리자일 경우 자신의 상품들만 조회
     @Cacheable(value = "Allproducts", key = "#condition")
     @Transactional(readOnly = true)
-    public Page<ProductResponseDto> getAllProductInCompany(BaseSearchConditionDto condition,Pageable pageable) {
+    public Page<ProductResponseDto> getAllProductInCompany(ProductBaseSearchConditionDto condition,Pageable pageable) {
         return productRepository.findAllWithStockAndCategoryByCompanyId(condition.getCompanyId(), pageable).map(ProductResponseDto::of);
     }
 

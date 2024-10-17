@@ -18,8 +18,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,8 +45,8 @@ public class ProductStockHistoryController {
     }
 
     @Secured({Authority.MASTER,Authority.COMPANY,Authority.HUB_MANAGER})
-    @GetMapping("/{productId}/product-stock-history/search")
-    public ResponseEntity<Page<ProductStockHistoryResponseDto>> getStockHistoriesByProductIdWithCondition(@ModelAttribute
+    @PostMapping("/{productId}/product-stock-history/search")
+    public ResponseEntity<Page<ProductStockHistoryResponseDto>> getStockHistoriesByProductIdWithCondition(@RequestBody
     ProductStockHistorySearchConditionDto condition,@PathVariable UUID productId, Pageable pageable) {
 
         Page<ProductStockHistoryResponseDto> productStockHistoryResponseDtos= productStockHistoryService.getStockHistoriesByProductIdWithCondition(condition,productId,pageable);
