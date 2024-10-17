@@ -33,7 +33,7 @@ public class ProductMessageService implements MessageService {
     private final ProductService productService;
     private final CompanyFeignClientService companyFeignClientService;
     private final UserFeignClientService userFeignClientService;
-
+    private static int STOCK_LOW_NOTIFICATION_NUM = 10;
     /* listener
      * 재고 감소 요청 process_product
      * 취소에 위한 재고 증가 요청 rollback_product
@@ -70,7 +70,7 @@ public class ProductMessageService implements MessageService {
 
             int currentQuantity = productStockService.reduceProductStock(processProduct.getProductId(),productStockDto);
 
-            if(currentQuantity <= 10)
+            if(currentQuantity <= STOCK_LOW_NOTIFICATION_NUM)
             {
                 sendLowStockNotification(processProduct.getProductId(),currentQuantity);
             }
