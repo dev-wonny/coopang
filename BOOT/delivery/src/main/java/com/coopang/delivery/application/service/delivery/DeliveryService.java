@@ -1,5 +1,6 @@
 package com.coopang.delivery.application.service.delivery;
 
+import com.coopang.apicommunication.kafka.message.ProcessDelivery;
 import com.coopang.delivery.application.request.delivery.DeliveryDto;
 import com.coopang.delivery.application.response.delivery.DeliveryResponseDto;
 import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;

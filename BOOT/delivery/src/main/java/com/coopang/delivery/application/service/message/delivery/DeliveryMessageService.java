@@ -1,8 +1,8 @@
 package com.coopang.delivery.application.service.message.delivery;
 
+import com.coopang.apicommunication.kafka.consumer.MessageService;
 import com.coopang.apicommunication.kafka.message.*;
-import com.coopang.delivery.apicommnication.MessageProducer;
-import com.coopang.delivery.apicommnication.MessageService;
+import com.coopang.apicommunication.kafka.producer.MessageProducer;
 import com.coopang.delivery.application.response.delivery.DeliveryResponseDto;
 import com.coopang.delivery.application.service.delivery.DeliveryService;
 import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;

@@ -1,7 +1,10 @@
 package com.coopang.delivery.domain.service.delivery;
 
 import com.coopang.apicommunication.feignclient.shipper.ShipperClient;
+import com.coopang.apicommunication.feignclient.shipper.ShipperClientService;
 import com.coopang.apicommunication.kafka.message.CancelDelivery;
+import com.coopang.apicommunication.kafka.message.ProcessDelivery;
+import com.coopang.apiconfig.feignclient.FeignConfig;
 import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
 import com.coopang.apidata.application.shipper.request.ShipperSearchConditionRequest;
 import com.coopang.apidata.application.shipper.response.ShipperResponse;
@@ -28,23 +31,26 @@ public class DeliveryDomainService {
     private final DeliveryJpaRepository deliveryJpaRepository;
     private final DeliveryHubHistoryService deliveryHubHistoryService;
     private final DeliveryUserHistoryService deliveryUserHistoryService;
-    private final ShipperClient shipperClient;
+    private final ShipperClientService shipperClientService;
+    private final FeignConfig feignConfig;
 
     public DeliveryDomainService(
             DeliveryJpaRepository deliveryJpaRepository,
             DeliveryHubHistoryService deliveryHubHistoryService,
             DeliveryUserHistoryService deliveryUserHistoryService,
-            ShipperClient shipperClient
-            ) {
+            ShipperClientService shipperClientService,
+            FeignConfig feignConfig
+    ) {
         this.deliveryJpaRepository = deliveryJpaRepository;
         this.deliveryHubHistoryService = deliveryHubHistoryService;
         this.deliveryUserHistoryService = deliveryUserHistoryService;
-        this.shipperClient = shipperClient;
+        this.shipperClientService = shipperClientService;
+        this.feignConfig = feignConfig;
     }
 
     public DeliveryEntity createDelivery(
             DeliveryDto deliveryDto
-    ){
+    ) {
         DeliveryEntity deliveryEntity = DeliveryEntity.create(
                 deliveryDto.getOrderId(),
                 deliveryDto.getDepartureHubId(),
@@ -70,66 +76,72 @@ public class DeliveryDomainService {
         );
         deliveryJpaRepository.save(deliveryEntity);
     }
+
     // 배송 취소
-    public void cancelDelivery(CancelDelivery cancelDelivery){
+    public void cancelDelivery(CancelDelivery cancelDelivery) {
         DeliveryEntity deliveryEntity = deliveryJpaRepository.findByOrderId(cancelDelivery.getOrderId())
                 .orElseThrow();
         deliveryEntity.setDeliveryStatus(DeliveryStatusEnum.DELIVERY_CANCELED);
     }
 
     // 배송 상태 변경 - 목적지 허브 도착 : 허브 배송 기사님 용
-    public void arrivedHub(List<DeliveryEntity> deliveries,UUID hubId) {
-        // 1. 고객 배송기사님 정보 가져오기
-        ShipperSearchConditionRequest shipperSearchConditionRequest = new ShipperSearchConditionRequest();
-        shipperSearchConditionRequest.setHubId(hubId);
-        shipperSearchConditionRequest.setShipperType("SHIPPER_CUSTOMER");
-        List<ShipperResponse> shippers = shipperClient.getShipperList(shipperSearchConditionRequest);
+    public void arrivedHub(List<DeliveryEntity> deliveries, UUID hubId) {
+            for (DeliveryEntity hubDelivery : deliveries) {
+                hubDelivery.setDeliveryStatus(DeliveryStatusEnum.ARRIVED_AT_DESTINATION_HUB);
 
-        int index = 0;
+                // 허브 배송 기록 채우기
+                deliveryHubHistoryService.createHubHistory(
+                        hubDelivery.getDeliveryId(),
+                        hubDelivery.getDepartureHubId(),
+                        hubDelivery.getDestinationHubId(),
+                        hubDelivery.getHubShipperId(),
+                        hubDelivery.getDeliveryStatus()
+                );
+            }
+            // 1. 고객 배송기사님 정보 가져오기
+            ShipperSearchConditionRequest shipperSearchConditionRequest = new ShipperSearchConditionRequest();
+            shipperSearchConditionRequest.setHubId(hubId);
+            shipperSearchConditionRequest.setShipperType("SHIPPER_CUSTOMER");
+            feignConfig.changeHeaderRoleToServer();
+            List<ShipperResponse> shippers = shipperClientService.getShipperList(shipperSearchConditionRequest);
+            feignConfig.resetRole();
+
+            int index = 0;
 
 
-        for (DeliveryEntity delivery : deliveries) {
-            delivery.setDeliveryStatus(DeliveryStatusEnum.ARRIVED_AT_DESTINATION_HUB);
+            for (DeliveryEntity userDelivery : deliveries) {
 
-            // 배달기사님 순차적으로 매핑
-            delivery.setHubShipperId(shippers.get(index).getShipperId());
+                // 배달기사님 순차적으로 매핑
+                userDelivery.setHubShipperId(shippers.get(index).getShipperId());
 
-            // 인덱스 업데이트 (2명 순환)
-            index = (index + 1) % shippers.size();
-            // 허브 배송 기록 채우기
-            deliveryHubHistoryService.createHubHistory(
-                    delivery.getDeliveryId(),
-                    delivery.getDepartureHubId(),
-                    delivery.getDestinationHubId(),
-                    delivery.getHubShipperId(),
-                    delivery.getDeliveryStatus()
-            );
+                // 인덱스 업데이트 (2명 순환)
+                index = (index + 1) % shippers.size();
 
-            // 고객 배송 기록 채우기
-            delivery.setDeliveryStatus(DeliveryStatusEnum.CUSTOMER_DELIVERY_ASSIGNMENT_IN_PROGRESS);
+                // 고객 배송 기록 채우기
+                userDelivery.setDeliveryStatus(DeliveryStatusEnum.CUSTOMER_DELIVERY_ASSIGNMENT_IN_PROGRESS);
+                deliveryUserHistoryService.createUserHistory(
+                        userDelivery.getDeliveryId(),
+                        userDelivery.getDepartureHubId(),
+                        userDelivery.getAddressEntity().getZipCode(),
+                        userDelivery.getAddressEntity().getAddress1(),
+                        userDelivery.getAddressEntity().getAddress2(),
+                        userDelivery.getUserShipperId(),
+                        userDelivery.getDeliveryStatus()
+                );
+            }
+        }
+        // 배송 상태 변경 - 목적지 도착 : 고객 배송 기사님 용
+        public void arrivedDelivery (DeliveryEntity deliveryEntity){
+            deliveryEntity.setDeliveryStatus(DeliveryStatusEnum.DELIVERY_COMPLETED_TO_CUSTOMER);
+
             deliveryUserHistoryService.createUserHistory(
-                    delivery.getDeliveryId(),
-                    delivery.getDepartureHubId(),
-                    delivery.getAddressEntity().getZipCode(),
-                    delivery.getAddressEntity().getAddress1(),
-                    delivery.getAddressEntity().getAddress2(),
-                    delivery.getUserShipperId(),
-                    delivery.getDeliveryStatus()
+                    deliveryEntity.getDeliveryId(),
+                    deliveryEntity.getDepartureHubId(),
+                    deliveryEntity.getAddressEntity().getZipCode(),
+                    deliveryEntity.getAddressEntity().getAddress1(),
+                    deliveryEntity.getAddressEntity().getAddress2(),
+                    deliveryEntity.getUserShipperId(),
+                    DeliveryStatusEnum.DELIVERY_COMPLETED_TO_CUSTOMER
             );
         }
     }
-    // 배송 상태 변경 - 목적지 도착 : 고객 배송 기사님 용
-    public void arrivedDelivery(DeliveryEntity deliveryEntity) {
-        deliveryEntity.setDeliveryStatus(DeliveryStatusEnum.DELIVERY_COMPLETED_TO_CUSTOMER);
-
-        deliveryUserHistoryService.createUserHistory(
-                deliveryEntity.getDeliveryId(),
-                deliveryEntity.getDepartureHubId(),
-                deliveryEntity.getAddressEntity().getZipCode(),
-                deliveryEntity.getAddressEntity().getAddress1(),
-                deliveryEntity.getAddressEntity().getAddress2(),
-                deliveryEntity.getUserShipperId(),
-                DeliveryStatusEnum.DELIVERY_COMPLETED_TO_CUSTOMER
-        );
-    }
-}

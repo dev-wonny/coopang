@@ -17,7 +17,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_delivery_hub_route_histories")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @EntityListeners(value = {AuditingEntityListener.class})
 public class DeliveryHubHistoryEntity extends BaseEntity {
 

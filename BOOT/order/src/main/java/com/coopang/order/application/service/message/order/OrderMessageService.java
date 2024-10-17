@@ -1,12 +1,9 @@
 package com.coopang.order.application.service.message.order;
 
+import com.coopang.apicommunication.kafka.consumer.MessageService;
 import com.coopang.apicommunication.kafka.message.*;
+import com.coopang.apicommunication.kafka.producer.MessageProducer;
 import com.coopang.apidata.application.order.enums.OrderStatusEnum;
-import com.coopang.order.apicommnication.*;
-import com.coopang.order.apicommnication.message.CancelPayment;
-import com.coopang.order.apicommnication.message.CompletePayment;
-import com.coopang.order.apicommnication.MessageService;
-import com.coopang.order.apicommnication.message.ProcessChangeStatus;
 import com.coopang.order.application.response.order.OrderResponseDto;
 import com.coopang.order.application.service.order.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;

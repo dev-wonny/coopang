@@ -6,6 +6,7 @@ import com.coopang.delivery.application.request.delivery.DeliveryDto;
 import com.coopang.delivery.application.response.delivery.DeliveryResponseDto;
 import com.coopang.delivery.application.service.delivery.DeliveryService;
 import com.coopang.delivery.application.service.message.delivery.DeliveryMessageService;
+import com.coopang.delivery.application.service.schedule.DeliveryScheduleService;
 import com.coopang.delivery.presentation.request.delivery.DeliveryRequestDto;
 import com.coopang.delivery.presentation.request.delivery.DeliverySearchCondition;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,15 +30,18 @@ public class DeliveryController {
     private final DeliveryService deliveryService;
     private final ModelMapperConfig mapperConfig;
     private final DeliveryMessageService deliveryMessageService;
+    private final DeliveryScheduleService deliveryScheduleService;
 
     public DeliveryController(
             DeliveryService deliveryService,
             ModelMapperConfig mapperConfig,
-            DeliveryMessageService deliveryMessageService
+            DeliveryMessageService deliveryMessageService,
+            DeliveryScheduleService deliveryScheduleService
     ) {
         this.deliveryService = deliveryService;
         this.mapperConfig = mapperConfig;
         this.deliveryMessageService = deliveryMessageService;
+        this.deliveryScheduleService = deliveryScheduleService;
     }
 
     @PostMapping("/delivery")
@@ -130,6 +134,14 @@ public class DeliveryController {
             @PathVariable UUID hubShipperId
             ){
         deliveryService.arrivedHub(destinationHubId, hubShipperId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // 16시 종합본
+    @GetMapping("deliveries/v1/delivery/16")
+    @Secured(UserRoleEnum.Authority.MASTER)
+    public ResponseEntity<Void> mapHubDelivery(){
+        deliveryScheduleService.readyDelivery();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -1,6 +1,8 @@
 package com.coopang.delivery.application.service.schedule;
 
 import com.coopang.apicommunication.feignclient.shipper.ShipperClient;
+import com.coopang.apicommunication.feignclient.shipper.ShipperClientService;
+import com.coopang.apiconfig.feignclient.FeignConfig;
 import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
 import com.coopang.apidata.application.shipper.request.ShipperSearchConditionRequest;
 import com.coopang.apidata.application.shipper.response.ShipperResponse;
@@ -9,10 +11,10 @@ import com.coopang.delivery.application.service.deliveryuserhistory.DeliveryUser
 import com.coopang.delivery.application.service.message.delivery.DeliveryMessageService;
 import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;
 import com.coopang.delivery.domain.repository.delivery.DeliveryRepository;
-import com.coopang.delivery.infrastructure.repository.delivery.DeliveryJpaRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,25 +23,29 @@ import java.util.UUID;
 
 @Slf4j(topic = "DeliveryScheduleService")
 @Service
+@Transactional
 public class DeliveryScheduleService {
 
     private final DeliveryHubHistoryService deliveryHubHistoryService;
     private final DeliveryUserHistoryService deliveryUserHistoryService;
     private final DeliveryMessageService deliveryMessageService;
-    private final ShipperClient shipperClient;
     private final DeliveryRepository deliveryRepository;
+    private final ShipperClientService shipperClientService;
+    private final FeignConfig feignConfig;
 
     public DeliveryScheduleService(
             DeliveryHubHistoryService deliveryHubHistoryService,
             DeliveryUserHistoryService deliveryUserHistoryService,
             DeliveryMessageService deliveryMessageService,
-            ShipperClient shipperClient,
+            ShipperClientService shipperClientService,
+            FeignConfig feignConfig,
             DeliveryRepository deliveryRepository
     ) {
         this.deliveryHubHistoryService = deliveryHubHistoryService;
         this.deliveryUserHistoryService = deliveryUserHistoryService;
         this.deliveryMessageService = deliveryMessageService;
-        this.shipperClient = shipperClient;
+        this.shipperClientService = shipperClientService;
+        this.feignConfig = feignConfig;
         this.deliveryRepository = deliveryRepository;
     }
 
@@ -57,7 +63,8 @@ public class DeliveryScheduleService {
      */
 
     // 스케줄링 - 허브 배송 준비 : 16시
-    @Scheduled(cron = "0 0 16 * * *")
+//    @Scheduled(cron = "0 0 16 * * *")
+//    @Scheduled(cron = "0 44 2 * * *")
     public void readyDelivery() {
         // 1. 배송 준비 중인 배송 건 조회
         List<DeliveryEntity> deliveries = findByDeliveryStatus(DeliveryStatusEnum.PENDING);
@@ -65,7 +72,9 @@ public class DeliveryScheduleService {
         // 2. 허브 배송기사님 정보 가져오기
         ShipperSearchConditionRequest shipperSearchConditionRequest = new ShipperSearchConditionRequest();
         shipperSearchConditionRequest.setShipperType("SHIPPER_HUB");
-        List<ShipperResponse> shippers = shipperClient.getShipperList(shipperSearchConditionRequest);
+        feignConfig.changeHeaderRoleToServer();
+        List<ShipperResponse> shippers = shipperClientService.getShipperList(shipperSearchConditionRequest);
+        feignConfig.resetRole();
 
         // 3. 배송기사님 정보를 Map으로 변환 (허브 ID를 키로 사용)
         Map<UUID, UUID> shipperMap = new HashMap<>();
@@ -111,13 +120,13 @@ public class DeliveryScheduleService {
         updateStatusDeliveryHub(deliveries, DeliveryStatusEnum.MOVING_TO_HUB );
     }
     // 스케줄링 - 고객 배송 물건 상차 및 slack 메세지 발송 : 06시
-    @Scheduled(cron = "0 0 6 * * *")
+    @Scheduled(cron = "0 05 3 * * *")
     public void sendToSlackCustomerDelivery(){
         List<DeliveryEntity> deliveries = findByDeliveryStatus(DeliveryStatusEnum.CUSTOMER_DELIVERY_ASSIGNMENT_IN_PROGRESS);
         updateStatusDeliveryUser(deliveries, DeliveryStatusEnum.CUSTOMER_DELIVERY_ASSIGNMENT_COMPLETED );
     }
     // 스케줄링 - 고객 배송 출발 : 08시
-    @Scheduled(cron = "0 0 8 * * *")
+    @Scheduled(cron = "0 06 3 * * *")
     public void userDeliveryStart(){
         List<DeliveryEntity> deliveries = findByDeliveryStatus(DeliveryStatusEnum.CUSTOMER_DELIVERY_ASSIGNMENT_COMPLETED);
         updateStatusDeliveryUser(deliveries, DeliveryStatusEnum.MOVING_TO_CUSTOMER );
@@ -135,6 +144,7 @@ public class DeliveryScheduleService {
                     deliveryEntity.getHubShipperId(),
                     deliveryStatus
             );
+
         }
     }
 

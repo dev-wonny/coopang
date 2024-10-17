@@ -1,6 +1,6 @@
 package com.coopang.delivery.application.service.message;
 
-import com.coopang.delivery.apicommnication.MessageService;
+import com.coopang.apicommunication.kafka.consumer.MessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.annotation.KafkaListener;
