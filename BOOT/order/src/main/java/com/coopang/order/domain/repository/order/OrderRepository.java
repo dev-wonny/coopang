@@ -1,11 +1,13 @@
 package com.coopang.order.domain.repository.order;
 
+import com.coopang.apidata.application.order.enums.OrderStatusEnum;
 import com.coopang.order.domain.entity.order.OrderEntity;
 import com.coopang.order.presentation.request.order.OrderGetAllConditionDto;
 import com.coopang.order.presentation.request.order.OrderSearchConditionDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,4 +26,6 @@ public interface OrderRepository {
     Page<OrderEntity> SearchByCompanyId(UUID companyId, OrderSearchConditionDto orderSearchConditionDto, Pageable pageable);
     Page<OrderEntity> Search(OrderSearchConditionDto orderSearchConditionDto, Pageable pageable);
 
+    // 주문 리스트 조회
+    List<OrderEntity> findOrderList(OrderStatusEnum orderStatusEnum);
 }

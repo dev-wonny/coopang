@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "OrderContorller API", description = "OrderContorller API")
@@ -262,5 +263,13 @@ public class OrderController {
     public ResponseEntity<Void> deleteOrder(@PathVariable UUID orderId) {
         orderService.deleteOrder(orderId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    // feginclient
+    @GetMapping("/order/list")
+    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.SERVER})
+    public ResponseEntity<List<OrderResponseDto>> getOrderList(){
+        final List<OrderResponseDto> orders = orderService.getOrderList();
+        return new ResponseEntity<>(orders,HttpStatus.OK);
     }
 }

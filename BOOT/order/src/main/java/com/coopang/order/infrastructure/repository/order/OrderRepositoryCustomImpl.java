@@ -3,6 +3,7 @@ package com.coopang.order.infrastructure.repository.order;
 import static com.coopang.order.domain.entity.order.QOrderEntity.orderEntity;
 
 import com.coopang.apiconfig.querydsl.Querydsl4RepositorySupport;
+import com.coopang.apidata.application.order.enums.OrderStatusEnum;
 import com.coopang.order.domain.entity.order.OrderEntity;
 import com.coopang.order.presentation.request.order.OrderGetAllConditionDto;
 import com.coopang.order.presentation.request.order.OrderSearchConditionDto;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -143,6 +145,13 @@ public class OrderRepositoryCustomImpl extends Querydsl4RepositorySupport implem
         );
     }
 
+    @Override
+    public List<OrderEntity> findOrderList(OrderStatusEnum orderStatusEnum){
+        return selectFrom(orderEntity)
+                .where(orderStatusEq(orderStatusEnum))
+                .and(isDeletedEq(false));
+    }
+
     private BooleanExpression userIdEq(UUID userId) {
         return userId != null ? orderEntity.userId.eq(userId) : null;
     }
@@ -157,6 +166,14 @@ public class OrderRepositoryCustomImpl extends Querydsl4RepositorySupport implem
 
     private BooleanExpression orderIdEq(UUID orderId) {
         return orderId != null ? orderEntity.orderId.eq(orderId) : null;
+    }
+
+    private BooleanExpression orderStatusEq(OrderStatusEnum orderStatusEnum) {
+        return orderStatusEnum != null ? orderEntity.orderStatus.eq(orderStatusEnum) : null;
+    }
+
+    private BooleanExpression isDeletedEq(Boolean isDeleted) {
+        return isDeleted != null ? orderEntity.isDeleted.eq(false) : null;
     }
 
     private BooleanExpression orderDateBetween(LocalDateTime startDate, LocalDateTime endDate) {

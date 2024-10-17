@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j(topic = "OrderService")
@@ -62,37 +63,40 @@ public class OrderService {
             UUID userId,
             OrderGetAllConditionDto orderGetAllConditionDto,
             Pageable pageable
-    ){
-        Page<OrderEntity> orders = orderRepository.findAllByUserId(userId,orderGetAllConditionDto,pageable);
+    ) {
+        Page<OrderEntity> orders = orderRepository.findAllByUserId(userId, orderGetAllConditionDto, pageable);
         return orders.map(OrderResponseDto::fromOrder);
     }
+
     // 2. HUB_MANAGER 용 만들기
     @Transactional(readOnly = true)
     public Page<OrderResponseDto> findAllByHub(
             UUID hubId,
             OrderGetAllConditionDto orderGetAllConditionDto,
             Pageable pageable
-    ){
-        Page<OrderEntity> orders = orderRepository.findAllByProductHubId(hubId,orderGetAllConditionDto,pageable);
+    ) {
+        Page<OrderEntity> orders = orderRepository.findAllByProductHubId(hubId, orderGetAllConditionDto, pageable);
         return orders.map(OrderResponseDto::fromOrder);
     }
+
     // 3. COMPANY 용 만들기
     @Transactional(readOnly = true)
     public Page<OrderResponseDto> findAllByCompany(
             UUID companyId,
             OrderGetAllConditionDto orderGetAllConditionDto,
             Pageable pageable
-    ){
-        Page<OrderEntity> orders = orderRepository.findAllByCompanyId(companyId,orderGetAllConditionDto,pageable);
+    ) {
+        Page<OrderEntity> orders = orderRepository.findAllByCompanyId(companyId, orderGetAllConditionDto, pageable);
         return orders.map(OrderResponseDto::fromOrder);
     }
+
     // 4. MASTER 용 만들기
     @Transactional(readOnly = true)
     public Page<OrderResponseDto> findAllByMaster(
             OrderGetAllConditionDto orderGetAllConditionDto,
             Pageable pageable
-    ){
-        Page<OrderEntity> orders = orderRepository.findAllByCondition(orderGetAllConditionDto,pageable);
+    ) {
+        Page<OrderEntity> orders = orderRepository.findAllByCondition(orderGetAllConditionDto, pageable);
         return orders.map(OrderResponseDto::fromOrder);
     }
 
@@ -110,36 +114,40 @@ public class OrderService {
             UUID userId,
             OrderSearchConditionDto orderSearchConditionDto,
             Pageable pageable
-    ){
-        Page<OrderEntity> orders = orderRepository.SearchByUserId(userId,orderSearchConditionDto,pageable);
+    ) {
+        Page<OrderEntity> orders = orderRepository.SearchByUserId(userId, orderSearchConditionDto, pageable);
         return orders.map(OrderResponseDto::fromOrder);
     }
+
     @Transactional(readOnly = true)
     public Page<OrderResponseDto> findAllByHubSearch(
             UUID hubId,
             OrderSearchConditionDto orderSearchConditionDto,
             Pageable pageable
-    ){
-        Page<OrderEntity> orders = orderRepository.SearchByProductHubId(hubId,orderSearchConditionDto,pageable);
+    ) {
+        Page<OrderEntity> orders = orderRepository.SearchByProductHubId(hubId, orderSearchConditionDto, pageable);
         return orders.map(OrderResponseDto::fromOrder);
     }
+
     @Transactional(readOnly = true)
     public Page<OrderResponseDto> findAllByCompanySearch(
             UUID companyId,
             OrderSearchConditionDto orderSearchConditionDto,
             Pageable pageable
-    ){
-        Page<OrderEntity> orders = orderRepository.SearchByCompanyId(companyId,orderSearchConditionDto,pageable);
+    ) {
+        Page<OrderEntity> orders = orderRepository.SearchByCompanyId(companyId, orderSearchConditionDto, pageable);
         return orders.map(OrderResponseDto::fromOrder);
     }
+
     @Transactional(readOnly = true)
     public Page<OrderResponseDto> findAllByMasterSearch(
             OrderSearchConditionDto orderSearchConditionDto,
             Pageable pageable
-    ){
-        Page<OrderEntity> orders = orderRepository.Search(orderSearchConditionDto,pageable);
+    ) {
+        Page<OrderEntity> orders = orderRepository.Search(orderSearchConditionDto, pageable);
         return orders.map(OrderResponseDto::fromOrder);
     }
+
     /*
     주문 수정
      */
@@ -163,6 +171,7 @@ public class OrderService {
         // 상태 업데이트 로직
         orderEntity.setOrderStatus(orderStatusEnum);
     }
+
     /*
     주문 삭제
     * 주문 상태가 Canceled / Shipped 일 경우에만 가능
@@ -173,6 +182,16 @@ public class OrderService {
         orderDomainService.validateOrderDelete(orderEntity.getOrderStatus());
         orderEntity.setDeleted(true);
         log.debug("deleted order: {}", orderEntity);
+    }
+
+    /*
+    feginclient
+     */
+    public List<OrderResponseDto> getOrderList() {
+        List<OrderEntity> orderEntity = orderRepository.findOrderList(OrderStatusEnum.PENDING);
+        return orderEntity.stream()
+                .map(OrderResponseDto::fromOrder)
+                .toList();
     }
 
     // 공통 메서드
