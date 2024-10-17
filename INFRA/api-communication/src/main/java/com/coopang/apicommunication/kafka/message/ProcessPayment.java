@@ -13,5 +13,4 @@ public class ProcessPayment {
     private UUID productId;
     private Integer orderQuantity;
     private BigDecimal orderTotalPrice;
-    private String Message;
 }

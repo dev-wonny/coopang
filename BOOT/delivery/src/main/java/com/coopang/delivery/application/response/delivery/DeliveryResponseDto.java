@@ -31,7 +31,7 @@ public class DeliveryResponseDto {
             UUID userShipperId,
             DeliveryStatusEnum deliveryStatus,
             boolean isDeleted
-    ){
+    ) {
         this.deliveryId = deliveryId;
         this.orderId = orderId;
         this.departureHubId = departureHubId;
@@ -49,7 +49,7 @@ public class DeliveryResponseDto {
                 delivery.getOrderId(),
                 delivery.getDepartureHubId(),
                 delivery.getDestinationHubId(),
-                new Address(delivery.getAddressEntity().getZipCode(),delivery.getAddressEntity().getAddress1(), delivery.getAddressEntity().getAddress2()),
+                new Address(delivery.getAddressEntity().getZipCode(), delivery.getAddressEntity().getAddress1(), delivery.getAddressEntity().getAddress2()),
                 delivery.getHubShipperId(),
                 delivery.getUserShipperId(),
                 delivery.getDeliveryStatus(),
