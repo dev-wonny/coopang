@@ -1,6 +1,7 @@
 package com.coopang.product.application.service.feignclient;
 
 import com.coopang.apicommunication.feignclient.company.CompanyClientService;
+import com.coopang.apiconfig.feignClient.FeignConfig;
 import com.coopang.apidata.application.company.request.CompanySearchConditionRequest;
 import com.coopang.apidata.application.company.response.CompanyResponse;
 import java.util.List;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 public class CompanyFeignClientService {
 
     private final CompanyClientService companyClientService;
-    private final com.coopang.apiconfig.feignclient.FeignConfig feignConfig;
+    private final FeignConfig feignConfig;
     
     //내부통신을 이용하여 허브에 소속된 업체들을 조회 
     public List<UUID> getCompanyIdsInFeignClient(UUID hubId) {
@@ -52,7 +53,5 @@ public class CompanyFeignClientService {
             // 역할을 초기화
             feignConfig.resetRole();
         }
-
-
     }
 }

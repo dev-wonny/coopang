@@ -143,8 +143,7 @@ public class ProductMessageService implements MessageService {
         LowStockNotification lowStockNotification = new LowStockNotification();
         lowStockNotification.setProductId(productId);
         lowStockNotification.setQuantity(quantity);
-        //TODO : 추후 UUID -> String 으로 이름 변경 data
-        lowStockNotification.setManagerId(UUID.fromString(slackId));
+        lowStockNotification.setSlackId(slackId);
 
         sendMessage("low_stock_notification",lowStockNotification);
     }
