@@ -1,7 +1,7 @@
 package com.coopang.product.presentation.controller.productstock;
 
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
-import com.coopang.apidata.application.user.enums.UserRoleEnum.Authority;
+import com.coopang.coredata.user.enums.UserRoleEnum.Authority;
 import com.coopang.product.application.request.productstock.ProductStockDto;
 import com.coopang.product.application.service.productstock.ProductStockService;
 import com.coopang.product.presentation.request.productstock.AddStockRequestDto;
