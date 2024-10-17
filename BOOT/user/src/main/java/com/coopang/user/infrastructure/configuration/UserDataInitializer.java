@@ -16,7 +16,7 @@ import static com.coopang.apidata.constants.HubRegions.getHubRegions;
 import static com.coopang.apidata.constants.UserConstants.COOPANG_EMAIL;
 import static com.coopang.apidata.constants.UserConstants.COOPANG_LOWERCASE;
 
-import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.user.application.request.UserDto;
 import com.coopang.user.application.service.UserService;
 import org.springframework.boot.CommandLineRunner;

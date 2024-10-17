@@ -1,0 +1,96 @@
+server:
+    port: 19091
+
+spring:
+    application:
+        name: gateway
+    main:
+        web-application-type: reactive
+    cloud:
+        gateway:
+            routes:
+                -   id: user
+                    uri: http://192.168.0.10:19092
+                    predicates:
+                        - Path=/users/**
+                        - Path=/auth/**
+                -   id: hub
+                    uri: lb://hub
+                    predicates:
+                        - Path=/hubs/**
+                        - Path=/companies/**
+                        - Path=/shippers/**
+                -   id: product
+                    uri: lb://product
+                    predicates:
+                        - Path=/products/**
+                        - Path=/product-stocks/**
+                        - Path=/product-stock-histories/**
+                -   id: order
+                    uri: lb://order
+                    predicates:
+                        - Path=/orders/**
+                        - Path=/payments/**
+                        - Path=/payment-histories/**
+                -   id: delivery
+                    uri: lb://delivery
+                    predicates:
+                        - Path=/deliveries/**
+                        - Path=/delivery-route-histories/**
+                -   id: ainoti
+                    uri: lb://ainoti
+                    predicates:
+                        - Path=/ai-request-histories/**
+                        - Path=/slack-messages/**
+            discovery:
+                locator:
+                    enabled: true
+    data:
+        redis:
+            host: localhost
+            port: 6379
+            password: q1w2e3r4!!
+service:
+    jwt:
+        secret-key: "7Iqk7YyM66W07YOA7L2U65Sp7YG065+9U3ByaW5n6rCV7J2Y7Yqc7YSw7LWc7JuQ67mI7J6F64uI64ukLg=="
+        expiration-time: 3600000
+
+eureka:
+    client:
+        service-url:
+            defaultZone: http://localhost:19090/eureka/
+
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: prometheus
+    prometheus:
+        metrics:
+            export:
+                enabled: true
+auth:
+    server:
+        url: http://localhost:19092
+jwt:
+    excluded-paths:
+        - /get
+        - /post
+        - /users/v1/join
+        - /users/v1/login
+        - /swagger-ui
+        - /v3/api-docs
+        - /actuator
+
+springdoc:
+    api-docs:
+        path: /v3/api-docs
+    packages-to-scan: com.coopang.hub.presentation.controller
+    default-consumes-media-type: application/json;charset=UTF-8
+    default-produces-media-type: application/json;charset=UTF-8
+    swagger-ui:
+        path: /swagger-ui.html
+        disable-swagger-default-url: true
+        display-request-duration: true
+        operations-sorter: alpha

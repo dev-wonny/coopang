@@ -1,6 +1,6 @@
 package com.coopang.user.domain.entity.user;
 
-import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.apidata.jpa.entity.address.AddressEntity;
 import com.coopang.apidata.jpa.entity.base.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;

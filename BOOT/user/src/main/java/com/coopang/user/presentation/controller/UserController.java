@@ -1,12 +1,11 @@
 package com.coopang.user.presentation.controller;
 
 
-import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ID;
-import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ROLE;
-
+import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ID;
+import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ROLE;
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.apidata.application.user.UserPermissionValidator;
-import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.user.application.request.AddressDto;
 import com.coopang.user.application.request.ChangePasswordDto;
 import com.coopang.user.application.request.MyInfoUpdateDto;
@@ -150,15 +149,15 @@ public class UserController {
      */
     @Secured(UserRoleEnum.Authority.MASTER)
     @PostMapping("/user/search")
-    public ResponseEntity<Page<UserResponseDto>> searchUsers(@Valid UserSearchConditionRequestDto req, Pageable pageable) {
+    public ResponseEntity<Page<UserResponseDto>> searchUsers(@RequestBody UserSearchConditionRequestDto req, Pageable pageable) {
         final UserSearchCondition condition = UserSearchCondition.from(req.getUserId(), req.getUserName(), req.getUserRole(), req.getEmail(), req.getIsDeleted());
         Page<UserResponseDto> users = userService.searchUsers(condition, pageable);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @Secured(UserRoleEnum.Authority.SERVER)
+    @Secured({UserRoleEnum.Authority.SERVER, UserRoleEnum.Authority.MASTER})
     @PostMapping("/user/list")
-    public ResponseEntity<List<UserResponseDto>> getUserList(@Valid UserSearchConditionRequestDto req) {
+    public ResponseEntity<List<UserResponseDto>> getUserList(@RequestBody UserSearchConditionRequestDto req) {
         final UserSearchCondition condition = UserSearchCondition.from(req.getUserId(), req.getUserName(), req.getUserRole(), req.getEmail(), req.getIsDeleted());
         List<UserResponseDto> userList = userService.getUserList(condition);
         return new ResponseEntity<>(userList, HttpStatus.OK);

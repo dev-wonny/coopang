@@ -1,6 +1,6 @@
 package com.coopang.user.infrastructure.security.filter;
 
-import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ID;
+import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ID;
 
 import com.coopang.user.infrastructure.security.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;

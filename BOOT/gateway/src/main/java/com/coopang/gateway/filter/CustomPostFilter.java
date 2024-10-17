@@ -1,6 +1,5 @@
 package com.coopang.gateway.filter;
 
-import static com.coopang.apidata.constants.UserConstants.HEADER_USER_ID;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -15,27 +14,12 @@ import reactor.core.publisher.Mono;
 @Component
 public class CustomPostFilter implements GlobalFilter, Ordered {
 
-
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-
-        // 이전 필터에서 설정된 요청 속성에서 값을 가져옴
         return chain.filter(exchange).then(Mono.fromRunnable(() -> {
             ServerHttpResponse response = exchange.getResponse();
-//			setResponseHeader(exchange, response);
             log.info("Post Filter: Response status code is " + response.getStatusCode());
         }));
-    }
-
-    private void setResponseHeader(ServerWebExchange exchange, ServerHttpResponse response) {
-        // 응답 헤더에 사용자 ID와 역할을 추가
-        final String userId = exchange.getRequest().getHeaders().getFirst(HEADER_USER_ID);
-        final String role = exchange.getRequest().getHeaders().getFirst("X-Role");
-
-        if (userId != null && role != null) {
-            response.getHeaders().add(HEADER_USER_ID, userId);
-            response.getHeaders().add("X-Role", role);
-        }
     }
 
     @Override

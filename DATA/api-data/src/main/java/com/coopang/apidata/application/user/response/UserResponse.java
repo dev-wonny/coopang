@@ -1,7 +1,7 @@
 package com.coopang.apidata.application.user.response;
 
 import com.coopang.apidata.application.address.Address;
-import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.coredata.user.enums.UserRoleEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
