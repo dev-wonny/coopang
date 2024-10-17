@@ -1,13 +1,13 @@
 package com.coopang.product.application.service.message.product;
 
+import com.coopang.apicommunication.kafka.consumer.MessageService;
 import com.coopang.apicommunication.kafka.message.CompleteProduct;
 import com.coopang.apicommunication.kafka.message.ErrorProduct;
 import com.coopang.apicommunication.kafka.message.LowStockNotification;
 import com.coopang.apicommunication.kafka.message.ProcessProduct;
 import com.coopang.apicommunication.kafka.message.RollbackProduct;
+import com.coopang.apicommunication.kafka.producer.MessageProducer;
 import com.coopang.apidata.application.company.response.CompanyResponse;
-import com.coopang.product.api_commnuication.MessageProducer;
-import com.coopang.product.api_commnuication.MessageService;
 import com.coopang.product.application.request.productstock.ProductStockDto;
 import com.coopang.product.application.response.product.ProductResponseDto;
 import com.coopang.product.application.service.product.ProductService;
@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Slf4j(topic = "ProductMessageService")
-@Service("ProductMessageService")
+@Service("productMessageService")
 public class ProductMessageService implements MessageService {
 
     private final ObjectMapper objectMapper;
@@ -160,7 +160,7 @@ public class ProductMessageService implements MessageService {
     private void sendMessage(String topic, Object payload) {
         try {
             final String message = objectMapper.writeValueAsString(payload);
-            messageProducer.send(topic, message);
+            messageProducer.sendMessage(topic, message);
         } catch (Exception e) {
             log.error("Error while sending message to topic {}: {}", topic, e.getMessage(), e);
         }
