@@ -9,6 +9,6 @@ import lombok.Setter;
 public class LowStockNotification {
     private UUID productId;
     private int quantity;
-    private UUID managerId;
+    private String slackId;
 
 }
