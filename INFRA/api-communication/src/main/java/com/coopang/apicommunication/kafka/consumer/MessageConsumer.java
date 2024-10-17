@@ -1,4 +1,4 @@
 package com.coopang.apicommunication.kafka.consumer;
 
-public interface MessageConsumer {
+public class MessageConsumer {
 }

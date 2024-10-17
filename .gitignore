@@ -104,5 +104,4 @@ docker-compose-*.yml
 /eureka/build/
 /gateway/build/
 /user/build/
-/delivery/build/
 /.idea/
