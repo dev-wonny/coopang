@@ -1,8 +1,8 @@
-package com.coopang.product.application.service.productStockHistory;
+package com.coopang.product.application.service.productstockhistory;
 
 import com.coopang.product.application.request.Productstockhistory.ProductStockHistoryDto;
-import com.coopang.product.application.response.ProductStockHistory.ProductStockHistoryResponseDto;
-import com.coopang.product.application.response.productStock.ProductStockResponseDto;
+import com.coopang.product.application.response.Productstockhistory.ProductStockHistoryResponseDto;
+import com.coopang.product.application.response.productstock.ProductStockResponseDto;
 import com.coopang.product.application.service.productstock.ProductStockService;
 import com.coopang.product.domain.entity.productstock.ProductStockEntity;
 import com.coopang.product.domain.entity.productstockhistory.ProductStockHistoryEntity;
