@@ -1,6 +1,6 @@
 package com.coopang.apicommunication.feignclient.user;
 
-import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.apidata.application.user.request.UserSearchConditionRequest;
 import com.coopang.apidata.application.user.response.UserResponse;
 import org.springframework.stereotype.Service;

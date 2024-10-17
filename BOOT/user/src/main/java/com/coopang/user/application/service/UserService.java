@@ -1,7 +1,7 @@
 package com.coopang.user.application.service;
 
 import com.coopang.apiconfig.error.UserNotFoundException;
-import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.user.application.request.AddressDto;
 import com.coopang.user.application.request.ChangePasswordDto;
 import com.coopang.user.application.request.MyInfoUpdateDto;
