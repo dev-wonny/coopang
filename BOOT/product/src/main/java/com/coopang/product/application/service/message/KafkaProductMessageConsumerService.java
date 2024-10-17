@@ -1,6 +1,6 @@
 package com.coopang.product.application.service.message;
 
-import com.coopang.product.api_commnuication.MessageConsumer;
+import com.coopang.apicommunication.kafka.consumer.MessageConsumer;
 import com.coopang.product.application.service.message.product.ProductMessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -9,17 +9,12 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class KafkaProductMessageConsumerService implements MessageConsumer {
+public class KafkaProductMessageConsumerService extends MessageConsumer {
 
     private final ProductMessageService productMessageService;
 
     public KafkaProductMessageConsumerService(ProductMessageService productMessageService) {
         this.productMessageService = productMessageService;
-    }
-
-    @Override
-    public void consume(String message) {
-
     }
 
     @KafkaListener(topics = "process_product", groupId = "product-server-group")

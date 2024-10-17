@@ -82,7 +82,8 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
         );
     }
 
-    private Predicate isAbleToSearchProductIsDeleted(ProductSearchConditionDto productSearchCondition) {
+    private Predicate isAbleToSearchProductIsDeleted(
+        ProductSearchConditionDto productSearchCondition) {
 
         BooleanBuilder builder = new BooleanBuilder();
 

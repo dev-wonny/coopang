@@ -2,13 +2,14 @@ package com.coopang.product.application.service;
 
 import com.coopang.product.application.response.ProductWithStockResponseDto;
 import com.coopang.product.application.response.product.ProductResponseDto;
-import com.coopang.product.application.response.productStock.ProductStockResponseDto;
+import com.coopang.product.application.response.productstock.ProductStockResponseDto;
 import com.coopang.product.application.service.product.ProductService;
 import com.coopang.product.application.service.productstock.ProductStockService;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+//상품과 재고를 함께 관리하는 서비스
 @Service
 @RequiredArgsConstructor
 public class ProductWithStockService {

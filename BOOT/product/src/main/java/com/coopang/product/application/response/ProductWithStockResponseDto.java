@@ -1,12 +1,11 @@
 package com.coopang.product.application.response;
 
 import com.coopang.product.application.response.product.ProductResponseDto;
-import com.coopang.product.application.response.productStock.ProductStockResponseDto;
+import com.coopang.product.application.response.productstock.ProductStockResponseDto;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)

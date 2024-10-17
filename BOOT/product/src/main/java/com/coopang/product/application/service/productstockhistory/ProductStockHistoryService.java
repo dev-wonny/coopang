@@ -1,13 +1,14 @@
-package com.coopang.product.application.service.productStockHistory;
+package com.coopang.product.application.service.productstockhistory;
 
 import com.coopang.product.application.request.Productstockhistory.ProductStockHistoryDto;
-import com.coopang.product.application.response.ProductStockHistory.ProductStockHistoryResponseDto;
-import com.coopang.product.application.response.productStock.ProductStockResponseDto;
+import com.coopang.product.application.response.Productstockhistory.ProductStockHistoryResponseDto;
+import com.coopang.product.application.response.productstock.ProductStockResponseDto;
 import com.coopang.product.application.service.productstock.ProductStockService;
 import com.coopang.product.domain.entity.productstock.ProductStockEntity;
 import com.coopang.product.domain.entity.productstockhistory.ProductStockHistoryEntity;
 import com.coopang.product.domain.repository.productstockhistory.ProductStockHistoryRepository;
 import com.coopang.product.domain.service.productstockhistory.ProductStockHistoryDomainService;
+import com.coopang.product.infrastructure.repository.productstockhistory.ProductStockHistoryJpaRepository;
 import com.coopang.product.presentation.request.productstockhistory.ProductStockHistorySearchConditionDto;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class ProductStockHistoryService {
 
     private final ProductStockHistoryDomainService productStockHistoryDomainService;
     private final ProductStockHistoryRepository productStockHistoryRepository;
+    private final ProductStockHistoryJpaRepository productStockHistoryJpaRepository;
     private final ProductStockService productStockService;
 
     //재고 기록 생성
@@ -79,7 +81,18 @@ public class ProductStockHistoryService {
         return productStockHistoryRepository.searchProductStockHistoryByProductId(condition,productId,pageable).map(ProductStockHistoryResponseDto::of);
     }
 
-    //특정 상품의 재고 기록 엔티티를 찾는 함수
+    //특정 상품의 재고기록 엔티티를 찾는 함수
+    public ProductStockHistoryResponseDto getProductStockHistoryById(UUID productStockHistoryId)
+    {
+        ProductStockHistoryEntity productStockHistoryEntity = productStockHistoryJpaRepository.findById(productStockHistoryId).orElseThrow(
+            () -> new IllegalArgumentException("존재하지 않는 상품의 재고기록입니다.")
+        );
+
+        return ProductStockHistoryResponseDto.of(productStockHistoryEntity);
+    }
+
+
+    //특정 상품의 재고 기록 엔티티를 찾는 내부 함수 - 상품 재고, 재고 기록 ID를 이용
     private ProductStockHistoryEntity findStockHistoryById(UUID productStockHistoryId,
         UUID productStockId) {
         return productStockHistoryRepository.findByProductStockHistoryIdAndProductStockEntity_ProductStockId(productStockHistoryId,productStockId)
