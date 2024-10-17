@@ -3,3 +3,4 @@ CREATE DATABASE coopang_hub;
 CREATE DATABASE coopang_company;
 CREATE DATABASE coopang_order;
 CREATE DATABASE coopang_message;
+CREATE DATABASE coopang_delivery;
