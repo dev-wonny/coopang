@@ -55,13 +55,14 @@ public class ProductStockHistoryController {
 
     @Secured({Authority.MASTER,Authority.HUB_MANAGER})
     @PutMapping("/{productId}/product-stock-history/{productStockHistoryId}")
-    public ResponseEntity<Void> updateProductStockHistory(@PathVariable UUID productId, @PathVariable UUID productStockHistoryId,
+    public ResponseEntity<ProductStockHistoryResponseDto> updateProductStockHistory(@PathVariable UUID productId, @PathVariable UUID productStockHistoryId,
         @RequestBody @Valid UpdateStockHistoryRequestDto request) {
 
         ProductStockHistoryDto productStockHistoryDto = mapperConfig.strictMapper().map(request, ProductStockHistoryDto.class);
         productStockHistoryService.updateProductStockHistory(productStockHistoryDto,productId,productStockHistoryId);
+        ProductStockHistoryResponseDto historyInfo = productStockHistoryService.getProductStockHistoryById(productStockHistoryId);
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(historyInfo, HttpStatus.OK);
     }
 
     @Secured({Authority.MASTER,Authority.HUB_MANAGER})

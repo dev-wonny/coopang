@@ -12,8 +12,8 @@ import com.coopang.product.application.response.product.ProductResponseDto;
 import com.coopang.product.application.service.ProductWithStockAndHistoryService;
 import com.coopang.product.application.service.ProductWithStockService;
 import com.coopang.product.application.service.product.ProductService;
-import com.coopang.product.presentation.request.product.ProductBaseSearchConditionDto;
 import com.coopang.product.presentation.request.product.CreateProductRequestDto;
+import com.coopang.product.presentation.request.product.ProductBaseSearchConditionDto;
 import com.coopang.product.presentation.request.product.ProductSearchConditionDto;
 import com.coopang.product.presentation.request.product.UpdateProductHiddenRequestDto;
 import com.coopang.product.presentation.request.product.UpdateProductRequestDto;
@@ -68,15 +68,15 @@ public class ProductController {
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PutMapping("/product/{productId}")
-    public ResponseEntity<Void> updateProduct(
+    public ResponseEntity<ProductResponseDto> updateProduct(
         @Valid @RequestBody UpdateProductRequestDto updateProductRequestDto,
         @PathVariable UUID productId) {
 
-        ProductDto productDto = mapperConfig.strictMapper()
-            .map(updateProductRequestDto, ProductDto.class);
+        ProductDto productDto = mapperConfig.strictMapper().map(updateProductRequestDto, ProductDto.class);
         productService.updateProduct(productDto, productId);
+        ProductResponseDto productInfo = productService.getProductById(productId);
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(productInfo,HttpStatus.OK);
     }
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
@@ -84,8 +84,7 @@ public class ProductController {
     public ResponseEntity<Void> updateProductHidden(
         @Valid @RequestBody UpdateProductHiddenRequestDto request, @PathVariable UUID productId) {
 
-        ProductHiddenAndSaleDto productHiddenAndSaleDto = mapperConfig.strictMapper()
-            .map(request, ProductHiddenAndSaleDto.class);
+        ProductHiddenAndSaleDto productHiddenAndSaleDto = mapperConfig.strictMapper().map(request, ProductHiddenAndSaleDto.class);
         productService.updateProductHidden(productHiddenAndSaleDto, productId);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
