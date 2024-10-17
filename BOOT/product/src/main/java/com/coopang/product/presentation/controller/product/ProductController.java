@@ -94,7 +94,7 @@ public class ProductController {
         @RequestHeader(HEADER_USER_ROLE) String userRole,
         @RequestHeader(HEADER_USER_ID) String userId,
         @Valid @RequestBody UpdateProductHiddenRequestDto request, @PathVariable UUID productId) {
-
+        validateHubOrCompanyByProductId(userRole,userId,productId);
         ProductHiddenAndSaleDto productHiddenAndSaleDto = mapperConfig.strictMapper().map(request, ProductHiddenAndSaleDto.class);
         productService.updateProductHidden(productHiddenAndSaleDto, productId);
 
@@ -107,7 +107,7 @@ public class ProductController {
         @RequestHeader(HEADER_USER_ROLE) String userRole,
         @RequestHeader(HEADER_USER_ID) String userId,
         @Valid @RequestBody UpdateProductSaleRequestDto request, @PathVariable UUID productId) {
-
+        validateHubOrCompanyByProductId(userRole,userId,productId);
         ProductHiddenAndSaleDto productHiddenAndSaleDto = mapperConfig.strictMapper()
             .map(request, ProductHiddenAndSaleDto.class);
         productService.updateProductSale(productHiddenAndSaleDto, productId);
@@ -121,6 +121,7 @@ public class ProductController {
         @RequestHeader(HEADER_USER_ROLE) String userRole,
         @RequestHeader(HEADER_USER_ID) String userId,
         @PathVariable UUID productId) {
+        validateHubOrCompanyByProductId(userRole,userId,productId);
 
         productService.deleteProductById(productId);
 
@@ -200,6 +201,24 @@ public class ProductController {
         }
     }
 
+    /**
+     * 허브매니저와 업체관리자에 대한 권한 검증
+     * @param userRole 권한
+     * @param userId Login Id
+     * @param productId
+     */
+    private void validateHubOrCompanyByProductId(String userRole,String userId, UUID productId) {
+
+        ProductResponseDto productResponseDto = productService.getValidProductById(productId);
+        UUID companyId = productResponseDto.getCompanyId();
+
+        if(UserRoleEnum.isCompany(userRole)) {
+            productPermissionValidator.verifyCompanyOfCompanyManager(userRole,UUID.fromString(userId),companyId);
+        }else {
+            productPermissionValidator.verifyCompanyOfCompanyManager(userRole,UUID.fromString(userId),companyId);
+        }
+    }
+
     //TODO : 조금더 깔끔한 방법으로 변경해야됨
     //Search 시 hub, company 인 경우 companyId, hubId 검증
     private void validateSearchCondition(String role, ProductBaseSearchConditionDto condition) {
@@ -210,4 +229,5 @@ public class ProductController {
             throw new IllegalArgumentException("Hub ID cannot be null for hub manager role");
         }
     }
+
 }
