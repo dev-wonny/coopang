@@ -40,26 +40,29 @@ public class DeliveryMessageService implements MessageService {
     @Override
     public void processMessage(String topic, String message) {
         log.info("Processing delivery topic {} message {}", topic, message);
-        switch (topic) {
-            case "complete_delivery":
-                handleCompleteDelivery(message);
-                break;
-            case "cancel_delivery":
-                handleCancelDelivery(message);
-                break;
-            default:
-                log.warn("Unknown topic {}", topic);
+        if (topic.equals("cancel_delivery")){
+            handleCancelDelivery(message);
         }
+        //        switch (topic) {
+//            case "complete_delivery":
+//                handleCompleteDelivery(message);
+//                break;
+//            case "cancel_delivery":
+//                handleCancelDelivery(message);
+//                break;
+//            default:
+//                log.warn("Unknown topic {}", topic);
+//        }
     }
 
-    private void handleCompleteDelivery(String message) {
-        try {
-            ProcessDelivery processDelivery = objectMapper.readValue(message, ProcessDelivery.class);
-            deliveryService.processCreateDelivery(processDelivery);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    private void handleCompleteDelivery(String message) {
+//        try {
+//            ProcessDelivery processDelivery = objectMapper.readValue(message, ProcessDelivery.class);
+//            deliveryService.processCreateDelivery(processDelivery);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     private void handleCancelDelivery(String message) {
         try {

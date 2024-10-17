@@ -1,8 +1,10 @@
 package com.coopang.delivery.application.service.schedule;
 
+import com.coopang.apicommunication.feignclient.order.OrderClientService;
 import com.coopang.apicommunication.feignclient.shipper.ShipperClientService;
 import com.coopang.apiconfig.feignclient.FeignConfig;
 import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
+import com.coopang.apidata.application.order.response.OrderResponse;
 import com.coopang.apidata.application.shipper.request.ShipperSearchConditionRequest;
 import com.coopang.apidata.application.shipper.response.ShipperResponse;
 import com.coopang.delivery.application.service.deliveryhubhistory.DeliveryHubHistoryService;
@@ -33,6 +35,7 @@ public class DeliveryScheduleService {
     private final ShipperClientService shipperClientService;
     private final FeignConfig feignConfig;
     private final DeliveryDomainService deliveryDomainService;
+    private final OrderClientService orderClientService;
 
     public DeliveryScheduleService(
             DeliveryHubHistoryService deliveryHubHistoryService,
@@ -41,8 +44,8 @@ public class DeliveryScheduleService {
             ShipperClientService shipperClientService,
             FeignConfig feignConfig,
             DeliveryRepository deliveryRepository,
-            DeliveryDomainService deliveryDomainService
-    ) {
+            DeliveryDomainService deliveryDomainService,
+            OrderClientService orderClientService) {
         this.deliveryHubHistoryService = deliveryHubHistoryService;
         this.deliveryUserHistoryService = deliveryUserHistoryService;
         this.deliveryMessageService = deliveryMessageService;
@@ -50,6 +53,7 @@ public class DeliveryScheduleService {
         this.feignConfig = feignConfig;
         this.deliveryRepository = deliveryRepository;
         this.deliveryDomainService = deliveryDomainService;
+        this.orderClientService = orderClientService;
     }
 
         /*
@@ -66,24 +70,21 @@ public class DeliveryScheduleService {
      */
 
     // 스케줄링 - 허브 배송 준비 : 16시
-//    @Scheduled(cron = "0 0 16 * * *")
-//    @Scheduled(cron = "0 44 2 * * *")
+    @Scheduled(cron = "0 0 16 * * *")
     public void readyDelivery() {
         /*
         1. order_server 에서 주문등록 완료된 애들만 가져오기
         2. 배송 등록하면서 허브배송 기사님 같이 등록하기
          */
-        OrderSearchConditionRequest orderSearchConditionRequest = new OrderSearchConditionRequest();
-        OrderSearchConditionRequest.setOrderStatus("PENDING");
         feignConfig.changeHeaderRoleToServer();
-        List<OrderResponse> orders = orderService.getOrderList(orderSearchConditionRequest);
-        feignConfig.resetRole();
+
+        List<OrderResponse> orders = orderClientService.getOrderList();
 
         // 2. 허브 배송기사님 정보 가져오기
         ShipperSearchConditionRequest shipperSearchConditionRequest = new ShipperSearchConditionRequest();
         shipperSearchConditionRequest.setShipperType("SHIPPER_HUB");
-        feignConfig.changeHeaderRoleToServer();
         List<ShipperResponse> shippers = shipperClientService.getShipperList(shipperSearchConditionRequest);
+
         feignConfig.resetRole();
 
         // 3. 배송기사님 정보를 Map으로 변환 (허브 ID를 키로 사용)
@@ -102,9 +103,9 @@ public class DeliveryScheduleService {
                     order.getOrderId(),
                     order.getProductHubId(),
                     order.getNearHubId(),
-                    order.getZipCode(),
-                    order.getAddress1(),
-                    order.getAddress2(),
+                    order.getAddress().getZipCode(),
+                    order.getAddress().getAddress1(),
+                    order.getAddress().getAddress2(),
                     hubShipperId
             );
 
@@ -136,7 +137,7 @@ public class DeliveryScheduleService {
     }
 
     // 스케줄링 - 고객 배송 물건 상차 및 slack 메세지 발송 : 06시
-    @Scheduled(cron = "0 05 3 * * *")
+    @Scheduled(cron = "0 0 6 * * *")
     public void sendToSlackCustomerDelivery() {
         List<DeliveryEntity> deliveries = findByDeliveryStatus(DeliveryStatusEnum.CUSTOMER_DELIVERY_ASSIGNMENT_IN_PROGRESS);
         updateStatusDeliveryUser(deliveries, DeliveryStatusEnum.CUSTOMER_DELIVERY_ASSIGNMENT_COMPLETED);

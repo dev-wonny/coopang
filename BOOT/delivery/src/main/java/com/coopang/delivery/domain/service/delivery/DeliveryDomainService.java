@@ -65,7 +65,7 @@ public class DeliveryDomainService {
     }
 
     // 배송 등록 - 주문 등록 후 바로 이어지는..
-    public void createProcessDelivery(
+    public DeliveryEntity createProcessDelivery(
             UUID orderId,
             UUID productHubId,
             UUID nearHubId,
@@ -84,7 +84,7 @@ public class DeliveryDomainService {
                 address2,
                 hubShipperId
         );
-        deliveryJpaRepository.save(deliveryEntity);
+        return deliveryJpaRepository.save(deliveryEntity);
     }
 
     // 배송 취소

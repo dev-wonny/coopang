@@ -1,12 +1,16 @@
 package com.coopang.delivery.presentation.controller.delivery;
 
+import com.coopang.apicommunication.feignclient.order.OrderClientService;
+import com.coopang.apiconfig.feignclient.FeignConfig;
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
-import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.apidata.application.order.response.OrderResponse;
+import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.delivery.application.request.delivery.DeliveryDto;
 import com.coopang.delivery.application.response.delivery.DeliveryResponseDto;
 import com.coopang.delivery.application.service.delivery.DeliveryService;
 import com.coopang.delivery.application.service.message.delivery.DeliveryMessageService;
 import com.coopang.delivery.application.service.schedule.DeliveryScheduleService;
+import com.coopang.delivery.domain.service.delivery.DeliveryDomainService;
 import com.coopang.delivery.presentation.request.delivery.DeliveryRequestDto;
 import com.coopang.delivery.presentation.request.delivery.DeliverySearchCondition;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "DeliveryController API", description = "DeliveryController API")
@@ -31,17 +36,24 @@ public class DeliveryController {
     private final ModelMapperConfig mapperConfig;
     private final DeliveryMessageService deliveryMessageService;
     private final DeliveryScheduleService deliveryScheduleService;
+    private final FeignConfig feignConfig;
+    private final OrderClientService orderClientService;
+
 
     public DeliveryController(
             DeliveryService deliveryService,
             ModelMapperConfig mapperConfig,
             DeliveryMessageService deliveryMessageService,
-            DeliveryScheduleService deliveryScheduleService
+            DeliveryScheduleService deliveryScheduleService,
+            FeignConfig feignConfig,
+            OrderClientService orderClientService
     ) {
         this.deliveryService = deliveryService;
         this.mapperConfig = mapperConfig;
         this.deliveryMessageService = deliveryMessageService;
         this.deliveryScheduleService = deliveryScheduleService;
+        this.feignConfig = feignConfig;
+        this.orderClientService = orderClientService;
     }
 
     @PostMapping("/delivery")
@@ -162,5 +174,44 @@ public class DeliveryController {
     public ResponseEntity<Void> deleteDelivery(@PathVariable UUID deliveryId) {
         deliveryService.deleteDelivery(deliveryId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+
+
+    @GetMapping("/delivery/test")
+    @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER})
+    public ResponseEntity<List<OrderResponse>> getList() {
+        feignConfig.changeHeaderRoleToServer();
+        List<OrderResponse> orders = orderClientService.getOrderList();
+        feignConfig.resetRole();
+        return new ResponseEntity<>(orders,HttpStatus.OK);
+    }
+
+    @PostMapping("/delivery/test/20")
+    @Secured({UserRoleEnum.Authority.MASTER})
+    public ResponseEntity<String> sendToSlackHubDelivery() {
+        deliveryScheduleService.sendToSlackHubDelivery();
+        return new ResponseEntity<>("// 스케줄링 - 허브 배송 물건 상차 및 주문 상태값 변경 : 20시", HttpStatus.OK);
+    }
+
+    @PostMapping("/delivery/test/21")
+    @Secured({UserRoleEnum.Authority.MASTER})
+    public ResponseEntity<String> hubDeliveryStart() {
+        deliveryScheduleService.hubDeliveryStart();
+        return new ResponseEntity<>("스케줄링 - 허브 배송 출발 : 21시", HttpStatus.OK);
+    }
+
+    @PostMapping("/delivery/test/6")
+    @Secured({UserRoleEnum.Authority.MASTER})
+    public ResponseEntity<String> sendToSlackCustomerDelivery() {
+        deliveryScheduleService.sendToSlackCustomerDelivery();
+        return new ResponseEntity<>("고객 배송 물건 상차 및 slack 메세지 발송 : 06시", HttpStatus.OK);
+    }
+
+    @PostMapping("/delivery/test/8")
+    @Secured({UserRoleEnum.Authority.MASTER})
+    public ResponseEntity<String> userDeliveryStart() {
+        deliveryScheduleService.userDeliveryStart();
+        return new ResponseEntity<>("고객 배송 출발 : 08시", HttpStatus.OK);
     }
 }

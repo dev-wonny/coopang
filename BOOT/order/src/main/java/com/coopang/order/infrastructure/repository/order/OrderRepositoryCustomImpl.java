@@ -148,8 +148,11 @@ public class OrderRepositoryCustomImpl extends Querydsl4RepositorySupport implem
     @Override
     public List<OrderEntity> findOrderList(OrderStatusEnum orderStatusEnum){
         return selectFrom(orderEntity)
-                .where(orderStatusEq(orderStatusEnum))
-                .and(isDeletedEq(false));
+                .where(
+                        orderStatusEq(orderStatusEnum),
+                        isDeletedEq(false)
+                )
+                .fetch();
     }
 
     private BooleanExpression userIdEq(UUID userId) {

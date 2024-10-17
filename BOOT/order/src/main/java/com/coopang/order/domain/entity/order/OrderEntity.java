@@ -94,7 +94,9 @@ public class OrderEntity extends BaseEntity {
             String address2,
             Integer orderQuantity,
             BigDecimal orderSinglePrice,
-            BigDecimal orderTotalPrice
+            BigDecimal orderTotalPrice,
+            UUID productHubId,
+            UUID nearHubId
     ){
         return OrderEntity.builder()
                 .userId(userId)
@@ -104,6 +106,8 @@ public class OrderEntity extends BaseEntity {
                 .orderSinglePrice(orderSinglePrice)
                 .orderTotalPrice(orderTotalPrice)
                 .orderStatus(OrderStatusEnum.READY)
+                .productHubId(productHubId)
+                .nearHubId(nearHubId)
                 .build();
     }
 

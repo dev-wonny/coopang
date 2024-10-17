@@ -33,7 +33,9 @@ public class OrderDomainService {
                 orderDto.getAddress2(),
                 orderDto.getOrderQuantity(),
                 orderDto.getOrderSinglePrice(),
-                orderDto.getOrderTotalPrice()
+                orderDto.getOrderTotalPrice(),
+                orderDto.getProductHubId(),
+                orderDto.getNearHubId()
         );
 
         return orderJpaRepository.save(orderEntity);

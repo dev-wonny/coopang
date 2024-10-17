@@ -1,7 +1,7 @@
 package com.coopang.order.presentation.controller.paymenthistory;
 
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
-import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.order.application.request.paymenthistory.PaymentHistoryDto;
 import com.coopang.order.application.response.paymenthistory.PaymentHistoryResponseDto;
 import com.coopang.order.application.service.paymenthistory.PaymentHistoryService;

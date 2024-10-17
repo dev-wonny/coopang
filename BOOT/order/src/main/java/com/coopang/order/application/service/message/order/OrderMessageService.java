@@ -68,7 +68,7 @@ public class OrderMessageService implements MessageService {
             // 주문 상태 변경
             orderService.updateOrderStatus(completeProduct.getOrderId(), OrderStatusEnum.PENDING);
             // 배송쪽으로 보내기
-            sendProcessDelivery(completeProduct.getOrderId());
+//            sendProcessDelivery(completeProduct.getOrderId());
         } catch (Exception e) {
             log.error("Error while processing listenCompleteProduct: {}", e.getMessage(), e);
             throw new RuntimeException(e); // 예외 처리
@@ -145,20 +145,20 @@ public class OrderMessageService implements MessageService {
      sendProcessDelivery
     Delete : 현재는 RequestDto에서 받는걸로 진행 다른 방법으로 수신할 예정
      */
-    public void sendProcessDelivery(UUID orderId){
-        OrderResponseDto orderResponseDto = orderService.findById(orderId);
-
-        ProcessDelivery processDelivery = new ProcessDelivery();
-        processDelivery.setOrderId(orderId);
-        processDelivery.setUserId(orderResponseDto.getUserId());
-        processDelivery.setNearHubId(orderResponseDto.getNearHubId());
-        processDelivery.setProductHubId(orderResponseDto.getProductHubId());
-        processDelivery.setZipCode(orderResponseDto.getAddress().getZipCode());
-        processDelivery.setAddress1(orderResponseDto.getAddress().getAddress1());
-        processDelivery.setAddress2(orderResponseDto.getAddress().getAddress2());
-
-        sendMessage("process_delivery",processDelivery);
-    }
+//    public void sendProcessDelivery(UUID orderId){
+//        OrderResponseDto orderResponseDto = orderService.findById(orderId);
+//
+//        ProcessDelivery processDelivery = new ProcessDelivery();
+//        processDelivery.setOrderId(orderId);
+//        processDelivery.setUserId(orderResponseDto.getUserId());
+//        processDelivery.setNearHubId(orderResponseDto.getNearHubId());
+//        processDelivery.setProductHubId(orderResponseDto.getProductHubId());
+//        processDelivery.setZipCode(orderResponseDto.getAddress().getZipCode());
+//        processDelivery.setAddress1(orderResponseDto.getAddress().getAddress1());
+//        processDelivery.setAddress2(orderResponseDto.getAddress().getAddress2());
+//
+//        sendMessage("process_delivery",processDelivery);
+//    }
     /*
     <complete_payment> 로 전달하기 위한 세팅
      sendCompletePayment

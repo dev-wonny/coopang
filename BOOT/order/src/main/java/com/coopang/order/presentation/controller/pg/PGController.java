@@ -1,6 +1,6 @@
 package com.coopang.order.presentation.controller.pg;
 
-import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.order.application.service.pg.PGService;
 import com.coopang.order.presentation.request.pg.PGRequestDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,7 +28,7 @@ public class PGController {
         this.pgService = pgService;
     }
 
-    @Secured(UserRoleEnum.Authority.MASTER)
+    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
     @PostMapping
     public ResponseEntity<String> tryPayPG(
             @RequestBody PGRequestDto requestDto
@@ -37,7 +37,7 @@ public class PGController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @Secured(UserRoleEnum.Authority.MASTER)
+    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
     @PostMapping("/cancel")
     public ResponseEntity<String> tryCancelPG(
             @RequestBody PGRequestDto requestDto

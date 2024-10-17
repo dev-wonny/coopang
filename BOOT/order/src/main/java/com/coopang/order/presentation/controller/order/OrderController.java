@@ -3,7 +3,7 @@ package com.coopang.order.presentation.controller.order;
 
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.apidata.application.order.enums.OrderStatusEnum;
-import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.order.application.request.order.OrderDto;
 import com.coopang.order.application.response.order.OrderResponseDto;
 import com.coopang.order.application.service.message.order.OrderMessageService;
