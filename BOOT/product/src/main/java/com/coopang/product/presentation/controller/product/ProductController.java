@@ -5,6 +5,7 @@ import static com.coopang.apiconfig.constants.HeaderConstants.HEADER_USER_ROLE;
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.apidata.application.user.enums.UserRoleEnum;
 import com.coopang.apidata.application.user.enums.UserRoleEnum.Authority;
+import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.product.application.request.product.ProductDto;
 import com.coopang.product.application.request.product.ProductHiddenAndSaleDto;
 import com.coopang.product.application.response.ProductWithStockResponseDto;
@@ -94,7 +95,7 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
+    @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.COMPANY, UserRoleEnum.Authority.HUB_MANAGER})
     @DeleteMapping("/product/{productId}")
     public ResponseEntity<Void> deleteProduct(@PathVariable UUID productId) {
 
