@@ -132,23 +132,13 @@ public class ProductController {
 
         Page<ProductResponseDto> productResponseDto;
 
+        validateSearchCondition(role,condition);
+
         if (UserRoleEnum.isMaster(role)) {
             productResponseDto = productService.getAllProductsByMaster(pageable);
         } else if (UserRoleEnum.isCompany(role)) {
-            //TODO : 더 좋은 방법으로 개선해야됨 이건 그냥 단순한 방법
-            if(condition == null || condition.getCompanyId() == null)
-            {
-                throw new IllegalArgumentException("Company ID cannot be null");
-            }
-
             productResponseDto = productService.getAllProductInCompany(condition, pageable);
         } else if (UserRoleEnum.isHubManager(role)) {
-
-            if(condition == null || condition.getHubId() == null)
-            {
-                throw new IllegalArgumentException("HUB ID cannot be null");
-            }
-
             productResponseDto = productService.getAllProductInHub(condition, pageable);
         } else {
             productResponseDto = productService.getAllProductByEvery(pageable);
@@ -207,6 +197,17 @@ public class ProductController {
             productPermissionValidator.verifyCompanyOfHubManager(userRole,UUID.fromString(userId),targetId);
         }else{
             productPermissionValidator.verifyCompanyOfCompanyManager(userRole,UUID.fromString(userId),targetId);
+        }
+    }
+
+    //TODO : 조금더 깔끔한 방법으로 변경해야됨
+    //Search 시 hub, company 인 경우 companyId, hubId 검증
+    private void validateSearchCondition(String role, ProductBaseSearchConditionDto condition) {
+        if (UserRoleEnum.isCompany(role) && (condition == null || condition.getCompanyId() == null)) {
+            throw new IllegalArgumentException("Company ID cannot be null for company role");
+        }
+        if (UserRoleEnum.isHubManager(role) && (condition == null || condition.getHubId() == null)) {
+            throw new IllegalArgumentException("Hub ID cannot be null for hub manager role");
         }
     }
 }
