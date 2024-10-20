@@ -11,9 +11,9 @@ import java.util.UUID;
 @Getter
 public class UserSearchConditionDto {
     private UUID userId;
-    private String userName;
+    private String userName;// StartsWith search functionality
     private UserRoleEnum userRole;
-    private String email;
+    private String email;// equal search functionality
     private boolean isDeleted;
 
     @Builder

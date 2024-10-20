@@ -165,7 +165,7 @@ public class UserService {
     @Transactional(readOnly = true)
     @Cacheable(value = "allUsers", key = "#pageable")
     public Page<UserResponseDto> getAllUsers(Pageable pageable) {
-        Page<UserEntity> users = userRepository.findAll(pageable);
+        final Page<UserEntity> users = userRepository.findAll(pageable);
         return users.map(UserResponseDto::fromUser);
     }
 
@@ -179,14 +179,14 @@ public class UserService {
     @Transactional(readOnly = true)
     @Cacheable(value = "allUsers", key = "#condition.toString() + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<UserResponseDto> searchUsers(UserSearchConditionDto condition, Pageable pageable) {
-        Page<UserEntity> users = userRepository.search(condition, pageable);
+        final Page<UserEntity> users = userRepository.search(condition, pageable);
         return users.map(UserResponseDto::fromUser);
     }
 
     @Transactional(readOnly = true)
     @Cacheable(value = "userList", key = "#condition")
     public List<UserResponseDto> getUserList(UserSearchConditionDto condition) {
-        List<UserEntity> userList = userRepository.findUserList(condition);
+        final List<UserEntity> userList = userRepository.findUserList(condition);
         return userList.stream()
             .map(UserResponseDto::fromUser)
             .toList();
