@@ -54,9 +54,9 @@ public class UserRepositoryCustomImpl extends Querydsl4RepositorySupport impleme
     private BooleanBuilder generateWhereClause(UserSearchConditionDto condition) {
         BooleanBuilder whereClause = new BooleanBuilder();
         whereClause.and(userIdEq(condition.getUserId()));
-        whereClause.and(userNameEq(condition.getUserName()));
-        whereClause.and(emailEq(condition.getEmail()));
+        whereClause.and(userNameStartsWith(condition.getUserName()));
         whereClause.and(roleEq(condition.getUserRole()));
+        whereClause.and(emailEq(condition.getEmail()));
         whereClause.and(userEntity.isDeleted.eq(condition.isDeleted()));
         return whereClause;
     }
@@ -65,12 +65,12 @@ public class UserRepositoryCustomImpl extends Querydsl4RepositorySupport impleme
         return !ObjectUtils.isEmpty(userId) ? userEntity.userId.eq(userId) : null;
     }
 
-    private Predicate emailEq(String email) {
-        return StringUtils.hasText(email) ? userEntity.email.eq(email) : null;
+    private Predicate userNameStartsWith(String userName) {
+        return StringUtils.hasText(userName) ? userEntity.userName.startsWith(userName) : null;
     }
 
-    private Predicate userNameEq(String userName) {
-        return StringUtils.hasText(userName) ? userEntity.userName.eq(userName) : null;
+    private Predicate emailEq(String email) {
+        return StringUtils.hasText(email) ? userEntity.email.eq(email) : null;
     }
 
     private Predicate roleEq(UserRoleEnum userRole) {

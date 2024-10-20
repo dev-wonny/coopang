@@ -95,7 +95,10 @@ public class UserController {
      * @return 수정된 본인 정보
      */
     @PutMapping("/me")
-    public ResponseEntity<UserResponseDto> updateMyInfo(@RequestHeader(HEADER_USER_ID) String userIdHeader, @Valid @RequestBody MyInfoUpdateRequestDto req) {
+    public ResponseEntity<UserResponseDto> updateMyInfo(
+        @RequestHeader(HEADER_USER_ID) String userIdHeader
+        , @Valid @RequestBody MyInfoUpdateRequestDto req
+    ) {
         final UUID userId = UUID.fromString(userIdHeader);
         final MyInfoUpdateDto myInfoUpdateDto = mapperConfig.strictMapper().map(req, MyInfoUpdateDto.class);
         userService.updateMyInfo(userId, myInfoUpdateDto);
@@ -110,7 +113,10 @@ public class UserController {
      * @param req          이전 비밀번호와 새로운 비밀번호
      */
     @PatchMapping("/me/change-password")
-    public ResponseEntity<Void> changeMyPassword(@RequestHeader(HEADER_USER_ID) String userIdHeader, @Valid @RequestBody ChangePasswordRequestDto req) {
+    public ResponseEntity<Void> changeMyPassword(
+        @RequestHeader(HEADER_USER_ID) String userIdHeader
+        , @Valid @RequestBody ChangePasswordRequestDto req
+    ) {
         final ChangePasswordDto changePasswordDto = mapperConfig.strictMapper().map(req, ChangePasswordDto.class);
         userService.updatePasswordAfterValidation(UUID.fromString(userIdHeader), changePasswordDto);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -165,11 +171,23 @@ public class UserController {
         , @RequestParam(value = "isDeleted", required = false, defaultValue = "false") boolean isDeleted
         , Pageable pageable
     ) {
-        final UserSearchConditionDto condition = UserSearchConditionDto.from(userId, userName, userRole, email, isDeleted);
-        Page<UserResponseDto> users = userService.searchUsers(condition, pageable);
+        final UserSearchConditionDto condition = UserSearchConditionDto.from(
+            userId
+            , userName
+            , userRole
+            , email
+            , isDeleted
+        );
+        final Page<UserResponseDto> users = userService.searchUsers(condition, pageable);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
+    /**
+     * 서버에서 List 조회
+     *
+     * @param req
+     * @return 검색된 List
+     */
     @Secured({UserRoleEnum.Authority.SERVER, UserRoleEnum.Authority.MASTER})
     @PostMapping("/user/list")
     public ResponseEntity<List<UserResponseDto>> getUserList(@RequestBody(required = false) UserSearchConditionRequestDto req) {
@@ -177,9 +195,15 @@ public class UserController {
         if (ObjectUtils.isEmpty(req)) {
             condition = UserSearchConditionDto.empty();
         } else {
-            condition = UserSearchConditionDto.from(req.getUserId(), req.getUserName(), req.getUserRole(), req.getEmail(), req.isDeleted());
+            condition = UserSearchConditionDto.from(
+                req.getUserId()
+                , req.getUserName()
+                , req.getUserRole()
+                , req.getEmail()
+                , req.isDeleted()
+            );
         }
-        List<UserResponseDto> userList = userService.getUserList(condition);
+        final List<UserResponseDto> userList = userService.getUserList(condition);
         return new ResponseEntity<>(userList, HttpStatus.OK);
     }
 
@@ -237,10 +261,12 @@ public class UserController {
      * @return 상태 코드 OK
      */
     @PatchMapping("/user/change-slack/{userId}")
-    public ResponseEntity<Void> updateSlackId(@PathVariable("userId") UUID userId,
-                                              @RequestHeader(HEADER_USER_ID) String userIdHeader,
-                                              @RequestHeader(HEADER_USER_ROLE) String roleHeader,
-                                              @Valid @RequestBody SlackRequestDto req) {
+    public ResponseEntity<Void> updateSlackId(
+        @PathVariable("userId") UUID userId
+        , @RequestHeader(HEADER_USER_ID) String userIdHeader
+        , @RequestHeader(HEADER_USER_ROLE) String roleHeader
+        , @Valid @RequestBody SlackRequestDto req
+    ) {
         // MASTER 또는 본인 여부 확인
         UserPermissionValidator.validateMasterOrSelf(userId, userIdHeader, roleHeader);
 
@@ -258,10 +284,12 @@ public class UserController {
      * @return 변경된 사용자 정보
      */
     @PatchMapping("/user/change-address/{userId}")
-    public ResponseEntity<UserResponseDto> updateAddress(@PathVariable("userId") UUID userId,
-                                                         @RequestHeader(HEADER_USER_ID) String userIdHeader,
-                                                         @RequestHeader(HEADER_USER_ROLE) String roleHeader,
-                                                         @Valid @RequestBody UpdateAddressRequestDto req) {
+    public ResponseEntity<UserResponseDto> updateAddress(
+        @PathVariable("userId") UUID userId
+        , @RequestHeader(HEADER_USER_ID) String userIdHeader
+        , @RequestHeader(HEADER_USER_ROLE) String roleHeader
+        , @Valid @RequestBody UpdateAddressRequestDto req
+    ) {
         // MASTER 또는 본인 여부 확인
         UserPermissionValidator.validateMasterOrSelf(userId, userIdHeader, roleHeader);
 
@@ -280,10 +308,10 @@ public class UserController {
      * @param req          변경 허브 ID
      */
     @PatchMapping("/user/change-nearHub/{userId}")
-    public ResponseEntity<Void> updateNearHub(@PathVariable("userId") UUID userId,
-                                              @RequestHeader(HEADER_USER_ID) String userIdHeader,
-                                              @RequestHeader(HEADER_USER_ROLE) String roleHeader,
-                                              @Valid @RequestBody NearHubRequestDto req
+    public ResponseEntity<Void> updateNearHub(
+        @PathVariable("userId") UUID userId, @RequestHeader(HEADER_USER_ID) String userIdHeader
+        , @RequestHeader(HEADER_USER_ROLE) String roleHeader
+        , @Valid @RequestBody NearHubRequestDto req
     ) {
         // MASTER 또는 본인 여부 확인
         UserPermissionValidator.validateMasterOrSelf(userId, userIdHeader, roleHeader);
