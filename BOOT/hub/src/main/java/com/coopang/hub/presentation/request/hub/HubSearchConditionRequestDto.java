@@ -11,5 +11,5 @@ public class HubSearchConditionRequestDto {
     private UUID hubId;
     private String hubName;//starsWith
     private UUID hubManagerId;
-    private Boolean isDeleted;
+    private boolean isDeleted = false;
 }
