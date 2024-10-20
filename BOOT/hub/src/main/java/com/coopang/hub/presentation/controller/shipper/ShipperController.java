@@ -3,11 +3,12 @@ package com.coopang.hub.presentation.controller.shipper;
 
 import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ID;
 import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ROLE;
+
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.apidata.application.hub.enums.ShipperTypeEnum;
 import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.hub.application.request.shipper.ShipperDto;
-import com.coopang.hub.application.request.shipper.ShipperSearchCondition;
+import com.coopang.hub.application.request.shipper.ShipperSearchConditionDto;
 import com.coopang.hub.application.response.shipper.ShipperResponseDto;
 import com.coopang.hub.application.service.hub.HubService;
 import com.coopang.hub.application.service.shipper.ShipperService;
@@ -26,6 +27,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -35,6 +37,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -69,13 +72,13 @@ public class ShipperController {
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER})
     @PostMapping
     public ResponseEntity<ShipperResponseDto> createShipper(
-            @RequestHeader(HEADER_USER_ID) String userIdHeader
-            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
-            , @Valid @RequestBody CreateShipperRequestDto req
+        @RequestHeader(HEADER_USER_ID) String userIdHeader
+        , @RequestHeader(HEADER_USER_ROLE) String roleHeader
+        , @Valid @RequestBody CreateShipperRequestDto req
     ) {
         HubPermissionValidator.validateHubManagerBelongToHub(roleHeader, req.getHubId(), UUID.fromString(userIdHeader), hubService);
         final ShipperDto shipperDto = mapperConfig.strictMapper().map(req, ShipperDto.class);
-        ShipperResponseDto shipper = shipperService.createShipper(shipperDto);
+        final ShipperResponseDto shipper = shipperService.createShipper(shipperDto);
         return new ResponseEntity<>(shipper, HttpStatus.CREATED);
     }
 
@@ -91,9 +94,9 @@ public class ShipperController {
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER, UserRoleEnum.Authority.SHIPPER})
     @GetMapping("/{shipperId}")
     public ResponseEntity<ShipperResponseDto> getShipperById(
-            @PathVariable UUID shipperId
-            , @RequestHeader(HEADER_USER_ID) String userIdHeader
-            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
+        @PathVariable UUID shipperId
+        , @RequestHeader(HEADER_USER_ID) String userIdHeader
+        , @RequestHeader(HEADER_USER_ROLE) String roleHeader
     ) {
         ShipperResponseDto shipper;
 
@@ -116,7 +119,7 @@ public class ShipperController {
     @Secured(UserRoleEnum.Authority.MASTER)
     @GetMapping
     public ResponseEntity<Page<ShipperResponseDto>> getAllShippers(Pageable pageable) {
-        Page<ShipperResponseDto> shippers = shipperService.getAllShippers(pageable);
+        final Page<ShipperResponseDto> shippers = shipperService.getAllShippers(pageable);
         return new ResponseEntity<>(shippers, HttpStatus.OK);
     }
 
@@ -125,42 +128,64 @@ public class ShipperController {
      * 검색
      *
      * @param roleHeader
-     * @param req
+     * @param shipperId
+     * @param hubId
+     * @param shipperType
+     * @param hubName
+     * @param isDeleted
      * @param pageable
      * @return
      */
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER, UserRoleEnum.Authority.SHIPPER})
-    @PostMapping("/search")
+    @GetMapping("/search")
     public ResponseEntity<Page<ShipperResponseDto>> searchShippers(
-            @RequestHeader(HEADER_USER_ROLE) String roleHeader
-            , @RequestBody ShipperSearchConditionRequestDto req
-            , Pageable pageable
+        @RequestHeader(HEADER_USER_ROLE) String roleHeader
+        , @RequestParam(value = "shipperId", required = false) UUID shipperId
+        , @RequestParam(value = "hubId", required = false) UUID hubId
+        , @RequestParam(value = "shipperType", required = false) String shipperType
+        , @RequestParam(value = "hubName", required = false) String hubName
+        , @RequestParam(value = "isDeleted", required = false) Boolean isDeleted
+        , Pageable pageable
     ) {
-        // 마스터 권한이면 클라이언트에서 받은 isDeleted 값을 사용하고, 그외 권한은 삭제되지 않은 항목만 조회하도록 false로 설정
-        final boolean isDeleted = UserRoleEnum.isMaster(roleHeader) ? req.getIsDeleted() : false;
-        final ShipperSearchCondition condition = ShipperSearchCondition.from(
-                req.getShipperId()
-                , req.getHubId()
-                , req.getShipperType()
-                , req.getHubName()
-                , isDeleted
+        ShipperSearchConditionDto condition = ShipperSearchConditionDto.from(
+            shipperId
+            , hubId
+            , shipperType
+            , hubName
+            , isDeleted
         );
 
-        Page<ShipperResponseDto> shippers = shipperService.searchShippers(condition, pageable);
+        // 마스터 권한이면 클라이언트에서 받은 isDeleted 값을 사용하고, 그외 권한은 삭제되지 않은 항목만 조회하도록 false로 설정
+        if (!UserRoleEnum.isMaster(roleHeader)) {
+            condition.setIsDeletedFalse();
+        }
+
+        final Page<ShipperResponseDto> shippers = shipperService.searchShippers(condition, pageable);
         return new ResponseEntity<>(shippers, HttpStatus.OK);
     }
 
-    @Secured(UserRoleEnum.Authority.SERVER)
+    /**
+     * 서버에서 List 조회
+     *
+     * @param req
+     * @return 검색된 List
+     */
+    @Secured({UserRoleEnum.Authority.SERVER, UserRoleEnum.Authority.MASTER})
     @PostMapping("/list")
-    public ResponseEntity<List<ShipperResponseDto>> getShipperList(@RequestBody ShipperSearchConditionRequestDto req) {
-        final ShipperSearchCondition condition = ShipperSearchCondition.from(
+    public ResponseEntity<List<ShipperResponseDto>> getShipperList(@RequestBody(required = false) ShipperSearchConditionRequestDto req) {
+        ShipperSearchConditionDto condition;
+        if (ObjectUtils.isEmpty(req)) {
+            condition = ShipperSearchConditionDto.empty();
+        } else {
+            condition = ShipperSearchConditionDto.from(
                 req.getShipperId()
                 , req.getHubId()
                 , req.getShipperType()
                 , req.getHubName()
-                , req.getIsDeleted()
-        );
-        List<ShipperResponseDto> shipperList = shipperService.getShipperList(condition);
+                , req.isDeleted()
+            );
+        }
+        final List<ShipperResponseDto> shipperList = shipperService.getShipperList(condition);
         return new ResponseEntity<>(shipperList, HttpStatus.OK);
     }
 
@@ -178,10 +203,10 @@ public class ShipperController {
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER})
     @PutMapping("/{shipperId}")
     public ResponseEntity<ShipperResponseDto> updateShipperInfo(
-            @PathVariable UUID shipperId
-            , @RequestHeader(HEADER_USER_ID) String userIdHeader
-            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
-            , @Valid @RequestBody UpdateShipperRequestDto updateShipperRequestDto
+        @PathVariable UUID shipperId
+        , @RequestHeader(HEADER_USER_ID) String userIdHeader
+        , @RequestHeader(HEADER_USER_ROLE) String roleHeader
+        , @Valid @RequestBody UpdateShipperRequestDto updateShipperRequestDto
     ) {
         // 수정하려는 shipper의 이전 정보
         ShipperEntity shipperEntity = shipperService.findShipperById(shipperId);
@@ -190,7 +215,7 @@ public class ShipperController {
         final ShipperDto shipperDto = mapperConfig.strictMapper().map(updateShipperRequestDto, ShipperDto.class);
         shipperService.updateShipperInfo(shipperEntity, shipperDto);
 
-        ShipperResponseDto shipper = shipperService.getShipperById(shipperId);
+        final ShipperResponseDto shipper = shipperService.getShipperById(shipperId);
         return new ResponseEntity<>(shipper, HttpStatus.OK);
     }
 
@@ -208,10 +233,10 @@ public class ShipperController {
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER})
     @PatchMapping("/{shipperId}/change-hub")
     public ResponseEntity<Void> changeHub(
-            @PathVariable UUID shipperId
-            , @RequestHeader(HEADER_USER_ID) String userIdHeader
-            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
-            , @Valid @RequestBody HubIdRequestDto req
+        @PathVariable UUID shipperId
+        , @RequestHeader(HEADER_USER_ID) String userIdHeader
+        , @RequestHeader(HEADER_USER_ROLE) String roleHeader
+        , @Valid @RequestBody HubIdRequestDto req
     ) {
         // 수정하려는 shipper의 이전 정보
         final ShipperResponseDto shipper = shipperService.getShipperById(shipperId);
@@ -235,10 +260,10 @@ public class ShipperController {
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER})
     @PatchMapping("/{shipperId}/change-shipperType")
     public ResponseEntity<Void> changeShipperType(
-            @PathVariable UUID shipperId
-            , @RequestHeader(HEADER_USER_ID) String userIdHeader
-            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
-            , @Valid @RequestBody ShipperTypeRequestDto req
+        @PathVariable UUID shipperId
+        , @RequestHeader(HEADER_USER_ID) String userIdHeader
+        , @RequestHeader(HEADER_USER_ROLE) String roleHeader
+        , @Valid @RequestBody ShipperTypeRequestDto req
     ) {
         // 수정하려는 shipper의 이전 정보
         final ShipperResponseDto shipper = shipperService.getShipperById(shipperId);
@@ -261,9 +286,9 @@ public class ShipperController {
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER})
     @DeleteMapping("/{shipperId}")
     public ResponseEntity<Void> deleteShipper(
-            @PathVariable UUID shipperId
-            , @RequestHeader(HEADER_USER_ID) String userIdHeader
-            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
+        @PathVariable UUID shipperId
+        , @RequestHeader(HEADER_USER_ID) String userIdHeader
+        , @RequestHeader(HEADER_USER_ROLE) String roleHeader
     ) {
         // 수정하려는 shipper의 이전 정보
         final ShipperResponseDto shipper = shipperService.getShipperById(shipperId);
