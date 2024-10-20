@@ -150,9 +150,12 @@ public class ProductController {
 
     @PostMapping("/product/search")
     public ResponseEntity<Page<ProductResponseDto>> searchProduct(
-        @RequestBody ProductSearchConditionDto searchCondition,
+        @RequestBody(required = false) ProductSearchConditionDto searchCondition,
         @RequestHeader(HEADER_USER_ROLE) String role, Pageable pageable) {
 
+        if(searchCondition==null){
+            searchCondition=new ProductSearchConditionDto();
+        }
         //마스터인 경우 모든 상품을 봄
         if (UserRoleEnum.isMaster(role)) {
             searchCondition.setIsAbleToWatchDeleted(true);
