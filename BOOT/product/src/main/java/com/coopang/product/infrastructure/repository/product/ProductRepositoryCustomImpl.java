@@ -125,10 +125,12 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
     }
 
     private Predicate isProductPriceGreaterThan(double minProductPrice) {
-        return Optional.ofNullable(minProductPrice).map(productEntity.productPrice::goe).orElse(null);
+        return productEntity.productPrice.goe(minProductPrice);
     }
 
     private Predicate isProductPricelessThan(double maxProductPrice) {
-        return Optional.ofNullable(maxProductPrice).map(productEntity.productPrice::loe).orElse(null);
+        maxProductPrice =  maxProductPrice == 0.0 ? Double.MAX_VALUE :maxProductPrice;
+
+        return productEntity.productPrice.loe(maxProductPrice);
     }
 }
