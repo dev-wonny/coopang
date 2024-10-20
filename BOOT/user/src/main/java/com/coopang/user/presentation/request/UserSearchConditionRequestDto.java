@@ -14,5 +14,5 @@ public class UserSearchConditionRequestDto {
     private String userRole;
     @Email(message = "Email should be valid")
     private String email;
-    private Boolean isDeleted;
+    private boolean isDeleted = false;
 }

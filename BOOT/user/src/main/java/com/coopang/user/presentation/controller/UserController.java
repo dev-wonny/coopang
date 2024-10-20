@@ -3,6 +3,7 @@ package com.coopang.user.presentation.controller;
 
 import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ID;
 import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ROLE;
+
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.apidata.application.user.UserPermissionValidator;
 import com.coopang.coredata.user.enums.UserRoleEnum;
@@ -10,7 +11,7 @@ import com.coopang.user.application.request.AddressDto;
 import com.coopang.user.application.request.ChangePasswordDto;
 import com.coopang.user.application.request.MyInfoUpdateDto;
 import com.coopang.user.application.request.UserDto;
-import com.coopang.user.application.request.UserSearchCondition;
+import com.coopang.user.application.request.UserSearchConditionDto;
 import com.coopang.user.application.response.UserResponseDto;
 import com.coopang.user.application.service.UserService;
 import com.coopang.user.presentation.request.ChangePasswordRequestDto;
@@ -31,6 +32,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -40,6 +42,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -140,25 +143,42 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
+
     /**
      * 관리자가 조건에 따라 사용자를 검색합니다.
      *
-     * @param req      검색 조건
-     * @param pageable 페이지네이션 정보
+     * @param userId
+     * @param userName
+     * @param userRole
+     * @param email
+     * @param isDeleted
+     * @param pageable
      * @return 검색된 사용자 목록
      */
     @Secured(UserRoleEnum.Authority.MASTER)
-    @PostMapping("/user/search")
-    public ResponseEntity<Page<UserResponseDto>> searchUsers(@RequestBody UserSearchConditionRequestDto req, Pageable pageable) {
-        final UserSearchCondition condition = UserSearchCondition.from(req.getUserId(), req.getUserName(), req.getUserRole(), req.getEmail(), req.getIsDeleted());
+    @GetMapping("/user/search")
+    public ResponseEntity<Page<UserResponseDto>> searchUsers(
+        @RequestParam(value = "userId", required = false) UUID userId
+        , @RequestParam(value = "userName", required = false) String userName
+        , @RequestParam(value = "userRole", required = false) String userRole
+        , @RequestParam(value = "email", required = false) String email
+        , @RequestParam(value = "isDeleted", required = false, defaultValue = "false") boolean isDeleted
+        , Pageable pageable
+    ) {
+        final UserSearchConditionDto condition = UserSearchConditionDto.from(userId, userName, userRole, email, isDeleted);
         Page<UserResponseDto> users = userService.searchUsers(condition, pageable);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @Secured({UserRoleEnum.Authority.SERVER, UserRoleEnum.Authority.MASTER})
     @PostMapping("/user/list")
-    public ResponseEntity<List<UserResponseDto>> getUserList(@RequestBody UserSearchConditionRequestDto req) {
-        final UserSearchCondition condition = UserSearchCondition.from(req.getUserId(), req.getUserName(), req.getUserRole(), req.getEmail(), req.getIsDeleted());
+    public ResponseEntity<List<UserResponseDto>> getUserList(@RequestBody(required = false) UserSearchConditionRequestDto req) {
+        UserSearchConditionDto condition;
+        if (ObjectUtils.isEmpty(req)) {
+            condition = UserSearchConditionDto.empty();
+        } else {
+            condition = UserSearchConditionDto.from(req.getUserId(), req.getUserName(), req.getUserRole(), req.getEmail(), req.isDeleted());
+        }
         List<UserResponseDto> userList = userService.getUserList(condition);
         return new ResponseEntity<>(userList, HttpStatus.OK);
     }
