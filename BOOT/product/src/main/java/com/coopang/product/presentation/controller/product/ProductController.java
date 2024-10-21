@@ -3,6 +3,7 @@ package com.coopang.product.presentation.controller.product;
 import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ID;
 import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ROLE;
 
+import com.coopang.apiconfig.datetime.DateTimeUtil;
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.coredata.user.enums.UserRoleEnum.Authority;
@@ -166,7 +167,12 @@ public class ProductController {
         @RequestHeader(HEADER_USER_ROLE) String role, Pageable pageable) {
 
         ProductSearchConditionDto productSearchConditionDto = Optional.ofNullable(searchCondition)
-            .map(ProductSearchConditionDto::from)
+            .map(conditionDto -> {
+                return ProductSearchConditionDto.from(conditionDto.getProductId(),
+                    conditionDto.getProductName(),conditionDto.getCompanyId(),conditionDto.getMinProductPrice(),conditionDto.getMaxProductPrice()
+                , DateTimeUtil.parseToLocalDateTime(conditionDto.getStartDate()),DateTimeUtil.parseToLocalDateTime(conditionDto.getEndDate())
+                ,conditionDto.getIsAbleToWatchDeleted());
+            } )
             .orElseGet(ProductSearchConditionDto::empty);
 
         //마스터인 경우 모든 상품을 봄 - 삭제된 상품까지

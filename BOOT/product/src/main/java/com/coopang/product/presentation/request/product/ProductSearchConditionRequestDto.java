@@ -14,8 +14,8 @@ public class ProductSearchConditionRequestDto extends ProductBaseSearchCondition
     private UUID companyId;
     private double minProductPrice;
     private double maxProductPrice;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private String startDate;
+    private String endDate;
     private boolean isAbleToWatchDeleted = false;
 
     public boolean getIsAbleToWatchDeleted(){
