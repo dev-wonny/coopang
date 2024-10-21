@@ -1,7 +1,8 @@
 package com.coopang.product.infrastructure.repository.product;
 
+import com.coopang.product.application.request.product.ProductSearchConditionDto;
 import com.coopang.product.domain.entity.product.ProductEntity;
-import com.coopang.product.presentation.request.product.ProductSearchConditionDto;
+import com.coopang.product.presentation.request.product.ProductSearchConditionRequestDto;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

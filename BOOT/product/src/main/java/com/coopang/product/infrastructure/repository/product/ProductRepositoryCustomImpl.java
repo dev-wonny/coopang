@@ -5,8 +5,9 @@ import static com.coopang.product.domain.entity.product.QProductEntity.productEn
 import static com.coopang.product.domain.entity.productstock.QProductStockEntity.productStockEntity;
 
 import com.coopang.apiconfig.querydsl.Querydsl4RepositorySupport;
+import com.coopang.product.application.request.product.ProductSearchConditionDto;
 import com.coopang.product.domain.entity.product.ProductEntity;
-import com.coopang.product.presentation.request.product.ProductSearchConditionDto;
+import com.coopang.product.presentation.request.product.ProductSearchConditionRequestDto;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import java.time.LocalDateTime;
@@ -61,10 +62,11 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
                 .where(
                     productNameContains(productSearchCondition.getProductName()),
                     companyIdEq(productSearchCondition.getCompanyId()),
+                    productIdEq(productSearchCondition.getProductId()),
                     betweenStartDateAndEndDate(productSearchCondition.getStartDate(), productSearchCondition.getEndDate()),
                     isProductPriceGreaterThan(productSearchCondition.getMinProductPrice()),
                     isProductPricelessThan(productSearchCondition.getMaxProductPrice()),
-                    isAbleToSearchProductIsDeleted(productSearchCondition),
+                    isAbleToSearchProductIsDeleted(productSearchCondition.getIsAbleToWatchDeleted()),
                     productStockEntity.productStock.value.ne(0)
                 ),
             countQuery -> countQuery.select(
@@ -73,22 +75,23 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
                 .where(
                     productNameContains(productSearchCondition.getProductName()),
                     companyIdEq(productSearchCondition.getCompanyId()),
+                    productIdEq(productSearchCondition.getProductId()),
                     betweenStartDateAndEndDate(productSearchCondition.getStartDate(), productSearchCondition.getEndDate()),
                     isProductPriceGreaterThan(productSearchCondition.getMinProductPrice()),
                     isProductPricelessThan(productSearchCondition.getMaxProductPrice()),
-                    isAbleToSearchProductIsDeleted(productSearchCondition),
+                    isAbleToSearchProductIsDeleted(productSearchCondition.getIsAbleToWatchDeleted()),
                     productStockEntity.productStock.value.ne(0)
                 )
         );
     }
 
     private Predicate isAbleToSearchProductIsDeleted(
-        ProductSearchConditionDto productSearchCondition) {
+        boolean isAbleToSearchProductIsDeleted) {
 
         BooleanBuilder builder = new BooleanBuilder();
 
         // isDeleted 조건
-        if (!productSearchCondition.getIsAbleToWatchDeleted()) {
+        if (!isAbleToSearchProductIsDeleted) {
 
             builder.and(productEntity.isDeleted.eq(false));
             builder.and(productEntity.isSale.eq(true));
@@ -100,6 +103,10 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
 
     private Predicate productNameContains(String productName) {
         return StringUtils.hasText(productName) ? productEntity.productName.contains(productName) : null;
+    }
+
+    private Predicate productIdEq(UUID productId) {
+        return productId != null ? productEntity.productId.eq(productId) : null;
     }
 
     private Predicate companyIdEq(UUID companyId) {
