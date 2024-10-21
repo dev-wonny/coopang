@@ -47,17 +47,18 @@ public class HubDataInitializer implements CommandLineRunner {
         createHub("울산광역시 센터", "울산 남구 중앙로 201", "11111", ULSAN, UUID.fromString("55de6337-556d-43c6-adbf-469c2cf2dea9"), UUID.fromString("773db62c-eae9-4d4e-9029-d24f348f8c61"));
         createHub("세종특별자치시 센터", "세종특별자치시 한누리대로 2130", "11111", SEJONG, UUID.fromString("e8c54e27-92cc-4780-a4d9-2ada1a577a34"), UUID.fromString("c3aebe6d-a257-4798-b3ce-b9595c3c59f3"));
         createHub("강원특별자치도 센터", "강원특별자치도 춘천시 중앙로 1", "11111", GANGWON, UUID.fromString("aa2a4b10-c91e-4993-8e28-a907602f13d2"), UUID.fromString("666278fe-006f-4895-a094-bac433c2d669"));
-        createHub("충청북도 센터", "충북 청주시 상당구 상당로 82", "11111", CHUNGBUK, UUID.fromString("3e864e21-15c8-47e1-b3b3-c669abf7f0fa"), UUID.fromString("c5fb540b-63f0-464a-951c-6cd711986440"));
+        createHub("충청북도 센터", "충북 청주시 상당구 상당로 82", "11111", CHUNGBUK, UUID.fromString("239f11df-4280-43b4-81a4-7139b31b071b"), UUID.fromString("c5fb540b-63f0-464a-951c-6cd711986440"));
     }
 
-    private void createHub(String hubName, String address1, String zipCode, String region, UUID hubManagerId, UUID hubId) {
-        HubDto hubDto = new HubDto();
-        hubDto.setHubId(hubId);
-        hubDto.setHubName(hubName);
-        hubDto.setHubManagerId(hubManagerId);
-        hubDto.setZipCode(zipCode);
-        hubDto.setAddress1(address1);
-        hubDto.setAddress2(region);
+    private void createHub(String hubName, String address2, String zipCode, String region, UUID hubManagerId, UUID hubId) {
+        final HubDto hubDto = HubDto.of(
+            hubId
+            , hubName
+            , hubManagerId
+            , zipCode
+            , region
+            , address2
+        );
         hubService.createHub(hubDto);
     }
 }

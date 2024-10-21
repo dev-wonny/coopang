@@ -18,7 +18,13 @@ public class ShipperSearchConditionDto {
     private boolean isDeleted;
 
     @Builder
-    private ShipperSearchConditionDto(UUID shipperId, UUID hubId, ShipperTypeEnum shipperType, String hubName, boolean isDeleted) {
+    private ShipperSearchConditionDto(
+        UUID shipperId
+        , UUID hubId
+        , ShipperTypeEnum shipperType
+        , String hubName
+        , boolean isDeleted
+    ) {
         this.shipperId = shipperId;
         this.hubId = hubId;
         this.shipperType = shipperType;
@@ -36,11 +42,17 @@ public class ShipperSearchConditionDto {
             .build();
     }
 
-    public static ShipperSearchConditionDto from(UUID shipperId, UUID hubId, String shipperType, String hubName, boolean isDeleted) {
+    public static ShipperSearchConditionDto from(
+        UUID shipperId
+        , UUID hubId
+        , String shipperType
+        , String hubName
+        , boolean isDeleted
+    ) {
         return ShipperSearchConditionDto.builder()
             .shipperId(shipperId)
             .hubId(hubId)
-            .shipperType(!ObjectUtils.isEmpty(shipperType) ? ShipperTypeEnum.getRoleEnum(shipperType) : null)
+            .shipperType(!ObjectUtils.isEmpty(shipperType) ? ShipperTypeEnum.getShipperTypeEnum(shipperType) : null)
             .hubName(hubName)
             .isDeleted(!ObjectUtils.isEmpty(isDeleted) && isDeleted)
             .build();
@@ -54,27 +66,32 @@ public class ShipperSearchConditionDto {
     public boolean equals(Object o) {
         if (this == o) {
             return true;
-        } else if (o != null && this.getClass() == o.getClass()) {
-            ShipperSearchConditionDto that = (ShipperSearchConditionDto) o;
-            return
-                Objects.equals(this.shipperId, that.shipperId)
-                    && Objects.equals(this.hubId, that.hubId)
-                    && this.shipperType == that.shipperType
-                    && Objects.equals(this.hubName, that.hubName)
-                    && Objects.equals(this.isDeleted, that.isDeleted);
-        } else {
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
+        ShipperSearchConditionDto that = (ShipperSearchConditionDto) o;
+        return isDeleted == that.isDeleted
+            && Objects.equals(shipperId, that.shipperId)
+            && Objects.equals(hubId, that.hubId)
+            && shipperType == that.shipperType
+            && Objects.equals(hubName, that.hubName)
+            ;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.shipperId, this.hubId, this.shipperType, this.hubName, this.isDeleted);
+        return Objects.hash(shipperId, hubId, shipperType, hubName, isDeleted);
     }
 
     @Override
     public String toString() {
-        return "ShipperSearchConditionDto(shipperId=" + this.shipperId + ", hubId=" + this.hubId + ", shipperType=" + this.shipperType + ", hubName=" + this.hubName + ", isDeleted=" + this.isDeleted +
-            ")";
+        return "ShipperSearchConditionDto{" +
+            "shipperId=" + shipperId +
+            ", hubId=" + hubId +
+            ", shipperType=" + shipperType +
+            ", hubName='" + hubName + '\'' +
+            ", isDeleted=" + isDeleted +
+            '}';
     }
 }

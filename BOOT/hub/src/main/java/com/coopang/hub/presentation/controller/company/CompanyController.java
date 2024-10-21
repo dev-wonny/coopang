@@ -77,7 +77,16 @@ public class CompanyController {
         , @Valid @RequestBody CreateCompanyRequestDto req
     ) {
         HubPermissionValidator.validateHubManagerBelongToHub(roleHeader, req.getHubId(), UUID.fromString(userIdHeader), hubService);
-        final CompanyDto companyDto = mapperConfig.strictMapper().map(req, CompanyDto.class);
+        CompanyDto companyDto = CompanyDto.of(
+            null
+            , req.getHubId()
+            , req.getCompanyManagerId()
+            , req.getCompanyName()
+            , req.getZipCode()
+            , req.getAddress1()
+            , req.getAddress2()
+
+        );
         final CompanyResponseDto company = companyService.createCompany(companyDto);
         return new ResponseEntity<>(company, HttpStatus.CREATED);
     }

@@ -2,6 +2,7 @@ package com.coopang.hub.application.response.hub;
 
 import com.coopang.apidata.application.address.Address;
 import com.coopang.hub.domain.entity.hub.HubEntity;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,12 +19,13 @@ public class HubResponseDto {
 
     private boolean isDeleted;
 
+    @Builder
     private HubResponseDto(
-            UUID hubId
-            , String hubName
-            , UUID hubManagerId
-            , Address address
-            , boolean isDeleted
+        UUID hubId
+        , String hubName
+        , UUID hubManagerId
+        , Address address
+        , boolean isDeleted
     ) {
         this.hubId = hubId;
         this.hubName = hubName;
@@ -39,17 +41,17 @@ public class HubResponseDto {
      * @return
      */
     public static HubResponseDto fromHub(HubEntity hub) {
-        return new HubResponseDto(
-                hub.getHubId()
-                , hub.getHubName()
-                , hub.getHubManagerId()
-                ,
-                new Address(
-                        hub.getAddressEntity().getZipCode()
-                        , hub.getAddressEntity().getAddress1()
-                        , hub.getAddressEntity().getAddress2()
-                )
-                , hub.isDeleted()
-        );
+        return HubResponseDto
+            .builder()
+            .hubId(hub.getHubId())
+            .hubName(hub.getHubName())
+            .hubManagerId(hub.getHubManagerId())
+            .address(new Address(
+                hub.getAddressEntity().getZipCode()
+                , hub.getAddressEntity().getAddress1()
+                , hub.getAddressEntity().getAddress2()
+            ))
+            .isDeleted(hub.isDeleted())
+            .build();
     }
 }
