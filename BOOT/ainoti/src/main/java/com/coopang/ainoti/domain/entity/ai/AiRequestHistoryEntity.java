@@ -51,7 +51,12 @@ public class AiRequestHistoryEntity extends BaseEntity {
     /**
      * 정적 팩토리 메서드 (create 메서드)
      */
-    public static AiRequestHistoryEntity create(UUID aiRequestHistoryId, AiCategory aiCategory, String aiRequest, String aiResponse) {
+    public static AiRequestHistoryEntity create(
+        UUID aiRequestHistoryId
+        , AiCategory aiCategory
+        , String aiRequest
+        , String aiResponse
+    ) {
         return AiRequestHistoryEntity.builder()
             .aiRequestHistoryId(aiRequestHistoryId)
             .aiCategory(aiCategory)
@@ -63,7 +68,12 @@ public class AiRequestHistoryEntity extends BaseEntity {
     /**
      * AI 요청 및 응답 업데이트
      */
-    public void updateAiRequestResponse(String aiRequest, String aiResponse) {
+    public void update(
+        AiCategory aiCategory
+        , String aiRequest
+        , String aiResponse
+    ) {
+        this.aiCategory = aiCategory;
         this.aiRequest = aiRequest;
         this.aiResponse = aiResponse;
     }

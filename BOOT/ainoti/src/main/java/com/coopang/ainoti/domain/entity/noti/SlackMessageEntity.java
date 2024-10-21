@@ -88,9 +88,19 @@ public class SlackMessageEntity extends BaseEntity {
             .build();
     }
 
-    public void updateSlackMessage(String slackMessage, SlackMessageStatus status, LocalDateTime sentTime) {
+    public void updateSlackMessage(
+        String receiveSlackId
+        , UUID receiveUserId
+        , SlackMessageStatus slackMessageStatus
+        , String slackMessage
+        , LocalDateTime sentTime
+        , String slackMessageSenderId
+    ) {
+        this.receiveSlackId = receiveSlackId;
+        this.receiveUserId = receiveUserId;
+        this.slackMessageStatus = slackMessageStatus;
         this.slackMessage = slackMessage;
-        this.slackMessageStatus = status;
         this.sentTime = sentTime;
+        this.slackMessageSenderId = slackMessageSenderId;
     }
 }

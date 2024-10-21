@@ -3,6 +3,7 @@ package com.coopang.ainoti.application.response.noti;
 
 import com.coopang.ainoti.application.enums.SlackMessageStatus;
 import com.coopang.ainoti.domain.entity.noti.SlackMessageEntity;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +13,6 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 public class SlackMessageResponseDto {
-
     private UUID slackMessageId;
     private String receiveSlackId;
     private UUID receiveUserId;
@@ -22,15 +22,16 @@ public class SlackMessageResponseDto {
     private String slackMessageSenderId;
     private boolean isDeleted;
 
+    @Builder
     private SlackMessageResponseDto(
-        UUID slackMessageId,
-        String receiveSlackId,
-        UUID receiveUserId,
-        SlackMessageStatus slackMessageStatus,
-        String slackMessage,
-        LocalDateTime sentTime,
-        String slackMessageSenderId,
-        boolean isDeleted
+        UUID slackMessageId
+        , String receiveSlackId
+        , UUID receiveUserId
+        , SlackMessageStatus slackMessageStatus
+        , String slackMessage
+        , LocalDateTime sentTime
+        , String slackMessageSenderId
+        , boolean isDeleted
     ) {
         this.slackMessageId = slackMessageId;
         this.receiveSlackId = receiveSlackId;
@@ -42,22 +43,16 @@ public class SlackMessageResponseDto {
         this.isDeleted = isDeleted;
     }
 
-    /**
-     * SlackMessageEntity를 SlackMessageResponseDto로 변환
-     *
-     * @param slackMessageEntity Slack 메시지 엔티티
-     * @return SlackMessageResponseDto
-     */
     public static SlackMessageResponseDto fromSlackMessage(SlackMessageEntity slackMessageEntity) {
-        return new SlackMessageResponseDto(
-            slackMessageEntity.getSlackMessageId(),
-            slackMessageEntity.getReceiveSlackId(),
-            slackMessageEntity.getReceiveUserId(),
-            slackMessageEntity.getSlackMessageStatus(),
-            slackMessageEntity.getSlackMessage(),
-            slackMessageEntity.getSentTime(),
-            slackMessageEntity.getSlackMessageSenderId(),
-            slackMessageEntity.isDeleted()
-        );
+        return SlackMessageResponseDto.builder()
+            .slackMessageId(slackMessageEntity.getSlackMessageId())
+            .receiveSlackId(slackMessageEntity.getReceiveSlackId())
+            .receiveUserId(slackMessageEntity.getReceiveUserId())
+            .slackMessageStatus(slackMessageEntity.getSlackMessageStatus())
+            .slackMessage(slackMessageEntity.getSlackMessage())
+            .sentTime(slackMessageEntity.getSentTime())
+            .slackMessageSenderId(slackMessageEntity.getSlackMessageSenderId())
+            .isDeleted(slackMessageEntity.isDeleted())
+            .build();
     }
 }

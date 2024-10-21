@@ -38,7 +38,7 @@ public class AiRequestHistoryService {
     public AiRequestHistoryResponseDto createAiRequestHistory(AiRequestHistoryDto aiRequestHistoryDto) {
         // UUID 생성
         final UUID aiRequestHistoryId = aiRequestHistoryDto.getAiRequestHistoryId() != null ? aiRequestHistoryDto.getAiRequestHistoryId() : UUID.randomUUID();
-        aiRequestHistoryDto.setAiRequestHistoryId(aiRequestHistoryId);
+        aiRequestHistoryDto.createId(aiRequestHistoryId);
 
         AiRequestHistoryEntity aiRequestHistoryEntity = aiRequestHistoryDomainService.createAiRequestHistory(aiRequestHistoryDto);
         return AiRequestHistoryResponseDto.fromAiRequestHistory(aiRequestHistoryEntity);
@@ -90,7 +90,7 @@ public class AiRequestHistoryService {
     @Transactional(readOnly = true)
     @Cacheable(value = "aiRequestHistoryList", key = "#condition")
     public List<AiRequestHistoryResponseDto> getAiRequestHistoryList(AiRequestHistorySearchConditionDto condition) {
-        List<AiRequestHistoryEntity> aiRequestHistories = aiRequestHistoryRepository.findAiRequestHistoryList(condition);
+        final List<AiRequestHistoryEntity> aiRequestHistories = aiRequestHistoryRepository.findAiRequestHistoryList(condition);
         return aiRequestHistories.stream()
             .map(AiRequestHistoryResponseDto::fromAiRequestHistory)
             .toList();
@@ -100,9 +100,9 @@ public class AiRequestHistoryService {
      * AI 요청 기록 검색 (페이징, 정렬, 키워드 검색)
      */
     @Transactional(readOnly = true)
-    @Cacheable(value = "allAiRequestHistories", key = "#condition")
+    @Cacheable(value = "allAiRequestHistories", key = "#condition.toString() + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<AiRequestHistoryResponseDto> searchAiRequestHistories(AiRequestHistorySearchConditionDto condition, Pageable pageable) {
-        Page<AiRequestHistoryEntity> aiRequestHistories = aiRequestHistoryRepository.search(condition, pageable);
+        final Page<AiRequestHistoryEntity> aiRequestHistories = aiRequestHistoryRepository.search(condition, pageable);
         return aiRequestHistories.map(AiRequestHistoryResponseDto::fromAiRequestHistory);
     }
 
@@ -111,9 +111,13 @@ public class AiRequestHistoryService {
      */
     @CacheEvict(value = "aiRequestHistories", key = "#aiRequestHistoryId")
     public void updateAiRequestHistory(UUID aiRequestHistoryId, AiRequestHistoryDto aiRequestHistoryDto) {
-        AiRequestHistoryEntity aiRequestHistoryEntity = findAiRequestHistoryById(aiRequestHistoryId);
-        aiRequestHistoryEntity.updateAiRequestResponse(aiRequestHistoryDto.getAiRequest(), aiRequestHistoryDto.getAiResponse());
-        log.debug("updateAiRequestHistory aiRequestHistoryId:{}", aiRequestHistoryId);
+        AiRequestHistoryEntity aiRequestHistoryEntity = findValidAiRequestHistoryById(aiRequestHistoryId);
+        aiRequestHistoryEntity.update(
+            aiRequestHistoryDto.getAiCategory()
+            , aiRequestHistoryDto.getAiRequest()
+            , aiRequestHistoryDto.getAiResponse()
+        );
+        log.debug("updateAiRequestHistory aiRequestHistoryId:{}, aiRequestHistoryDto:{}", aiRequestHistoryId, aiRequestHistoryDto.toString());
     }
 
     /**

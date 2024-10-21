@@ -5,28 +5,24 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
 @Setter
 public class UpdateSlackMessageRequestDto {
-
-    @NotNull
-    private UUID slackMessageId; // 필수: 업데이트할 Slack 메시지의 UUID
-
-    @NotBlank
+    @NotBlank(message = "Receiver Slack ID is required")
     private String receiveSlackId; // 필수: 수신자의 Slack ID
 
-    @NotNull
-    private UUID receiveUserId; // 필수: 수신자의 UUID
-
-    @NotBlank
-    private String slackMessage; // 필수: 새로운 메시지 내용
+    private UUID receiveUserId; // 선택: 수신자의 UUID
 
     @NotNull
-    private LocalDateTime sentTime; // 필수: 메시지 전송 시간
+    private String slackMessageStatus;
 
-    @NotBlank
-    private String slackMessageSenderId; // 필수: 발신자 Slack ID
+    @NotBlank(message = "Slack message content is required")
+    private String slackMessage; // 필수: 메시지 내용
+
+    @NotBlank(message = "Sent time is required")
+    private String sentTime; // 필수: 메시지 전송 시간
+
+    private String slackMessageSenderId; // 선택: 발신자 Slack ID
 }
