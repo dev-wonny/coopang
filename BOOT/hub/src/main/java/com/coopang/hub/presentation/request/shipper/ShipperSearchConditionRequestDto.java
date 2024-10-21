@@ -13,5 +13,5 @@ public class ShipperSearchConditionRequestDto {
     private String shipperType;
 
     private String hubName;
-    private Boolean isDeleted;
+    private boolean isDeleted = false;
 }

@@ -1,0 +1,27 @@
+<configuration>
+	<!-- Console Appender: 콘솔로 로그 출력 -->
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- Loki Appender: Loki로 로그 전송 -->
+	<appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+		<http>
+			<url>http://localhost:3100/loki/api/v1/push</url>
+		</http>
+		<format>
+			<label>
+				<pattern>app=my-app,host=${HOSTNAME}</pattern>
+			</label>
+			<message class="com.github.loki4j.logback.JsonLayout" />
+		</format>
+	</appender>
+
+	<!-- Root Logger: 두 개의 Appender를 모두 사용 -->
+	<root level="DEBUG">
+		<appender-ref ref="CONSOLE" />  <!-- 콘솔로 출력 -->
+		<appender-ref ref="LOKI" />     <!-- Loki로 전송 -->
+	</root>
+</configuration>

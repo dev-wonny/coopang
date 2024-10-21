@@ -6,7 +6,7 @@ import com.coopang.user.application.request.AddressDto;
 import com.coopang.user.application.request.ChangePasswordDto;
 import com.coopang.user.application.request.MyInfoUpdateDto;
 import com.coopang.user.application.request.UserDto;
-import com.coopang.user.application.request.UserSearchCondition;
+import com.coopang.user.application.request.UserSearchConditionDto;
 import com.coopang.user.application.response.UserResponseDto;
 import com.coopang.user.domain.entity.user.UserEntity;
 import com.coopang.user.domain.repository.UserRepository;
@@ -165,7 +165,7 @@ public class UserService {
     @Transactional(readOnly = true)
     @Cacheable(value = "allUsers", key = "#pageable")
     public Page<UserResponseDto> getAllUsers(Pageable pageable) {
-        Page<UserEntity> users = userRepository.findAll(pageable);
+        final Page<UserEntity> users = userRepository.findAll(pageable);
         return users.map(UserResponseDto::fromUser);
     }
 
@@ -177,19 +177,19 @@ public class UserService {
      * @return a page of searched users.
      */
     @Transactional(readOnly = true)
-    @Cacheable(value = "allUsers", key = "#condition")
-    public Page<UserResponseDto> searchUsers(UserSearchCondition condition, Pageable pageable) {
-        Page<UserEntity> users = userRepository.search(condition, pageable);
+    @Cacheable(value = "allUsers", key = "#condition.toString() + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
+    public Page<UserResponseDto> searchUsers(UserSearchConditionDto condition, Pageable pageable) {
+        final Page<UserEntity> users = userRepository.search(condition, pageable);
         return users.map(UserResponseDto::fromUser);
     }
 
     @Transactional(readOnly = true)
     @Cacheable(value = "userList", key = "#condition")
-    public List<UserResponseDto> getUserList(UserSearchCondition condition) {
-        List<UserEntity> userList = userRepository.findUserList(condition);
+    public List<UserResponseDto> getUserList(UserSearchConditionDto condition) {
+        final List<UserEntity> userList = userRepository.findUserList(condition);
         return userList.stream()
-                .map(UserResponseDto::fromUser)
-                .toList();
+            .map(UserResponseDto::fromUser)
+            .toList();
     }
 
     /**

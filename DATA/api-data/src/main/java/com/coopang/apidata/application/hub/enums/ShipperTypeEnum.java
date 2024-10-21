@@ -19,11 +19,11 @@ public enum ShipperTypeEnum {
         public static final String SHIPPER_CUSTOMER = "ROLE_SHIPPER_CUSTOMER";
     }
 
-    public static ShipperTypeEnum getRoleEnum(String s) {
+    public static ShipperTypeEnum getShipperTypeEnum(String s) {
         try {
             return ShipperTypeEnum.valueOf(s);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid authority: " + s);
+            throw new IllegalArgumentException("Invalid type: " + s);
         }
     }
 }
