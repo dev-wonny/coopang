@@ -54,7 +54,7 @@ public class SlackMessageController {
     @Secured({UserRoleEnum.Authority.SERVER, UserRoleEnum.Authority.MASTER})
     @PostMapping
     public ResponseEntity<SlackMessageResponseDto> createSlackMessage(@Valid @RequestBody CreateSlackMessageRequestDto req) {
-        SlackMessageDto slackMessageDto = SlackMessageDto.from(
+        SlackMessageDto slackMessageDto = SlackMessageDto.of(
             null
             , req.getReceiveSlackId()
             , req.getReceiveUserId()// 선택적 필드
@@ -139,7 +139,7 @@ public class SlackMessageController {
     @Secured({UserRoleEnum.Authority.SERVER, UserRoleEnum.Authority.MASTER})
     @PutMapping("/{slackMessageId}")
     public ResponseEntity<SlackMessageResponseDto> updateSlackMessage(@PathVariable UUID slackMessageId, @Valid @RequestBody UpdateSlackMessageRequestDto req) {
-        final SlackMessageDto slackMessageDto = SlackMessageDto.from(
+        final SlackMessageDto slackMessageDto = SlackMessageDto.of(
             slackMessageId
             , req.getReceiveSlackId()
             , req.getReceiveUserId()// 선택적 필드
