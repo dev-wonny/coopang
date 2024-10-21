@@ -59,7 +59,7 @@ public class AiRequestHistoryController {
     public ResponseEntity<AiRequestHistoryResponseDto> createAiRequestHistory(@Valid @RequestBody CreateAiRequestHistoryRequestDto req) {
         AiRequestHistoryDto aiRequestHistoryDto = AiRequestHistoryDto.of(
             null
-            , !StringUtils.isBlank(req.getAiCategory()) ? AiCategory.getEnum(req.getAiCategory()) : null
+            , !StringUtils.isBlank(req.getAiCategory()) ? AiCategory.getAiCategoryEnum(req.getAiCategory()) : null
             , req.getAiRequest()
             , req.getAiResponse()
         );
@@ -128,7 +128,7 @@ public class AiRequestHistoryController {
     public ResponseEntity<AiRequestHistoryResponseDto> updateAiRequestHistory(@PathVariable UUID aiRequestHistoryId, @Valid @RequestBody UpdateAiRequestHistoryRequestDto req) {
         final AiRequestHistoryDto aiRequestHistoryDto = AiRequestHistoryDto.of(
             aiRequestHistoryId
-            , !StringUtils.isBlank(req.getAiCategory()) ? AiCategory.getEnum(req.getAiCategory()) : null
+            , !StringUtils.isBlank(req.getAiCategory()) ? AiCategory.getAiCategoryEnum(req.getAiCategory()) : null
             , req.getAiRequest()
             , req.getAiResponse()
         );
