@@ -6,6 +6,7 @@ import com.coopang.ainoti.application.enums.SlackMessageStatus;
 import com.coopang.ainoti.application.request.noti.SlackMessageSearchConditionDto;
 import com.coopang.ainoti.domain.entity.noti.SlackMessageEntity;
 import com.coopang.apiconfig.querydsl.Querydsl4RepositorySupport;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,41 +28,45 @@ public class SlackMessageRepositoryCustomImpl extends Querydsl4RepositorySupport
 
     @Override
     public Page<SlackMessageEntity> search(SlackMessageSearchConditionDto condition, Pageable pageable) {
+        final BooleanBuilder whereClause = generateWhereClause(condition);
         return applyPagination(pageable, contentQuery -> contentQuery
                 .selectFrom(slackMessageEntity)
                 .where(
-                    receiveSlackIdEq(condition.getReceiveSlackId())
-                    , receiveUserIdEq(condition.getReceiveUserId())
-                    , slackMessageStatusEq(condition.getSlackMessageStatus())
-                    , slackMessageContains(condition.getSlackMessage())
-                    , slackMessageEntity.isDeleted.eq(condition.isDeleted())
-
+                    whereClause
                 ),
             countQuery -> countQuery
                 .selectFrom(slackMessageEntity)
                 .where(
-                    receiveSlackIdEq(condition.getReceiveSlackId())
-                    , receiveUserIdEq(condition.getReceiveUserId())
-                    , slackMessageStatusEq(condition.getSlackMessageStatus())
-                    , slackMessageContains(condition.getSlackMessage())
-                    , slackMessageEntity.isDeleted.eq(condition.isDeleted())
-
+                    whereClause
                 )
         );
     }
 
     @Override
     public List<SlackMessageEntity> findSlackMessageList(SlackMessageSearchConditionDto condition) {
+        final BooleanBuilder whereClause = generateWhereClause(condition);
         return selectFrom(slackMessageEntity)
             .where(
-                receiveSlackIdEq(condition.getReceiveSlackId())
-                , receiveUserIdEq(condition.getReceiveUserId())
-                , slackMessageStatusEq(condition.getSlackMessageStatus())
-                , slackMessageContains(condition.getSlackMessage())
-                , slackMessageEntity.isDeleted.eq(condition.isDeleted())
-
+                whereClause
             )
             .fetch();
+    }
+
+    private BooleanBuilder generateWhereClause(SlackMessageSearchConditionDto condition) {
+        BooleanBuilder whereClause = new BooleanBuilder();
+        whereClause.and(slackMessageIdEq(condition.getSlackMessageId()));
+        whereClause.and(receiveSlackIdEq(condition.getReceiveSlackId()));
+        whereClause.and(receiveUserIdEq(condition.getReceiveUserId()));
+        whereClause.and(slackMessageStatusEq(condition.getSlackMessageStatus()));
+        whereClause.and(slackMessageContains(condition.getSlackMessage()));
+        whereClause.and(sentTimeFromGoe(condition.getSentTimeFrom()));
+        whereClause.and(sentTimeToLoe(condition.getSentTimeTo()));
+        whereClause.and(slackMessageEntity.isDeleted.eq(condition.isDeleted()));
+        return whereClause;
+    }
+
+    private Predicate slackMessageIdEq(UUID slackMessageId) {
+        return !ObjectUtils.isEmpty(slackMessageId) ? slackMessageEntity.slackMessageId.eq(slackMessageId) : null;
     }
 
     private Predicate receiveSlackIdEq(String receiveSlackId) {
@@ -77,5 +83,13 @@ public class SlackMessageRepositoryCustomImpl extends Querydsl4RepositorySupport
 
     private Predicate slackMessageContains(String slackMessage) {
         return StringUtils.hasText(slackMessage) ? slackMessageEntity.slackMessage.contains(slackMessage) : null;
+    }
+
+    private Predicate sentTimeFromGoe(LocalDateTime sentTimeFrom) {
+        return !ObjectUtils.isEmpty(sentTimeFrom) ? slackMessageEntity.sentTime.goe(sentTimeFrom) : null;
+    }
+
+    private Predicate sentTimeToLoe(LocalDateTime sentTimeTo) {
+        return !ObjectUtils.isEmpty(sentTimeTo) ? slackMessageEntity.sentTime.loe(sentTimeTo) : null;
     }
 }

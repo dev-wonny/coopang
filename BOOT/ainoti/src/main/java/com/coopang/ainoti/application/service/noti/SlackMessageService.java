@@ -38,7 +38,7 @@ public class SlackMessageService {
     public SlackMessageResponseDto createSlackMessage(SlackMessageDto slackMessageDto) {
         // UUID 생성
         final UUID slackMessageId = slackMessageDto.getSlackMessageId() != null ? slackMessageDto.getSlackMessageId() : UUID.randomUUID();
-        slackMessageDto.setSlackMessageId(slackMessageId);
+        slackMessageDto.createId(slackMessageId);
 
         SlackMessageEntity slackMessageEntity = slackMessageDomainService.createSlackMessage(slackMessageDto);
         return SlackMessageResponseDto.fromSlackMessage(slackMessageEntity);
@@ -100,7 +100,7 @@ public class SlackMessageService {
      * Slack 메시지 검색 (페이징, 정렬, 키워드 검색)
      */
     @Transactional(readOnly = true)
-    @Cacheable(value = "allSlackMessages", key = "#condition")
+    @Cacheable(value = "allSlackMessages", key = "#condition.toString() + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<SlackMessageResponseDto> searchSlackMessages(SlackMessageSearchConditionDto condition, Pageable pageable) {
         Page<SlackMessageEntity> slackMessages = slackMessageRepository.search(condition, pageable);
         return slackMessages.map(SlackMessageResponseDto::fromSlackMessage);
@@ -111,9 +111,16 @@ public class SlackMessageService {
      */
     @CacheEvict(value = "slackMessages", key = "#slackMessageId")
     public void updateSlackMessage(UUID slackMessageId, SlackMessageDto slackMessageDto) {
-        SlackMessageEntity slackMessageEntity = findSlackMessageById(slackMessageId);
-        slackMessageEntity.updateSlackMessage(slackMessageDto.getSlackMessage(), slackMessageDto.getSlackMessageStatus(), slackMessageDto.getSentTime());
-        log.debug("updateSlackMessage slackMessageId:{}", slackMessageId);
+        SlackMessageEntity slackMessageEntity = findValidSlackMessageById(slackMessageId);
+        slackMessageEntity.updateSlackMessage(
+            slackMessageDto.getReceiveSlackId()
+            , slackMessageDto.getReceiveUserId()
+            , slackMessageDto.getSlackMessageStatus()
+            , slackMessageDto.getSlackMessage()
+            , slackMessageDto.getSentTime()
+            , slackMessageDto.getSlackMessageSenderId()
+        );
+        log.debug("updateSlackMessage slackMessageId:{}, slackMessageDto:{}", slackMessageId, slackMessageDto.toString());
     }
 
     /**
@@ -121,7 +128,7 @@ public class SlackMessageService {
      */
     @CacheEvict(value = "slackMessages", key = "#slackMessageId")
     public void deleteSlackMessage(UUID slackMessageId) {
-        SlackMessageEntity slackMessageEntity = findSlackMessageById(slackMessageId);
+        SlackMessageEntity slackMessageEntity = findValidSlackMessageById(slackMessageId);
         slackMessageEntity.setDeleted(true);
         log.debug("deleteSlackMessage slackMessageId:{}", slackMessageId);
     }

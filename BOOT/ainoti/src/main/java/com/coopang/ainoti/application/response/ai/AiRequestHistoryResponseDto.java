@@ -11,7 +11,6 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 public class AiRequestHistoryResponseDto {
-
     private UUID aiRequestHistoryId;
     private AiCategory aiCategory;
     private String aiRequest;
