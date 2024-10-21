@@ -14,5 +14,5 @@ public class CompanySearchConditionRequestDto {
     private String companyName;//starsWith
 
     private String hubName;//starsWith
-    private Boolean isDeleted;
+    private boolean isDeleted = false;
 }

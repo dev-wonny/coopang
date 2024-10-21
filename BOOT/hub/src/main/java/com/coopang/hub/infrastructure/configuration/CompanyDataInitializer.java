@@ -62,52 +62,52 @@ public class CompanyDataInitializer implements CommandLineRunner {
     private void setCompanyManagers() {
         companyManagers = new HashMap<>();
         companyManagers.put(SEOUL, new UUID[] {
-                UUID.fromString("ec75ee25-1ee5-404f-a156-ddeba231daae"),
-                UUID.fromString("5e69568e-9a30-442b-bcd0-a8a30a80ac0e")
+            UUID.fromString("ec75ee25-1ee5-404f-a156-ddeba231daae"),
+            UUID.fromString("5e69568e-9a30-442b-bcd0-a8a30a80ac0e")
         });
         companyManagers.put(GYEONGGI_NORTH, new UUID[] {
-                UUID.fromString("1f19e2ff-d270-4d55-bf82-91739bf344ab"),
-                UUID.fromString("01b5bca3-aedb-44b3-9d1a-f5fdbaca141d")
+            UUID.fromString("1f19e2ff-d270-4d55-bf82-91739bf344ab"),
+            UUID.fromString("01b5bca3-aedb-44b3-9d1a-f5fdbaca141d")
         });
         companyManagers.put(GYEONGGI_SOUTH, new UUID[] {
-                UUID.fromString("6619735d-66f2-4388-a17e-f1d6074669b3"),
-                UUID.fromString("d1f7b37c-96c1-48d8-a6c8-2c6dab9545ec")
+            UUID.fromString("6619735d-66f2-4388-a17e-f1d6074669b3"),
+            UUID.fromString("d1f7b37c-96c1-48d8-a6c8-2c6dab9545ec")
         });
         companyManagers.put(BUSAN, new UUID[] {
-                UUID.fromString("58f8dd25-2383-4edf-a0a7-1a85ac312bc4"),
-                UUID.fromString("2b236f99-4a5f-4542-97c3-341f0d9ebc57")
+            UUID.fromString("58f8dd25-2383-4edf-a0a7-1a85ac312bc4"),
+            UUID.fromString("2b236f99-4a5f-4542-97c3-341f0d9ebc57")
         });
         companyManagers.put(DAEGU, new UUID[] {
-                UUID.fromString("7cc32daf-cd16-444c-a6a9-e5ca8923c4f5"),
-                UUID.fromString("56d419ff-20cc-4469-9e17-9ae9f0735dde")
+            UUID.fromString("7cc32daf-cd16-444c-a6a9-e5ca8923c4f5"),
+            UUID.fromString("56d419ff-20cc-4469-9e17-9ae9f0735dde")
         });
         companyManagers.put(INCHEON, new UUID[] {
-                UUID.fromString("dc578d2e-c850-471a-86b7-c1b760c9f35b"),
-                UUID.fromString("10b830f1-aa78-433d-9d34-e46dc450b1ca")
+            UUID.fromString("dc578d2e-c850-471a-86b7-c1b760c9f35b"),
+            UUID.fromString("10b830f1-aa78-433d-9d34-e46dc450b1ca")
         });
         companyManagers.put(GWANGJU, new UUID[] {
-                UUID.fromString("16ba1a03-fd9e-429b-a047-558f8c67bbe8"),
-                UUID.fromString("7a124a90-d15e-4e9d-b1b8-1e31e43524eb")
+            UUID.fromString("16ba1a03-fd9e-429b-a047-558f8c67bbe8"),
+            UUID.fromString("7a124a90-d15e-4e9d-b1b8-1e31e43524eb")
         });
         companyManagers.put(DAEJEON, new UUID[] {
-                UUID.fromString("0ea3bd2a-d202-4f9e-bade-d7f2defbf03e"),
-                UUID.fromString("735d2c64-5c0a-41ea-bf71-53e9f49b9b09")
+            UUID.fromString("0ea3bd2a-d202-4f9e-bade-d7f2defbf03e"),
+            UUID.fromString("735d2c64-5c0a-41ea-bf71-53e9f49b9b09")
         });
         companyManagers.put(ULSAN, new UUID[] {
-                UUID.fromString("b6bdb9bc-a2e7-4da6-bc96-417a990e5cd0"),
-                UUID.fromString("9f049e8c-d207-4dce-9fcd-dbae49432b81")
+            UUID.fromString("b6bdb9bc-a2e7-4da6-bc96-417a990e5cd0"),
+            UUID.fromString("9f049e8c-d207-4dce-9fcd-dbae49432b81")
         });
         companyManagers.put(SEJONG, new UUID[] {
-                UUID.fromString("372e5bb4-4d93-42a0-bf50-3f99094c35c6"),
-                UUID.fromString("aafba163-0224-45fe-9005-2ac36a1e5847")
+            UUID.fromString("372e5bb4-4d93-42a0-bf50-3f99094c35c6"),
+            UUID.fromString("aafba163-0224-45fe-9005-2ac36a1e5847")
         });
         companyManagers.put(GANGWON, new UUID[] {
-                UUID.fromString("d44242a9-74db-4c01-8b10-8617ab1cb1ad"),
-                UUID.fromString("a5295c52-3dfa-467f-aafb-3f728ba2a4e5")
+            UUID.fromString("d44242a9-74db-4c01-8b10-8617ab1cb1ad"),
+            UUID.fromString("a5295c52-3dfa-467f-aafb-3f728ba2a4e5")
         });
         companyManagers.put(CHUNGBUK, new UUID[] {
-                UUID.fromString("d5f4e84b-84c8-43d2-b2b7-27d883d7b17d"),
-                UUID.fromString("48b50467-1bb4-42d0-a653-e753239210a3")
+            UUID.fromString("d5f4e84b-84c8-43d2-b2b7-27d883d7b17d"),
+            UUID.fromString("48b50467-1bb4-42d0-a653-e753239210a3")
         });
     }
 
@@ -121,29 +121,30 @@ public class CompanyDataInitializer implements CommandLineRunner {
 
     // 과일가게 회사 생성
     private void createFruitShopCompany(String hubRegion, UUID hubId, UUID managerId) {
-        CompanyDto fruitShopDto = new CompanyDto();
-        fruitShopDto.setCompanyId(null);
-        fruitShopDto.setCompanyName(hubRegion + " 과일가게");
-        fruitShopDto.setHubId(hubId);
-        fruitShopDto.setCompanyManagerId(managerId);  // 지역에 맞는 관리자 ID 설정
-        fruitShopDto.setZipCode("11111");
-        fruitShopDto.setAddress1(hubRegion + " 중심지");
-        fruitShopDto.setAddress2("101동");
+        final CompanyDto fruitShopDto = CompanyDto.of(
+            null
+            , hubId
+            , managerId
+            , hubRegion + " 과일가게"
+            , "11111"
+            , hubRegion + " 중심지"
+            , "101동"
+        );
 
         companyService.createCompany(fruitShopDto);
     }
 
     // 핸드폰 회사 생성
     private void createPhoneCompany(String hubRegion, UUID hubId, UUID managerId) {
-        CompanyDto phoneShopDto = new CompanyDto();
-        phoneShopDto.setCompanyId(null);
-        phoneShopDto.setCompanyName(hubRegion + " 핸드폰 가게");
-        phoneShopDto.setHubId(hubId);
-        phoneShopDto.setCompanyManagerId(managerId);  // 지역에 맞는 관리자 ID 설정
-        phoneShopDto.setZipCode("11111");
-        phoneShopDto.setAddress1(hubRegion + " 중심지");
-        phoneShopDto.setAddress2("102동");
-
+        final CompanyDto phoneShopDto = CompanyDto.of(
+            null
+            , hubId
+            , managerId
+            , hubRegion + " 핸드폰 가게"
+            , "11111"
+            , hubRegion + " 중심지"
+            , "102동"
+        );
         companyService.createCompany(phoneShopDto);
     }
 }

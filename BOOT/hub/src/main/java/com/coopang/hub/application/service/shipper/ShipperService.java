@@ -2,7 +2,7 @@ package com.coopang.hub.application.service.shipper;
 
 import com.coopang.apidata.application.hub.enums.ShipperTypeEnum;
 import com.coopang.hub.application.request.shipper.ShipperDto;
-import com.coopang.hub.application.request.shipper.ShipperSearchCondition;
+import com.coopang.hub.application.request.shipper.ShipperSearchConditionDto;
 import com.coopang.hub.application.response.shipper.ShipperResponseDto;
 import com.coopang.hub.domain.entity.shipper.ShipperEntity;
 import com.coopang.hub.domain.repository.shipper.ShipperRepository;
@@ -35,7 +35,7 @@ public class ShipperService {
     public ShipperResponseDto createShipper(ShipperDto shipperDto) {
         // 서비스 레이어에서 UUID 생성
         final UUID userId = shipperDto.getShipperId() != null ? shipperDto.getShipperId() : UUID.randomUUID();
-        shipperDto.setShipperId(userId);
+        shipperDto.createId(userId);
 
         ShipperEntity shipperEntity = shipperDomainService.createShipper(shipperDto);
         return ShipperResponseDto.fromShipper(shipperEntity);
@@ -46,14 +46,14 @@ public class ShipperService {
     @Cacheable(value = "shippers", key = "#shipperId")
     public ShipperEntity findShipperById(UUID shipperId) {
         return shipperRepository.findByShipperId(shipperId)
-                .orElseThrow(() -> new IllegalArgumentException("Shipper not found. shipperId=" + shipperId));
+            .orElseThrow(() -> new IllegalArgumentException("Shipper not found. shipperId=" + shipperId));
     }
 
     @Transactional(readOnly = true)
     @Cacheable(value = "shippers", key = "#shipperId")
     public ShipperEntity findValidShipperById(UUID shipperId) {
         return shipperRepository.findByShipperIdAndIsDeletedFalse(shipperId)
-                .orElseThrow(() -> new IllegalArgumentException("Shipper not found. shipperId=" + shipperId));
+            .orElseThrow(() -> new IllegalArgumentException("Shipper not found. shipperId=" + shipperId));
     }
 
     @Transactional(readOnly = true)
@@ -73,23 +73,23 @@ public class ShipperService {
     @Transactional(readOnly = true)
     @Cacheable(value = "allShippers", key = "#pageable")
     public Page<ShipperResponseDto> getAllShippers(Pageable pageable) {
-        Page<ShipperEntity> shippers = shipperRepository.findAll(pageable);
+        final Page<ShipperEntity> shippers = shipperRepository.findAll(pageable);
         return shippers.map(ShipperResponseDto::fromShipper);
     }
 
     @Transactional(readOnly = true)
     @Cacheable(value = "shipperList", key = "#condition")
-    public List<ShipperResponseDto> getShipperList(ShipperSearchCondition condition) {
-        List<ShipperEntity> shippers = shipperRepository.findShipperList(condition);
+    public List<ShipperResponseDto> getShipperList(ShipperSearchConditionDto condition) {
+        final List<ShipperEntity> shippers = shipperRepository.findShipperList(condition);
         return shippers.stream()
-                .map(ShipperResponseDto::fromShipper)
-                .toList();
+            .map(ShipperResponseDto::fromShipper)
+            .toList();
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "allShippers", key = "#condition")
-    public Page<ShipperResponseDto> searchShippers(ShipperSearchCondition condition, Pageable pageable) {
-        Page<ShipperEntity> shippers = shipperRepository.search(condition, pageable);
+    @Cacheable(value = "allShippers", key = "#condition.toString() + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
+    public Page<ShipperResponseDto> searchShippers(ShipperSearchConditionDto condition, Pageable pageable) {
+        final Page<ShipperEntity> shippers = shipperRepository.search(condition, pageable);
         return shippers.map(ShipperResponseDto::fromShipper);
     }
 

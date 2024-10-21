@@ -70,12 +70,12 @@ public class HubService {
     public List<HubResponseDto> getHubList(HubSearchConditionDto condition) {
         List<HubEntity> hubs = hubRepository.findHubList(condition);
         return hubs.stream()
-                .map(HubResponseDto::fromHub)
-                .toList();
+            .map(HubResponseDto::fromHub)
+            .toList();
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "allHubs", key = "#condition")
+    @Cacheable(value = "allHubs", key = "#condition.toString() + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<HubResponseDto> searchHubs(HubSearchConditionDto condition, Pageable pageable) {
         Page<HubEntity> hubs = hubRepository.search(condition, pageable);
         return hubs.map(HubResponseDto::fromHub);

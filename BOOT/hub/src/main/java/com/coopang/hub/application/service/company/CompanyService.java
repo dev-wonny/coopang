@@ -2,7 +2,7 @@ package com.coopang.hub.application.service.company;
 
 import com.coopang.apiconfig.error.AccessDeniedException;
 import com.coopang.hub.application.request.company.CompanyDto;
-import com.coopang.hub.application.request.company.CompanySearchCondition;
+import com.coopang.hub.application.request.company.CompanySearchConditionDto;
 import com.coopang.hub.application.response.company.CompanyResponseDto;
 import com.coopang.hub.domain.entity.company.CompanyEntity;
 import com.coopang.hub.domain.repository.company.CompanyRepository;
@@ -33,8 +33,8 @@ public class CompanyService {
     @Transactional
     public CompanyResponseDto createCompany(CompanyDto companyDto) {
         // 서비스 레이어에서 UUID 생성
-        final UUID userId = companyDto.getCompanyId() != null ? companyDto.getCompanyId() : UUID.randomUUID();
-        companyDto.setCompanyId(userId);
+        final UUID companyId = companyDto.getCompanyId() != null ? companyDto.getCompanyId() : UUID.randomUUID();
+        companyDto.createId(companyId);
 
         CompanyEntity companyEntity = companyDomainService.createCompany(companyDto);
         return CompanyResponseDto.fromCompany(companyEntity);
@@ -44,14 +44,14 @@ public class CompanyService {
     @Cacheable(value = "companies", key = "#companyId")
     public CompanyEntity findCompanyById(UUID companyId) {
         return companyRepository.findByCompanyId(companyId)
-                .orElseThrow(() -> new IllegalArgumentException("Company not found. companyId=" + companyId));
+            .orElseThrow(() -> new IllegalArgumentException("Company not found. companyId=" + companyId));
     }
 
     @Transactional(readOnly = true)
     @Cacheable(value = "companies", key = "#companyId")
     public CompanyEntity findValidCompanyById(UUID companyId) {
         return companyRepository.findByCompanyIdAndIsDeletedFalse(companyId)
-                .orElseThrow(() -> new IllegalArgumentException("Company not found. companyId=" + companyId));
+            .orElseThrow(() -> new IllegalArgumentException("Company not found. companyId=" + companyId));
     }
 
     @Transactional(readOnly = true)
@@ -71,23 +71,23 @@ public class CompanyService {
     @Transactional(readOnly = true)
     @Cacheable(value = "allCompanies", key = "#pageable")
     public Page<CompanyResponseDto> getAllCompanies(Pageable pageable) {
-        Page<CompanyEntity> companies = companyRepository.findAllByIsDeletedFalse(pageable);
+        final Page<CompanyEntity> companies = companyRepository.findAllByIsDeletedFalse(pageable);
         return companies.map(CompanyResponseDto::fromCompany);
     }
 
     @Transactional(readOnly = true)
     @Cacheable(value = "companyList", key = "#condition")
-    public List<CompanyResponseDto> getCompanyList(CompanySearchCondition condition) {
-        List<CompanyEntity> companyList = companyRepository.findCompanyList(condition);
+    public List<CompanyResponseDto> getCompanyList(CompanySearchConditionDto condition) {
+        final List<CompanyEntity> companyList = companyRepository.findCompanyList(condition);
         return companyList.stream()
-                .map(CompanyResponseDto::fromCompany)
-                .toList();
+            .map(CompanyResponseDto::fromCompany)
+            .toList();
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "allCompanies", key = "#condition")
-    public Page<CompanyResponseDto> searchCompanies(CompanySearchCondition condition, Pageable pageable) {
-        Page<CompanyEntity> companies = companyRepository.search(condition, pageable);
+    @Cacheable(value = "allCompanies", key = "#condition.toString() + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
+    public Page<CompanyResponseDto> searchCompanies(CompanySearchConditionDto condition, Pageable pageable) {
+        final Page<CompanyEntity> companies = companyRepository.search(condition, pageable);
         return companies.map(CompanyResponseDto::fromCompany);
     }
 
@@ -96,12 +96,12 @@ public class CompanyService {
         CompanyEntity companyEntity = findValidCompanyById(companyId);
 
         companyEntity.updateCompanyInfo(
-                companyDto.getCompanyName()
-                , companyDto.getHubId()
-                , companyDto.getCompanyManagerId()
-                , companyDto.getZipCode()
-                , companyDto.getAddress1()
-                , companyDto.getAddress2()
+            companyDto.getCompanyName()
+            , companyDto.getHubId()
+            , companyDto.getCompanyManagerId()
+            , companyDto.getZipCode()
+            , companyDto.getAddress1()
+            , companyDto.getAddress2()
         );
         log.debug("updateCompany companyId:{}", companyId);
     }

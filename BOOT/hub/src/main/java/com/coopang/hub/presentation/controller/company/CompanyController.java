@@ -3,10 +3,11 @@ package com.coopang.hub.presentation.controller.company;
 
 import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ID;
 import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ROLE;
+
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.hub.application.request.company.CompanyDto;
-import com.coopang.hub.application.request.company.CompanySearchCondition;
+import com.coopang.hub.application.request.company.CompanySearchConditionDto;
 import com.coopang.hub.application.response.company.CompanyResponseDto;
 import com.coopang.hub.application.service.company.CompanyService;
 import com.coopang.hub.application.service.hub.HubService;
@@ -27,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -36,6 +38,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -69,12 +72,21 @@ public class CompanyController {
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER, UserRoleEnum.Authority.COMPANY})
     @PostMapping
     public ResponseEntity<CompanyResponseDto> createCompany(
-            @RequestHeader(HEADER_USER_ID) String userIdHeader
-            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
-            , @Valid @RequestBody CreateCompanyRequestDto req
+        @RequestHeader(HEADER_USER_ID) String userIdHeader
+        , @RequestHeader(HEADER_USER_ROLE) String roleHeader
+        , @Valid @RequestBody CreateCompanyRequestDto req
     ) {
         HubPermissionValidator.validateHubManagerBelongToHub(roleHeader, req.getHubId(), UUID.fromString(userIdHeader), hubService);
-        final CompanyDto companyDto = mapperConfig.strictMapper().map(req, CompanyDto.class);
+        CompanyDto companyDto = CompanyDto.of(
+            null
+            , req.getHubId()
+            , req.getCompanyManagerId()
+            , req.getCompanyName()
+            , req.getZipCode()
+            , req.getAddress1()
+            , req.getAddress2()
+
+        );
         final CompanyResponseDto company = companyService.createCompany(companyDto);
         return new ResponseEntity<>(company, HttpStatus.CREATED);
     }
@@ -90,8 +102,8 @@ public class CompanyController {
      */
     @GetMapping("/{companyId}")
     public ResponseEntity<CompanyResponseDto> getCompanyById(
-            @PathVariable UUID companyId
-            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
+        @PathVariable UUID companyId
+        , @RequestHeader(HEADER_USER_ROLE) String roleHeader
     ) {
         CompanyResponseDto company;
         // 마스터면 delete도 보임, 그외 권한 delete 안 보임
@@ -103,50 +115,74 @@ public class CompanyController {
         return new ResponseEntity<>(company, HttpStatus.OK);
     }
 
-    @Secured(UserRoleEnum.Authority.SERVER)
-    @PostMapping("/list")
-    public ResponseEntity<List<CompanyResponseDto>> getCompanyList(@RequestBody CompanySearchConditionRequestDto req) {
-        final CompanySearchCondition condition = CompanySearchCondition.from(
-                req.getCompanyId()
-                , req.getHubId()
-                , req.getCompanyManagerId()
-                , req.getCompanyName()
-                , req.getHubName()
-                , req.getIsDeleted()
-        );
-        List<CompanyResponseDto> companyList = companyService.getCompanyList(condition);
-        return new ResponseEntity<>(companyList, HttpStatus.OK);
-    }
-
     /**
      * 검색
      * 모두: 제한 없음
      * 마스터: 삭제 여부 선택 가능
      *
      * @param roleHeader
-     * @param req
+     * @param companyId
+     * @param hubId
+     * @param companyManagerId
+     * @param companyName
+     * @param hubName
+     * @param isDeleted
      * @param pageable
      * @return
      */
-    @PostMapping("/search")
+    @GetMapping("/search")
     public ResponseEntity<Page<CompanyResponseDto>> searchCompanies(
-            @RequestHeader(HEADER_USER_ROLE) String roleHeader
-            , @RequestBody CompanySearchConditionRequestDto req
-            , Pageable pageable
+        @RequestHeader(HEADER_USER_ROLE) String roleHeader
+        , @RequestParam(value = "companyId", required = false) UUID companyId
+        , @RequestParam(value = "hubId", required = false) UUID hubId
+        , @RequestParam(value = "companyManagerId", required = false) UUID companyManagerId
+        , @RequestParam(value = "companyName", required = false) String companyName
+        , @RequestParam(value = "hubName", required = false) String hubName
+        , @RequestParam(value = "isDeleted", required = false, defaultValue = "false") boolean isDeleted
+        , Pageable pageable
     ) {
+        final CompanySearchConditionDto condition = CompanySearchConditionDto.from(
+            companyId
+            , hubId
+            , companyManagerId
+            , companyName
+            , hubName
+            , isDeleted
+        );
+
         // 마스터 권한이면 클라이언트에서 받은 isDeleted 값을 사용하고, 그외 권한은 삭제되지 않은 항목만 조회하도록 false로 설정
-        final boolean isDeleted = UserRoleEnum.isMaster(roleHeader) ? req.getIsDeleted() : false;
-        final CompanySearchCondition condition = CompanySearchCondition.from(
+        if (!UserRoleEnum.isMaster(roleHeader)) {
+            condition.setIsDeletedFalse();
+        }
+
+        final Page<CompanyResponseDto> companies = companyService.searchCompanies(condition, pageable);
+        return new ResponseEntity<>(companies, HttpStatus.OK);
+    }
+
+    /**
+     * 서버에서 List 조회
+     *
+     * @param req
+     * @return 검색된 List
+     */
+    @Secured({UserRoleEnum.Authority.SERVER, UserRoleEnum.Authority.MASTER})
+    @PostMapping("/list")
+    public ResponseEntity<List<CompanyResponseDto>> getCompanyList(@RequestBody(required = false) CompanySearchConditionRequestDto req) {
+        CompanySearchConditionDto condition;
+        if (ObjectUtils.isEmpty(req)) {
+            condition = CompanySearchConditionDto.empty();
+        } else {
+            condition = CompanySearchConditionDto.from(
                 req.getCompanyId()
                 , req.getHubId()
                 , req.getCompanyManagerId()
                 , req.getCompanyName()
                 , req.getHubName()
-                , isDeleted
-        );
-
-        Page<CompanyResponseDto> companies = companyService.searchCompanies(condition, pageable);
-        return new ResponseEntity<>(companies, HttpStatus.OK);
+                , req.isDeleted()
+            );
+        }
+        final List<CompanyResponseDto> companyList = companyService.getCompanyList(condition);
+        return new ResponseEntity<>(companyList, HttpStatus.OK);
     }
 
     /**
@@ -161,15 +197,15 @@ public class CompanyController {
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER, UserRoleEnum.Authority.COMPANY})
     @PutMapping("/{companyId}")
     public ResponseEntity<CompanyResponseDto> updateCompany(
-            @PathVariable UUID companyId
-            , @RequestHeader(HEADER_USER_ID) String userIdHeader
-            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
-            , @Valid @RequestBody UpdateCompanyRequestDto req
+        @PathVariable UUID companyId
+        , @RequestHeader(HEADER_USER_ID) String userIdHeader
+        , @RequestHeader(HEADER_USER_ROLE) String roleHeader
+        , @Valid @RequestBody UpdateCompanyRequestDto req
     ) {
         validateRoleHubManaagerAndCompanyAccess(companyId, UUID.fromString(userIdHeader), roleHeader);
         final CompanyDto companyDto = mapperConfig.strictMapper().map(req, CompanyDto.class);
         companyService.updateCompany(companyId, companyDto);
-        CompanyResponseDto updatedCompany = companyService.getValidCompanyById(companyId);
+        final CompanyResponseDto updatedCompany = companyService.getValidCompanyById(companyId);
         return new ResponseEntity<>(updatedCompany, HttpStatus.OK);
     }
 
@@ -185,10 +221,10 @@ public class CompanyController {
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER, UserRoleEnum.Authority.COMPANY})
     @PatchMapping("/{companyId}/change-hub")
     public ResponseEntity<Void> changeHub(
-            @PathVariable UUID companyId
-            , @RequestHeader(HEADER_USER_ID) String userIdHeader
-            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
-            , @RequestBody CompanyHubIdRequestDto req
+        @PathVariable UUID companyId
+        , @RequestHeader(HEADER_USER_ID) String userIdHeader
+        , @RequestHeader(HEADER_USER_ROLE) String roleHeader
+        , @RequestBody CompanyHubIdRequestDto req
     ) {
         validateRoleHubManaagerAndCompanyAccess(companyId, UUID.fromString(userIdHeader), roleHeader);
         companyService.changeHub(companyId, req.getHubId());
@@ -207,10 +243,10 @@ public class CompanyController {
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER, UserRoleEnum.Authority.COMPANY})
     @PatchMapping("/{companyId}/change-manager")
     public ResponseEntity<Void> changeCompanyManager(
-            @PathVariable UUID companyId
-            , @RequestHeader(HEADER_USER_ID) String userIdHeader
-            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
-            , @RequestBody CompanyMangerIdRequestDto req
+        @PathVariable UUID companyId
+        , @RequestHeader(HEADER_USER_ID) String userIdHeader
+        , @RequestHeader(HEADER_USER_ROLE) String roleHeader
+        , @RequestBody CompanyMangerIdRequestDto req
     ) {
         validateRoleHubManaagerAndCompanyAccess(companyId, UUID.fromString(userIdHeader), roleHeader);
         companyService.changeCompanyManager(companyId, req.getCompanyManagerId());
@@ -229,10 +265,10 @@ public class CompanyController {
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER, UserRoleEnum.Authority.COMPANY})
     @PatchMapping("/{companyId}/change-name")
     public ResponseEntity<Void> changeCompanyName(
-            @PathVariable UUID companyId,
-            @RequestHeader(HEADER_USER_ID) String userIdHeader,
-            @RequestHeader(HEADER_USER_ROLE) String roleHeader,
-            @RequestBody CompanyNameRequestDto req
+        @PathVariable UUID companyId,
+        @RequestHeader(HEADER_USER_ID) String userIdHeader,
+        @RequestHeader(HEADER_USER_ROLE) String roleHeader,
+        @RequestBody CompanyNameRequestDto req
     ) {
         validateRoleHubManaagerAndCompanyAccess(companyId, UUID.fromString(userIdHeader), roleHeader);
         companyService.changeCompanyName(companyId, req.getCompanyName());
@@ -251,10 +287,10 @@ public class CompanyController {
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER, UserRoleEnum.Authority.COMPANY})
     @PatchMapping("/{companyId}/change-address")
     public ResponseEntity<Void> changeCompanyAddress(
-            @PathVariable UUID companyId
-            , @RequestHeader(HEADER_USER_ID) String userIdHeader
-            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
-            , @Valid @RequestBody CompanyAddressRequestDto req
+        @PathVariable UUID companyId
+        , @RequestHeader(HEADER_USER_ID) String userIdHeader
+        , @RequestHeader(HEADER_USER_ROLE) String roleHeader
+        , @Valid @RequestBody CompanyAddressRequestDto req
     ) {
         validateRoleHubManaagerAndCompanyAccess(companyId, UUID.fromString(userIdHeader), roleHeader);
         companyService.changeCompanyAddress(companyId, req.getZipCode(), req.getAddress1(), req.getAddress2());
@@ -272,9 +308,9 @@ public class CompanyController {
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER, UserRoleEnum.Authority.COMPANY})
     @DeleteMapping("/{companyId}")
     public ResponseEntity<Void> deleteCompany(
-            @PathVariable UUID companyId
-            , @RequestHeader(HEADER_USER_ID) String userIdHeader
-            , @RequestHeader(HEADER_USER_ROLE) String roleHeader
+        @PathVariable UUID companyId
+        , @RequestHeader(HEADER_USER_ID) String userIdHeader
+        , @RequestHeader(HEADER_USER_ROLE) String roleHeader
     ) {
         validateRoleHubManaagerAndCompanyAccess(companyId, UUID.fromString(userIdHeader), roleHeader);
         companyService.deleteCompany(companyId);
