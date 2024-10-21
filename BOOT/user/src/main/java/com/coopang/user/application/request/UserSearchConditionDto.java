@@ -3,6 +3,7 @@ package com.coopang.user.application.request;
 import com.coopang.coredata.user.enums.UserRoleEnum;
 import lombok.Builder;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Objects;
@@ -44,7 +45,7 @@ public class UserSearchConditionDto {
         return UserSearchConditionDto.builder()
             .userId(userId)
             .userName(userName)
-            .userRole(!ObjectUtils.isEmpty(userRole) ? UserRoleEnum.getRoleEnum(userRole) : null)
+            .userRole(!StringUtils.isBlank(userRole) ? UserRoleEnum.getRoleEnum(userRole) : null)
             .email(email)
             .isDeleted(!ObjectUtils.isEmpty(isDeleted) && isDeleted)
             .build();
@@ -54,28 +55,28 @@ public class UserSearchConditionDto {
     public boolean equals(Object o) {
         if (this == o) {
             return true;
-        } else if (o != null && this.getClass() == o.getClass()) {
-            UserSearchConditionDto that = (UserSearchConditionDto) o;
-            return
-                Objects.equals(this.userId, that.userId)
-                    && Objects.equals(this.userName, that.userName)
-                    && this.userRole == that.userRole
-                    && Objects.equals(this.email, that.email)
-                    && Objects.equals(this.isDeleted, that.isDeleted)
-                ;
-        } else {
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
+        UserSearchConditionDto that = (UserSearchConditionDto) o;
+        return isDeleted == that.isDeleted && Objects.equals(userId, that.userId) && Objects.equals(userName, that.userName) && userRole == that.userRole &&
+            Objects.equals(email, that.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.userId, this.userName, this.userRole, this.email, this.isDeleted);
+        return Objects.hash(userId, userName, userRole, email, isDeleted);
     }
 
     @Override
     public String toString() {
-        String var10000 = String.valueOf(this.userId);
-        return "UserSearchConditionDto(userId=" + var10000 + ", userName=" + this.userName + ", userRole=" + this.userRole + ", email=" + this.email + ", isDeleted=" + this.isDeleted + ")";
+        return "UserSearchConditionDto{" +
+            "userId=" + userId +
+            ", userName='" + userName + '\'' +
+            ", userRole=" + userRole +
+            ", email='" + email + '\'' +
+            ", isDeleted=" + isDeleted +
+            '}';
     }
 }
