@@ -1,8 +1,9 @@
 package com.coopang.product.domain.repository.product;
 
+import com.coopang.product.application.request.product.ProductSearchConditionDto;
 import com.coopang.product.domain.entity.product.ProductEntity;
 import com.coopang.product.domain.entity.productstockhistory.ProductStockHistoryEntity;
-import com.coopang.product.presentation.request.product.ProductSearchConditionDto;
+import com.coopang.product.presentation.request.product.ProductSearchConditionRequestDto;
 import com.coopang.product.presentation.request.productstockhistory.ProductStockHistorySearchConditionDto;
 import feign.Param;
 import java.util.List;

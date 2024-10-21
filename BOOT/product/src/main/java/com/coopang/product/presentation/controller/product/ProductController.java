@@ -6,8 +6,10 @@ import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_RO
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.coredata.user.enums.UserRoleEnum.Authority;
+import com.coopang.product.application.request.product.ProductBaseSearchConditionDto;
 import com.coopang.product.application.request.product.ProductDto;
 import com.coopang.product.application.request.product.ProductHiddenAndSaleDto;
+import com.coopang.product.application.request.product.ProductSearchConditionDto;
 import com.coopang.product.application.response.ProductWithStockResponseDto;
 import com.coopang.product.application.response.product.ProductResponseDto;
 import com.coopang.product.application.service.ProductWithStockAndHistoryService;
@@ -15,13 +17,14 @@ import com.coopang.product.application.service.ProductWithStockService;
 import com.coopang.product.application.service.product.ProductPermissionValidator;
 import com.coopang.product.application.service.product.ProductService;
 import com.coopang.product.presentation.request.product.CreateProductRequestDto;
-import com.coopang.product.presentation.request.product.ProductBaseSearchConditionDto;
-import com.coopang.product.presentation.request.product.ProductSearchConditionDto;
+import com.coopang.product.presentation.request.product.ProductBaseSearchConditionRequestDto;
+import com.coopang.product.presentation.request.product.ProductSearchConditionRequestDto;
 import com.coopang.product.presentation.request.product.UpdateProductHiddenRequestDto;
 import com.coopang.product.presentation.request.product.UpdateProductRequestDto;
 import com.coopang.product.presentation.request.product.UpdateProductSaleRequestDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +60,7 @@ public class ProductController {
     private final ProductService productService;
     private final ProductPermissionValidator productPermissionValidator;
 
+    //상품 생성
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PostMapping("/product")
     public ResponseEntity<ProductResponseDto> createProduct(
@@ -72,6 +76,7 @@ public class ProductController {
         return new ResponseEntity<>(productResponseDto, HttpStatus.CREATED);
     }
 
+    //특정 상품의 정보 변경
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PutMapping("/product/{productId}")
     public ResponseEntity<ProductResponseDto> updateProduct(
@@ -88,6 +93,7 @@ public class ProductController {
         return new ResponseEntity<>(productInfo,HttpStatus.OK);
     }
 
+    //특정 상품의 숨김 상태 여부 변경
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PatchMapping("/product/{productId}/hidden")
     public ResponseEntity<Void> updateProductHidden(
@@ -101,6 +107,7 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    //특정 상품의 판매가능 여부 변경
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PatchMapping("/product/{productId}/sale")
     public ResponseEntity<Void> updateProductSale(
@@ -115,6 +122,7 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    //특정 상품 논리적으로 삭제
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @DeleteMapping("/product/{productId}")
     public ResponseEntity<Void> deleteProduct(
@@ -128,19 +136,22 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    //상품 목록 조회 - 페이징, 정렬 지원
     @GetMapping("/product")
-    public ResponseEntity<Page<ProductResponseDto>> getAllProducts(@ModelAttribute ProductBaseSearchConditionDto condition, @RequestHeader(HEADER_USER_ROLE) String role, Pageable pageable) {
+    public ResponseEntity<Page<ProductResponseDto>> getAllProducts(@ModelAttribute ProductBaseSearchConditionRequestDto condition, @RequestHeader(HEADER_USER_ROLE) String role, Pageable pageable) {
 
         Page<ProductResponseDto> productResponseDto;
 
         validateSearchCondition(role,condition);
 
+        ProductBaseSearchConditionDto productBaseSearchConditionDto = ProductBaseSearchConditionDto.from(condition);
+
         if (UserRoleEnum.isMaster(role)) {
             productResponseDto = productService.getAllProductsByMaster(pageable);
         } else if (UserRoleEnum.isCompany(role)) {
-            productResponseDto = productService.getAllProductInCompany(condition, pageable);
+            productResponseDto = productService.getAllProductInCompany(productBaseSearchConditionDto, pageable);
         } else if (UserRoleEnum.isHubManager(role)) {
-            productResponseDto = productService.getAllProductInHub(condition, pageable);
+            productResponseDto = productService.getAllProductInHub(productBaseSearchConditionDto, pageable);
         } else {
             productResponseDto = productService.getAllProductByEvery(pageable);
         }
@@ -148,23 +159,26 @@ public class ProductController {
         return new ResponseEntity<>(productResponseDto, HttpStatus.OK);
     }
 
+    //상품 목록 조회 - 키워드 검색, 페이징, 정렬 지원
     @PostMapping("/product/search")
     public ResponseEntity<Page<ProductResponseDto>> searchProduct(
-        @RequestBody(required = false) ProductSearchConditionDto searchCondition,
+        @RequestBody(required = false) ProductSearchConditionRequestDto searchCondition,
         @RequestHeader(HEADER_USER_ROLE) String role, Pageable pageable) {
 
-        if(searchCondition==null){
-            searchCondition=new ProductSearchConditionDto();
-        }
-        //마스터인 경우 모든 상품을 봄
+        ProductSearchConditionDto productSearchConditionDto = Optional.ofNullable(searchCondition)
+            .map(ProductSearchConditionDto::from)
+            .orElseGet(ProductSearchConditionDto::empty);
+
+        //마스터인 경우 모든 상품을 봄 - 삭제된 상품까지
         if (UserRoleEnum.isMaster(role)) {
-            searchCondition.setIsAbleToWatchDeleted(true);
+            productSearchConditionDto.setIsAbleToWatchDeleted();
         }
 
-        Page<ProductResponseDto> products = productService.searchProduct(searchCondition, pageable);
+        Page<ProductResponseDto> products = productService.searchProduct(productSearchConditionDto, pageable);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
+    //특정 상품 조회
     @GetMapping("/product/{productId}")
     public ResponseEntity<ProductWithStockResponseDto> getProductById(
         @RequestHeader(HEADER_USER_ROLE) String role, @PathVariable UUID productId) {
@@ -180,6 +194,7 @@ public class ProductController {
         return new ResponseEntity<>(productWithStockResponseDto, HttpStatus.OK);
     }
 
+    //카테고리별로 상품들을 조회
     @GetMapping("/category/{categoryId}/product")
     public ResponseEntity<Page<ProductResponseDto>> getProductWithCategory(
         @PathVariable UUID categoryId, Pageable pageable) {
@@ -222,9 +237,8 @@ public class ProductController {
         }
     }
 
-    //TODO : 조금더 깔끔한 방법으로 변경해야됨
     //Search 시 hub, company 인 경우 companyId, hubId 검증
-    private void validateSearchCondition(String role, ProductBaseSearchConditionDto condition) {
+    private void validateSearchCondition(String role, ProductBaseSearchConditionRequestDto condition) {
         if (UserRoleEnum.isCompany(role) && (condition == null || condition.getCompanyId() == null)) {
             throw new IllegalArgumentException("Company ID cannot be null for company role");
         }
