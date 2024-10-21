@@ -3,6 +3,7 @@ package com.coopang.user.application.response;
 import com.coopang.apidata.application.address.Address;
 import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.user.domain.entity.user.UserEntity;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,18 +26,18 @@ public class UserResponseDto {
     private boolean isBlock;
     private boolean isDeleted;
 
-    // private 생성자, 외부에서 객체 생성을 막음
+    @Builder
     private UserResponseDto(
-            UUID userId,
-            String email,
-            String userName,
-            String phoneNumber,
-            UserRoleEnum role,
-            String slackId,
-            Address address,
-            UUID nearHubId,
-            boolean isBlock,
-            boolean isDeleted
+        UUID userId
+        , String email
+        , String userName
+        , String phoneNumber
+        , UserRoleEnum role
+        , String slackId
+        , Address address
+        , UUID nearHubId
+        , boolean isBlock
+        , boolean isDeleted
     ) {
         this.userId = userId;
         this.email = email;
@@ -58,21 +59,21 @@ public class UserResponseDto {
      * @return
      */
     public static UserResponseDto fromUser(UserEntity user) {
-        return new UserResponseDto(
-                user.getUserId(),
-                user.getEmail(),
-                user.getUserName(),
-                user.getPhoneNumber(),
-                user.getRole(),
-                user.getSlackId(),
-                new Address(
-                        user.getAddressEntity().getZipCode(),
-                        user.getAddressEntity().getAddress1(),
-                        user.getAddressEntity().getAddress2()
-                ),
-                user.getNearHubId(),
-                user.isBlock(),
-                user.isDeleted()
-        );
+        return UserResponseDto.builder()
+            .userId(user.getUserId())
+            .email(user.getEmail())
+            .userName(user.getUserName())
+            .phoneNumber(user.getPhoneNumber())
+            .role(user.getRole())
+            .slackId(user.getSlackId())
+            .address(new Address(
+                user.getAddressEntity().getZipCode(),
+                user.getAddressEntity().getAddress1(),
+                user.getAddressEntity().getAddress2()
+            ))
+            .nearHubId(user.getNearHubId())
+            .isBlock(user.isBlock())
+            .isDeleted(user.isDeleted())
+            .build();
     }
 }
