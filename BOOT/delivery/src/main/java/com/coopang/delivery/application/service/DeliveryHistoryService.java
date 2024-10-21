@@ -38,9 +38,6 @@ public class DeliveryHistoryService {
                         hubDeliveryHistory.getDeliveryId(),
                         hubDeliveryHistory.getDepartureHubId(),
                         hubDeliveryHistory.getArrivalHubId(),
-                        null,
-                        null,
-                        null,
                         hubDeliveryHistory.getDeliveryRouteHistoryStatus(), // DeliveryEntity의 상태 가져오기
                         hubDeliveryHistory.getCreatedAt(),
                         hubDeliveryHistory.getHubShipperId()
@@ -53,9 +50,6 @@ public class DeliveryHistoryService {
                         userDeliveryHistory.getDeliveryId(),
                         userDeliveryHistory.getDepartureHubId(),
                         null,
-                        userDeliveryHistory.getAddressEntity().getZipCode(),
-                        userDeliveryHistory.getAddressEntity().getAddress1(),
-                        userDeliveryHistory.getAddressEntity().getAddress2(),
                         userDeliveryHistory.getDeliveryRouteHistoryStatus(),
                         userDeliveryHistory.getCreatedAt(),
                         userDeliveryHistory.getUserShipperId()

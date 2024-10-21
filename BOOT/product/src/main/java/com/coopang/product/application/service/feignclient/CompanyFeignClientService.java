@@ -1,7 +1,7 @@
 package com.coopang.product.application.service.feignclient;
 
 import com.coopang.apicommunication.feignclient.company.CompanyClientService;
-import com.coopang.apiconfig.feignClient.FeignConfig;
+import com.coopang.apiconfig.feignclient.FeignConfig;
 import com.coopang.apidata.application.company.request.CompanySearchConditionRequest;
 import com.coopang.apidata.application.company.response.CompanyResponse;
 import java.util.List;

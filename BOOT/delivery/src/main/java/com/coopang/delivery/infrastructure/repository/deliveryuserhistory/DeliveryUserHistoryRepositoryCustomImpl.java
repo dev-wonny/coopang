@@ -25,9 +25,6 @@ public class DeliveryUserHistoryRepositoryCustomImpl extends Querydsl4Repository
         return select(Projections.fields(DeliveryUserHistoryEntity.class, // 필요한 필드만 선택
                 deliveryUserHistoryEntity.deliveryId,
                 deliveryUserHistoryEntity.departureHubId,
-                deliveryUserHistoryEntity.addressEntity.zipCode,
-                deliveryUserHistoryEntity.addressEntity.address1,
-                deliveryUserHistoryEntity.addressEntity.address2,
                 deliveryUserHistoryEntity.deliveryRouteHistoryStatus,
                 deliveryUserHistoryEntity.createdAt,
                 deliveryUserHistoryEntity.userShipperId

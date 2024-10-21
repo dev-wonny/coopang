@@ -1,7 +1,7 @@
 package com.coopang.product.application.service.feignclient;
 
 import com.coopang.apicommunication.feignclient.hub.HubClientService;
-import com.coopang.apiconfig.feignClient.FeignConfig;
+import com.coopang.apiconfig.feignclient.FeignConfig;
 import com.coopang.apidata.application.hub.response.HubResponse;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
