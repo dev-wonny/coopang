@@ -18,7 +18,14 @@ public class CompanySearchConditionDto {
     private boolean isDeleted;
 
     @Builder
-    private CompanySearchConditionDto(UUID companyId, UUID hubId, UUID companyManagerId, String companyName, String hubName, boolean isDeleted) {
+    private CompanySearchConditionDto(
+        UUID companyId
+        , UUID hubId
+        , UUID companyManagerId
+        , String companyName
+        , String hubName
+        , boolean isDeleted
+    ) {
         this.companyId = companyId;
         this.hubId = hubId;
         this.companyManagerId = companyManagerId;
@@ -38,7 +45,14 @@ public class CompanySearchConditionDto {
             .build();
     }
 
-    public static CompanySearchConditionDto from(UUID companyId, UUID hubId, UUID companyManagerId, String companyName, String hubName, boolean isDeleted) {
+    public static CompanySearchConditionDto from(
+        UUID companyId
+        , UUID hubId
+        , UUID companyManagerId
+        , String companyName
+        , String hubName
+        , boolean isDeleted
+    ) {
         return CompanySearchConditionDto.builder()
             .companyId(companyId)
             .hubId(hubId)
@@ -57,28 +71,35 @@ public class CompanySearchConditionDto {
     public boolean equals(Object o) {
         if (this == o) {
             return true;
-        } else if (o != null && this.getClass() == o.getClass()) {
-            CompanySearchConditionDto that = (CompanySearchConditionDto) o;
-            return
-                Objects.equals(this.companyId, that.companyId)
-                    && Objects.equals(this.hubId, that.hubId)
-                    && Objects.equals(this.companyManagerId, that.companyManagerId)
-                    && Objects.equals(this.companyName, that.companyName)
-                    && Objects.equals(this.hubName, that.hubName)
-                    && Objects.equals(this.isDeleted, that.isDeleted);
-        } else {
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
+        CompanySearchConditionDto that = (CompanySearchConditionDto) o;
+        return
+            isDeleted == that.isDeleted
+                && Objects.equals(companyId, that.companyId)
+                && Objects.equals(hubId, that.hubId)
+                && Objects.equals(companyManagerId, that.companyManagerId)
+                && Objects.equals(companyName, that.companyName)
+                && Objects.equals(hubName, that.hubName)
+            ;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.companyId, this.hubId, this.companyManagerId, this.companyName, this.hubName, this.isDeleted);
+        return Objects.hash(companyId, hubId, companyManagerId, companyName, hubName, isDeleted);
     }
 
     @Override
     public String toString() {
-        return "CompanySearchConditionDto(companyId=" + this.companyId + ", hubId=" + this.hubId + ", companyManagerId=" + this.companyManagerId + ", companyName=" + this.companyName + ", hubName=" +
-            this.hubName + ", isDeleted=" + this.isDeleted + ")";
+        return "CompanySearchConditionDto{" +
+            "companyId=" + companyId +
+            ", hubId=" + hubId +
+            ", companyManagerId=" + companyManagerId +
+            ", companyName='" + companyName + '\'' +
+            ", hubName='" + hubName + '\'' +
+            ", isDeleted=" + isDeleted +
+            '}';
     }
 }

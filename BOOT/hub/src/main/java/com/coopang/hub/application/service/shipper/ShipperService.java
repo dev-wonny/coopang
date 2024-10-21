@@ -35,7 +35,7 @@ public class ShipperService {
     public ShipperResponseDto createShipper(ShipperDto shipperDto) {
         // 서비스 레이어에서 UUID 생성
         final UUID userId = shipperDto.getShipperId() != null ? shipperDto.getShipperId() : UUID.randomUUID();
-        shipperDto.setShipperId(userId);
+        shipperDto.createId(userId);
 
         ShipperEntity shipperEntity = shipperDomainService.createShipper(shipperDto);
         return ShipperResponseDto.fromShipper(shipperEntity);

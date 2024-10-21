@@ -33,8 +33,8 @@ public class CompanyService {
     @Transactional
     public CompanyResponseDto createCompany(CompanyDto companyDto) {
         // 서비스 레이어에서 UUID 생성
-        final UUID userId = companyDto.getCompanyId() != null ? companyDto.getCompanyId() : UUID.randomUUID();
-        companyDto.setCompanyId(userId);
+        final UUID companyId = companyDto.getCompanyId() != null ? companyDto.getCompanyId() : UUID.randomUUID();
+        companyDto.createId(companyId);
 
         CompanyEntity companyEntity = companyDomainService.createCompany(companyDto);
         return CompanyResponseDto.fromCompany(companyEntity);

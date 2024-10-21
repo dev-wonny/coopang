@@ -269,7 +269,7 @@ public class ShipperController {
         final ShipperResponseDto shipper = shipperService.getShipperById(shipperId);
         HubPermissionValidator.validateHubManagerBelongToHub(roleHeader, shipper.getHubId(), UUID.fromString(userIdHeader), hubService);
 
-        shipperService.changeShipperType(shipperId, ShipperTypeEnum.getRoleEnum(req.getShipperType()));
+        shipperService.changeShipperType(shipperId, ShipperTypeEnum.getShipperTypeEnum(req.getShipperType()));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
