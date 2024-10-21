@@ -46,7 +46,7 @@ public class AiRequestHistorySearchConditionDto {
     ) {
         return AiRequestHistorySearchConditionDto.builder()
             .aiRequestHistoryId(aiRequestHistoryId)
-            .aiCategory(!StringUtils.isBlank(aiCategory) ? AiCategory.getEnum(aiCategory) : null)
+            .aiCategory(!StringUtils.isBlank(aiCategory) ? AiCategory.getAiCategoryEnum(aiCategory) : null)
             .aiRequest(aiRequest)
             .isDeleted(!ObjectUtils.isEmpty(isDeleted) && isDeleted)
             .build();
