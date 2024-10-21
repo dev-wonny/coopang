@@ -5,12 +5,14 @@ import static com.coopang.hub.domain.entity.shipper.QShipperEntity.shipperEntity
 
 import com.coopang.apiconfig.querydsl.Querydsl4RepositorySupport;
 import com.coopang.apidata.application.hub.enums.ShipperTypeEnum;
-import com.coopang.hub.application.request.shipper.ShipperSearchCondition;
+import com.coopang.hub.application.request.shipper.ShipperSearchConditionDto;
 import com.coopang.hub.domain.entity.shipper.ShipperEntity;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -23,48 +25,55 @@ public class ShipperRepositoryCustomImpl extends Querydsl4RepositorySupport impl
     }
 
     @Override
-    public Page<ShipperEntity> search(ShipperSearchCondition condition, Pageable pageable) {
-
+    public Page<ShipperEntity> search(ShipperSearchConditionDto condition, Pageable pageable) {
+        final BooleanBuilder whereClause = generateWhereClause(condition);
         return applyPagination(pageable, contentQuery -> contentQuery
-                        .selectFrom(shipperEntity)
-                        .innerJoin(hubEntity).on(shipperEntity.hubId.eq(hubEntity.hubId))
-                        .where(
-                                hubIdEq(condition.getHubId())
-                                , shipperTypeEq(condition.getShipperType())
-                                , hubNameStartsWith(condition.getHubName())
-                                , shipperEntity.isDeleted.eq(condition.getIsDeleted())
-                        ),
-                countQuery -> countQuery
-                        .selectFrom(shipperEntity)
-                        .innerJoin(hubEntity).on(shipperEntity.hubId.eq(hubEntity.hubId))
-                        .where(
-                                hubIdEq(condition.getHubId())
-                                , shipperTypeEq(condition.getShipperType())
-                                , hubNameStartsWith(condition.getHubName())
-                                , shipperEntity.isDeleted.eq(condition.getIsDeleted())
-                        )
+                .selectFrom(shipperEntity)
+                .innerJoin(hubEntity).on(shipperEntity.hubId.eq(hubEntity.hubId))
+                .where(
+                    whereClause
+                ),
+            countQuery -> countQuery
+                .selectFrom(shipperEntity)
+                .innerJoin(hubEntity).on(shipperEntity.hubId.eq(hubEntity.hubId))
+                .where(
+                    whereClause
+                )
         );
     }
 
     @Override
-    public List<ShipperEntity> findShipperList(ShipperSearchCondition condition) {
+    public List<ShipperEntity> findShipperList(ShipperSearchConditionDto condition) {
+        final BooleanBuilder whereClause = generateWhereClause(condition);
         return selectFrom(shipperEntity)
-                .innerJoin(hubEntity).on(shipperEntity.hubId.eq(hubEntity.hubId))
-                .where(
-                        hubIdEq(condition.getHubId())
-                        , shipperTypeEq(condition.getShipperType())
-                        , hubNameStartsWith(condition.getHubName())
-                        , shipperEntity.isDeleted.eq(condition.getIsDeleted())
-                )
-                .fetch();
+            .innerJoin(hubEntity).on(shipperEntity.hubId.eq(hubEntity.hubId))
+            .where(
+                whereClause
+            )
+            .fetch();
+    }
+
+    private BooleanBuilder generateWhereClause(ShipperSearchConditionDto condition) {
+        BooleanBuilder whereClause = new BooleanBuilder();
+        whereClause.and(shipperIdEq(condition.getShipperId()));
+        whereClause.and(hubIdEq(condition.getHubId()));
+        whereClause.and(shipperTypeEq(condition.getShipperType()));
+        whereClause.and(hubNameStartsWith(condition.getHubName()));
+        whereClause.and(shipperEntity.isDeleted.eq(condition.isDeleted()));
+        whereClause.and(hubEntity.isDeleted.eq(condition.isDeleted()));
+        return whereClause;
+    }
+
+    private Predicate shipperIdEq(UUID shipperId) {
+        return !ObjectUtils.isEmpty(shipperId) ? shipperEntity.shipperId.eq(shipperId) : null;
     }
 
     private Predicate hubIdEq(UUID hubId) {
-        return hubId != null ? shipperEntity.hubId.eq(hubId) : null;
+        return !ObjectUtils.isEmpty(hubId) ? shipperEntity.hubId.eq(hubId) : null;
     }
 
     private Predicate shipperTypeEq(ShipperTypeEnum shipperType) {
-        return shipperType != null ? shipperEntity.shipperType.eq(shipperType) : null;
+        return !ObjectUtils.isEmpty(shipperType) ? shipperEntity.shipperType.eq(shipperType) : null;
     }
 
     private Predicate hubNameStartsWith(String hubName) {
