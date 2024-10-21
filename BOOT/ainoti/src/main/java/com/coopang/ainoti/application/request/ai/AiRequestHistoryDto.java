@@ -26,7 +26,7 @@ public class AiRequestHistoryDto {
         this.aiResponse = aiResponse;
     }
 
-    public static AiRequestHistoryDto from(
+    public static AiRequestHistoryDto of(
         UUID aiRequestHistoryId,
         AiCategory aiCategory,
         String aiRequest,

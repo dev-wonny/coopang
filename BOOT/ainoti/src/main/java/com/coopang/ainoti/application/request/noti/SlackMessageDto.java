@@ -36,7 +36,7 @@ public class SlackMessageDto {
         this.slackMessageSenderId = slackMessageSenderId;
     }
 
-    public static SlackMessageDto from(
+    public static SlackMessageDto of(
         UUID slackMessageId
         , String receiveSlackId
         , UUID receiveUserId
