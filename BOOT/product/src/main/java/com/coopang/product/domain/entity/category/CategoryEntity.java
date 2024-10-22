@@ -45,4 +45,8 @@ public class CategoryEntity extends BaseEntity {
         return CategoryEntity.builder().categoryId(categoryId != null ? categoryId : UUID.randomUUID())
             .categoryName(categoryName).build();
     }
+
+    public void updateCategoryName(String categoryName){
+        this.categoryName = categoryName;
+    }
 }

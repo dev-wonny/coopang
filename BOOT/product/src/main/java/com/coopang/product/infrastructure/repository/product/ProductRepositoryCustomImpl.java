@@ -1,19 +1,15 @@
 package com.coopang.product.infrastructure.repository.product;
 
-import static com.coopang.product.domain.entity.product.QProductEntity.productEntity;
 import static com.coopang.product.domain.entity.category.QCategoryEntity.categoryEntity;
-import static com.coopang.product.domain.entity.productStock.QProductStockEntity.productStockEntity;
-import static com.coopang.product.domain.entity.productStockHistory.QProductStockHistoryEntity.productStockHistoryEntity;
+import static com.coopang.product.domain.entity.product.QProductEntity.productEntity;
+import static com.coopang.product.domain.entity.productstock.QProductStockEntity.productStockEntity;
 
 import com.coopang.apiconfig.querydsl.Querydsl4RepositorySupport;
+import com.coopang.product.application.request.product.ProductSearchConditionDto;
 import com.coopang.product.domain.entity.product.ProductEntity;
-import com.coopang.product.domain.entity.productStock.ProductStockEntity;
-import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryChangeType;
-import com.coopang.product.domain.entity.productStockHistory.ProductStockHistoryEntity;
-import com.coopang.product.presentation.request.product.ProductSearchCondition;
-import com.coopang.product.presentation.request.productStockHistory.ProductStockHistorySearchCondition;
+import com.coopang.product.presentation.request.product.ProductSearchConditionRequestDto;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
-import jakarta.persistence.LockModeType;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,10 +25,9 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
     }
 
     @Override
-    public Optional<ProductEntity> getOneByProductId(UUID productId) {
+    public Optional<ProductEntity> getValidOneByProductIdWithCategory(UUID productId) {
 
         return Optional.ofNullable(selectFrom(productEntity)
-            .leftJoin(productEntity.productStockEntity,productStockEntity)
             .leftJoin(productEntity.categoryEntity,categoryEntity)
             .fetchJoin()
             .where(
@@ -43,83 +38,20 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
             ).fetchOne());
     }
 
+    @Override
+    public Optional<ProductEntity> getOneByProductIdWithCategory(UUID productId) {
+
+        return Optional.ofNullable(selectFrom(productEntity)
+            .leftJoin(productEntity.categoryEntity,categoryEntity)
+            .fetchJoin()
+            .where(
+                productEntity.productId.eq(productId)
+            ).fetchOne());
+    }
+
 
     @Override
-    public Page<ProductStockHistoryEntity> getProductStockHistoryByProductId(UUID productId, Pageable pageable) {
-
-        return applyPagination(pageable,contentQuery ->
-
-             contentQuery.selectFrom(productStockHistoryEntity)
-                .join(productStockHistoryEntity.productStockEntity)
-                .join(productEntity).fetchJoin()
-                .on(productStockHistoryEntity.productStockEntity.productEntity.productId.eq(productEntity.productId))
-                .where(productEntity.productId.eq(productId))
-            ,countQuery -> countQuery.selectFrom(productStockHistoryEntity)
-                .join(productStockHistoryEntity.productStockEntity)
-                .join(productEntity).fetchJoin()
-                .on(productStockHistoryEntity.productStockEntity.productEntity.productId.eq(productEntity.productId))
-                .where(productEntity.productId.eq(productId))
-        );
-    }
-
-    @Override
-    public Page<ProductStockHistoryEntity> searchProductStockHistoryByProductId(
-        ProductStockHistorySearchCondition condition, UUID productId, Pageable pageable) {
-
-        return applyPagination(pageable,contentQuery ->
-                contentQuery.selectFrom(productStockHistoryEntity)
-                    .join(productStockHistoryEntity.productStockEntity)
-                    .join(productEntity).fetchJoin()
-                    .on(productStockHistoryEntity.productStockEntity.productEntity.productId.eq(productEntity.productId))
-                    .where(productEntity.productId.eq(productId),
-                        isProductStockHistoryType(condition.changeType()),
-                        betweenStartDateAndEndDateByProductStockHistory(condition.startDate(),condition.endDate()))
-            ,countQuery -> countQuery.selectFrom(productStockHistoryEntity)
-                .join(productStockHistoryEntity.productStockEntity)
-                .join(productEntity).fetchJoin()
-                .on(productStockHistoryEntity.productStockEntity.productEntity.productId.eq(productEntity.productId))
-                .where(productEntity.productId.eq(productId),
-                    isProductStockHistoryType(condition.changeType()),
-                    betweenStartDateAndEndDateByProductStockHistory(condition.startDate(),condition.endDate()))
-        );
-    }
-
-    @Override
-    public ProductStockEntity findAndLockProductStock(UUID productId) {
-
-        return selectFrom(productStockEntity)
-            .join(productEntity)
-            .on(productEntity.productStockEntity.productStockId.eq(productStockEntity.productStockId))
-            .setLockMode(LockModeType.PESSIMISTIC_WRITE)
-            .where(productStockEntity.isDeleted.eq(false),
-                productEntity.productId.eq(productId))
-            .fetchOne();
-    }
-
-    private Predicate isProductStockHistoryType(ProductStockHistoryChangeType changeType) {
-        return changeType != null ? productStockHistoryEntity.productStockHistoryChangeType.eq(changeType) : null ;
-    }
-
-    private Predicate betweenStartDateAndEndDateByProductStockHistory(LocalDateTime startDate, LocalDateTime endDate) {
-
-        if(startDate==null && endDate==null) {
-            return null;
-        }
-
-        if (startDate == null) {
-            return productStockHistoryEntity.createdAt.before(endDate);
-        }
-
-        if(endDate==null) {
-
-            return productStockHistoryEntity.createdAt.after(startDate);
-        }
-
-        return productStockHistoryEntity.createdAt.between(startDate, endDate);
-    }
-
-    @Override
-    public Page<ProductEntity> search(ProductSearchCondition productSearchCondition,
+    public Page<ProductEntity> search(ProductSearchConditionDto productSearchCondition,
         Pageable pageable) {
 
         return applyPagination(pageable, contentQuery ->
@@ -130,12 +62,11 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
                 .where(
                     productNameContains(productSearchCondition.getProductName()),
                     companyIdEq(productSearchCondition.getCompanyId()),
+                    productIdEq(productSearchCondition.getProductId()),
                     betweenStartDateAndEndDate(productSearchCondition.getStartDate(), productSearchCondition.getEndDate()),
                     isProductPriceGreaterThan(productSearchCondition.getMinProductPrice()),
                     isProductPricelessThan(productSearchCondition.getMaxProductPrice()),
-                    productEntity.isDeleted.eq(false),
-                    productEntity.isHidden.eq(false),
-                    productEntity.isSale.eq(true),
+                    isAbleToSearchProductIsDeleted(productSearchCondition.getIsAbleToWatchDeleted()),
                     productStockEntity.productStock.value.ne(0)
                 ),
             countQuery -> countQuery.select(
@@ -144,19 +75,38 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
                 .where(
                     productNameContains(productSearchCondition.getProductName()),
                     companyIdEq(productSearchCondition.getCompanyId()),
+                    productIdEq(productSearchCondition.getProductId()),
                     betweenStartDateAndEndDate(productSearchCondition.getStartDate(), productSearchCondition.getEndDate()),
                     isProductPriceGreaterThan(productSearchCondition.getMinProductPrice()),
                     isProductPricelessThan(productSearchCondition.getMaxProductPrice()),
-                    productEntity.isDeleted.eq(false),
-                    productEntity.isHidden.eq(false),
-                    productEntity.isSale.eq(true),
+                    isAbleToSearchProductIsDeleted(productSearchCondition.getIsAbleToWatchDeleted()),
                     productStockEntity.productStock.value.ne(0)
                 )
         );
     }
 
+    private Predicate isAbleToSearchProductIsDeleted(
+        boolean isAbleToSearchProductIsDeleted) {
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        // isDeleted 조건
+        if (!isAbleToSearchProductIsDeleted) {
+
+            builder.and(productEntity.isDeleted.eq(false));
+            builder.and(productEntity.isSale.eq(true));
+            builder.and(productEntity.isHidden.eq(false));
+        }
+
+        return builder;
+    }
+
     private Predicate productNameContains(String productName) {
         return StringUtils.hasText(productName) ? productEntity.productName.contains(productName) : null;
+    }
+
+    private Predicate productIdEq(UUID productId) {
+        return productId != null ? productEntity.productId.eq(productId) : null;
     }
 
     private Predicate companyIdEq(UUID companyId) {
@@ -170,22 +120,24 @@ public class ProductRepositoryCustomImpl extends Querydsl4RepositorySupport impl
         }
 
         if (startDate == null) {
-            return productEntity.createdAt.before(endDate);
+            return productEntity.createdAt.loe(endDate);
         }
 
         if(endDate==null) {
 
-            return productEntity.createdAt.after(startDate);
+            return productEntity.createdAt.goe(startDate);
         }
 
         return productEntity.createdAt.between(startDate, endDate);
     }
 
     private Predicate isProductPriceGreaterThan(double minProductPrice) {
-        return Optional.ofNullable(minProductPrice).map(price ->productEntity.productPrice.goe(price)).orElse(null);
+        return productEntity.productPrice.goe(minProductPrice);
     }
 
     private Predicate isProductPricelessThan(double maxProductPrice) {
-        return Optional.ofNullable(maxProductPrice).map(price ->productEntity.productPrice.loe(price)).orElse(null);
+        maxProductPrice =  maxProductPrice == 0.0 ? Double.MAX_VALUE :maxProductPrice;
+
+        return productEntity.productPrice.loe(maxProductPrice);
     }
 }
