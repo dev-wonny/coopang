@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 
-@EnableFeignClients(basePackages = "com.coopang.apiconfig.feignClient")
+@EnableFeignClients(basePackages = "com.coopang.apiconfig.feignclient")
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.coopang.apiconfig"})
 public class ApiCommunicationApplication {

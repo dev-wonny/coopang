@@ -1,6 +1,6 @@
 package com.coopang.apicommunication.feignclient.shipper;
 
-import com.coopang.apiconfig.feignClient.FeignConfig;
+import com.coopang.apiconfig.feignclient.FeignConfig;
 import com.coopang.apidata.application.shipper.request.ShipperSearchConditionRequest;
 import com.coopang.apidata.application.shipper.response.ShipperResponse;
 import org.springframework.cloud.openfeign.FeignClient;

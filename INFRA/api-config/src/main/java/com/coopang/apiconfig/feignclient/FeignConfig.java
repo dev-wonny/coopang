@@ -1,4 +1,4 @@
-package com.coopang.apiconfig.feignClient;
+package com.coopang.apiconfig.feignclient;
 
 import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ID;
 import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ROLE;
