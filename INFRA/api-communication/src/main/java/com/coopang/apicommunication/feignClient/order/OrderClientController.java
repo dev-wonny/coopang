@@ -1,5 +1,6 @@
 package com.coopang.apicommunication.feignclient.order;
 
+import com.coopang.apidata.application.order.response.OrderResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
