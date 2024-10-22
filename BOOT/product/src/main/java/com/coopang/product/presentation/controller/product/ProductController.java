@@ -168,10 +168,16 @@ public class ProductController {
 
         ProductSearchConditionDto productSearchConditionDto = Optional.ofNullable(searchCondition)
             .map(conditionDto -> {
-                return ProductSearchConditionDto.from(conditionDto.getProductId(),
-                    conditionDto.getProductName(),conditionDto.getCompanyId(),conditionDto.getMinProductPrice(),conditionDto.getMaxProductPrice()
-                , DateTimeUtil.parseToLocalDateTime(conditionDto.getStartDate()),DateTimeUtil.parseToLocalDateTime(conditionDto.getEndDate())
-                ,conditionDto.getIsAbleToWatchDeleted());
+                return ProductSearchConditionDto.from(
+                      conditionDto.getProductId()
+                    , conditionDto.getProductName()
+                    , conditionDto.getCompanyId()
+                    , conditionDto.getMinProductPrice()
+                    , conditionDto.getMaxProductPrice()
+                    , DateTimeUtil.parseToLocalDateTime(conditionDto.getStartDate())
+                    , DateTimeUtil.parseToLocalDateTime(conditionDto.getEndDate())
+                    , conditionDto.getIsAbleToWatchDeleted()
+                );
             } )
             .orElseGet(ProductSearchConditionDto::empty);
 
