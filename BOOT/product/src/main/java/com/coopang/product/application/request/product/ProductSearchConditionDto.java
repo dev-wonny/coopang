@@ -67,40 +67,36 @@ public class ProductSearchConditionDto {
     public boolean equals(Object o) {
         if (this == o) {
             return true;
-        } else if (o != null && this.getClass() == o.getClass()) {
-            ProductSearchConditionDto that = (ProductSearchConditionDto) o;
-            return
-                Objects.equals(this.productId, that.productId)
-                    && Objects.equals(this.productName, that.productName)
-                    && Objects.equals(this.companyId ,that.companyId)
-                    && Objects.equals(this.minProductPrice, that.minProductPrice)
-                    && Objects.equals(this.maxProductPrice, that.maxProductPrice)
-                    && Objects.equals(this.startDate, that.startDate)
-                    && Objects.equals(this.endDate, that.endDate)
-                    && this.isAbleToWatchDeleted == that.isAbleToWatchDeleted;
-
-        } else {
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
+        ProductSearchConditionDto that = (ProductSearchConditionDto) o;
+        return Double.compare(minProductPrice, that.minProductPrice) == 0
+            && Double.compare(maxProductPrice, that.maxProductPrice) == 0
+            && isAbleToWatchDeleted == that.isAbleToWatchDeleted && Objects.equals(productId,
+            that.productId) && Objects.equals(productName, that.productName)
+            && Objects.equals(companyId, that.companyId) && Objects.equals(
+            startDate, that.startDate) && Objects.equals(endDate, that.endDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.productId, this.productName, this.companyId, this.minProductPrice, this.maxProductPrice,
-            this.startDate, this.endDate, this.isAbleToWatchDeleted);
+        return Objects.hash(productId, productName, companyId, minProductPrice, maxProductPrice,
+            startDate, endDate, isAbleToWatchDeleted);
     }
 
     @Override
     public String toString() {
-
-        return  "ProductSearchConditionDto(productId=" + this.productId
-            + ", productName=" + this.productName
-            + ", companyId=" + this.companyId
-            + ", minProductPrice=" + this.minProductPrice
-            + ", maxProductPrice=" + this.maxProductPrice
-            + ", startDate=" + this.startDate
-            + ", endDate=" + this.endDate
-            + ", isAbleToWatchDeleted=" + this.isAbleToWatchDeleted
-            + ")";
+        return "ProductSearchConditionDto{" +
+            "productId=" + productId +
+            ", productName='" + productName + '\'' +
+            ", companyId=" + companyId +
+            ", minProductPrice=" + minProductPrice +
+            ", maxProductPrice=" + maxProductPrice +
+            ", startDate=" + startDate +
+            ", endDate=" + endDate +
+            ", isAbleToWatchDeleted=" + isAbleToWatchDeleted +
+            '}';
     }
 }
