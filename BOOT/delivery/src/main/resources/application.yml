@@ -1,0 +1,92 @@
+server:
+  port: 19096
+
+spring:
+  #    profiles:
+  #        active: local
+  application:
+    name: delivery
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/coopang_delivery
+    username: coopang
+    password: q1w2e3r4!!
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: q1w2e3r4!!
+  cache:
+    type: caffeine
+    cache-names: hubs
+    caffeine:
+      spec: maximumSize=500,expireAfterAccess=60m
+  kafka:
+    bootstrap-servers: localhost:9092  # Kafka 브로커 주소
+    consumer:
+      group-id: my-group  # 컨슈머 그룹 ID
+      auto-offset-reset: earliest  # 오프셋 리셋 정책 (earliest, latest 등)
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer  # 키 디시리얼라이저
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer  # 값 디시리얼라이저
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer  # 키 직렬라이저
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer  # 값 직렬라이저
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  packages-to-scan: com.coopang.delivery.presentation.controller
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: /swagger-ui.html
+    disable-swagger-default-url: true
+    display-request-duration: true
+    operations-sorter: alpha
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
+    org.springframework.cache: debug
+
+service:
+  jwt:
+    secret-key: "7Iqk7YyM66W07YOA7L2U65Sp7YG065+9U3ByaW5n6rCV7J2Y7Yqc7YSw7LWc7JuQ67mI7J6F64uI64ukLg=="
+    expiration-time: 3600000
+    token-prefix: "Bearer "
+    header-string: "Authorization"
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+common:
+  api:
+    filter:
+      enabled: true
+      paths:
+        - /swagger-ui
+        - /v3/api-docs
+        - /actuator
