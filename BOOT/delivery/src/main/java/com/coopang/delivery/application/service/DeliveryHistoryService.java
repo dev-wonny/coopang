@@ -1,6 +1,5 @@
 package com.coopang.delivery.application.service;
 
-import com.coopang.delivery.application.response.delivery.DeliveryResponseDto;
 import com.coopang.delivery.application.response.deliveryhistory.DeliveryHistoryResponseDto;
 import com.coopang.delivery.application.service.deliveryhubhistory.DeliveryHubHistoryService;
 import com.coopang.delivery.application.service.deliveryuserhistory.DeliveryUserHistoryService;
@@ -12,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j(topic = "DeliveryHistoryService")
 @Service
