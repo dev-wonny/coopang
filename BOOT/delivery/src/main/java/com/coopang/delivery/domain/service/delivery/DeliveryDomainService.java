@@ -1,15 +1,12 @@
 package com.coopang.delivery.domain.service.delivery;
 
-import com.coopang.apicommunication.feignclient.shipper.ShipperClient;
 import com.coopang.apicommunication.feignclient.shipper.ShipperClientService;
 import com.coopang.apicommunication.kafka.message.CancelDelivery;
-import com.coopang.apicommunication.kafka.message.ProcessDelivery;
 import com.coopang.apiconfig.feignclient.FeignConfig;
 import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
 import com.coopang.apidata.application.shipper.request.ShipperSearchConditionRequest;
 import com.coopang.apidata.application.shipper.response.ShipperResponse;
 import com.coopang.delivery.application.request.delivery.DeliveryDto;
-import com.coopang.delivery.application.service.deliveryhubhistory.DeliveryHubHistoryService;
 import com.coopang.delivery.application.service.deliveryuserhistory.DeliveryUserHistoryService;
 import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;
 import com.coopang.delivery.infrastructure.repository.delivery.DeliveryJpaRepository;

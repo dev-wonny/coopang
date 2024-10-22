@@ -1,8 +1,6 @@
 package com.coopang.delivery.presentation.controller.deliveryhistory;
 
 import com.coopang.coredata.user.enums.UserRoleEnum;
-import com.coopang.delivery.application.response.deliveryhistory.DeliveryHistoryResponseDto;
-import com.coopang.delivery.application.service.DeliveryHistoryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
