@@ -1,7 +1,7 @@
 package com.coopang.delivery.application.service.schedule;
 
 import com.coopang.apicommunication.feignclient.shipper.ShipperClientService;
-import com.coopang.apiconfig.feignclient.FeignConfig;
+import com.coopang.apiconfig.feignClient.FeignConfig;
 import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
 import com.coopang.apidata.application.shipper.request.ShipperSearchConditionRequest;
 import com.coopang.apidata.application.shipper.response.ShipperResponse;

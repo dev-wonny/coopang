@@ -1,6 +1,6 @@
 package com.coopang.apicommunication.feignclient.hub;
 
-import com.coopang.apiconfig.feignclient.FeignConfig;
+import com.coopang.apiconfig.feignClient.FeignConfig;
 import com.coopang.apidata.application.hub.request.HubSearchConditionRequest;
 import com.coopang.apidata.application.hub.response.HubResponse;
 import org.springframework.cloud.openfeign.FeignClient;
