@@ -2,10 +2,14 @@ package com.coopang.user.application.request;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.UUID;
 
 @Getter
+@Setter
+@NoArgsConstructor
 public class UserDto {
     private UUID userId;
     private String email;
@@ -21,7 +25,7 @@ public class UserDto {
     private UUID nearHubId;
 
     @Builder
-    public UserDto(
+    private UserDto(
         UUID userId
         , String email
         , String password

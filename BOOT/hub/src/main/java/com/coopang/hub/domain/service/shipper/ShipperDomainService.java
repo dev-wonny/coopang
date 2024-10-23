@@ -17,9 +17,9 @@ public class ShipperDomainService {
 
     public ShipperEntity createShipper(ShipperDto dto) {
         ShipperEntity shipperEntity = ShipperEntity.create(
-                dto.getShipperId()
-                , dto.getHubId()
-                , dto.getShipperType()
+            dto.getShipperId()
+            , dto.getHubId()
+            , dto.getShipperType()
 
         );
         return shipperJpaRepository.save(shipperEntity);

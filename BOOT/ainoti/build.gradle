@@ -29,6 +29,9 @@ dependencies {
     implementation project(':INFRA:api-config')
     implementation project(':INFRA:api-communication')
 
+    // Slack
+    implementation 'com.slack.api:slack-api-client:1.42.0'
+
     // actuator
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 

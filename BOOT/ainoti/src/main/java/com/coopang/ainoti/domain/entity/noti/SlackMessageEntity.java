@@ -103,4 +103,8 @@ public class SlackMessageEntity extends BaseEntity {
         this.sentTime = sentTime;
         this.slackMessageSenderId = slackMessageSenderId;
     }
+
+    public void changeSlackMessageStatus(SlackMessageStatus status) {
+        this.slackMessageStatus = status;
+    }
 }

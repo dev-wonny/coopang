@@ -1,8 +1,8 @@
 package com.coopang.user.domain.entity.user;
 
-import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.coopang.apidata.jpa.entity.address.AddressEntity;
 import com.coopang.apidata.jpa.entity.base.BaseEntity;
+import com.coopang.coredata.user.enums.UserRoleEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -67,16 +67,16 @@ public class UserEntity extends BaseEntity {
 
     @Builder
     private UserEntity(
-            UUID userId,
-            String email,
-            String password,
-            String userName,
-            String phoneNumber,
-            UserRoleEnum role,
-            String slackId,
-            AddressEntity addressEntity,
-            UUID nearHubId,
-            boolean isBlock
+        UUID userId,
+        String email,
+        String password,
+        String userName,
+        String phoneNumber,
+        UserRoleEnum role,
+        String slackId,
+        AddressEntity addressEntity,
+        UUID nearHubId,
+        boolean isBlock
     ) {
         this.userId = userId;
         this.email = email;
@@ -91,29 +91,29 @@ public class UserEntity extends BaseEntity {
     }
 
     public static UserEntity create(
-            UUID userId,
-            String email,
-            String passwordEncode,
-            String userName,
-            String phoneNumber,
-            String role,
-            String slackId,
-            String zipCode,
-            String address1,
-            String address2,
-            UUID nearHubId
+        UUID userId,
+        String email,
+        String passwordEncode,
+        String userName,
+        String phoneNumber,
+        String role,
+        String slackId,
+        String zipCode,
+        String address1,
+        String address2,
+        UUID nearHubId
     ) {
         return UserEntity.builder()
-                .userId(userId)
-                .email(email)
-                .password(passwordEncode)
-                .userName(userName)
-                .phoneNumber(phoneNumber)
-                .role(UserRoleEnum.getRoleEnum(role))
-                .slackId(slackId)
-                .addressEntity(AddressEntity.create(zipCode, address1, address2))
-                .nearHubId(nearHubId)
-                .build();
+            .userId(userId)
+            .email(email)
+            .password(passwordEncode)
+            .userName(userName)
+            .phoneNumber(phoneNumber)
+            .role(UserRoleEnum.getRoleEnum(role))
+            .slackId(slackId)
+            .addressEntity(AddressEntity.create(zipCode, address1, address2))
+            .nearHubId(nearHubId)
+            .build();
     }
 
     public void updateUserInfo(String userName,

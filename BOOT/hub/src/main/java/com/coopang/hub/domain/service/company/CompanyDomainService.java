@@ -17,13 +17,13 @@ public class CompanyDomainService {
 
     public CompanyEntity createCompany(CompanyDto companyDto) {
         CompanyEntity companyEntity = CompanyEntity.create(
-                companyDto.getCompanyId()
-                , companyDto.getHubId()
-                , companyDto.getCompanyManagerId()
-                , companyDto.getCompanyName()
-                , companyDto.getZipCode()
-                , companyDto.getAddress1()
-                , companyDto.getAddress2()
+            companyDto.getCompanyId()
+            , companyDto.getHubId()
+            , companyDto.getCompanyManagerId()
+            , companyDto.getCompanyName()
+            , companyDto.getZipCode()
+            , companyDto.getAddress1()
+            , companyDto.getAddress2()
         );
         return companyJpaRepository.save(companyEntity);
     }

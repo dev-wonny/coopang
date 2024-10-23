@@ -33,7 +33,7 @@ public class HubService {
     public HubResponseDto createHub(HubDto hubDto) {
         // 서비스 레이어에서 UUID 생성
         final UUID hubId = hubDto.getHubId() != null ? hubDto.getHubId() : UUID.randomUUID();
-        hubDto.setHubId(hubId);
+        hubDto.createId(hubId);
 
         HubEntity hubEntity = hubDomainService.createHub(hubDto);
         return HubResponseDto.fromHub(hubEntity);
