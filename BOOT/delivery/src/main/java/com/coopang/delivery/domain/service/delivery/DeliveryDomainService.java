@@ -7,7 +7,6 @@ import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
 import com.coopang.apidata.application.shipper.request.ShipperSearchConditionRequest;
 import com.coopang.apidata.application.shipper.response.ShipperResponse;
 import com.coopang.delivery.application.request.delivery.DeliveryDto;
-import com.coopang.delivery.application.service.deliveryhubhistory.DeliveryHubHistoryService;
 import com.coopang.delivery.application.service.deliveryuserhistory.DeliveryUserHistoryService;
 import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;
 import com.coopang.delivery.infrastructure.repository.delivery.DeliveryJpaRepository;
@@ -63,7 +62,7 @@ public class DeliveryDomainService {
     }
 
     // 배송 등록 - 주문 등록 후 바로 이어지는..
-    public void createProcessDelivery(
+    public DeliveryEntity createProcessDelivery(
             UUID orderId,
             UUID productHubId,
             UUID nearHubId,
@@ -82,7 +81,7 @@ public class DeliveryDomainService {
                 address2,
                 hubShipperId
         );
-        deliveryJpaRepository.save(deliveryEntity);
+        return deliveryJpaRepository.save(deliveryEntity);
     }
 
     // 배송 취소
