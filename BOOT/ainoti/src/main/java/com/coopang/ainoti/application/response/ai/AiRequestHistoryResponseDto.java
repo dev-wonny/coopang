@@ -1,8 +1,8 @@
 package com.coopang.ainoti.application.response.ai;
 
 
-import com.coopang.apidata.application.ai.AiCategory;
 import com.coopang.ainoti.domain.entity.ai.AiRequestHistoryEntity;
+import com.coopang.apidata.application.ai.AiCategory;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

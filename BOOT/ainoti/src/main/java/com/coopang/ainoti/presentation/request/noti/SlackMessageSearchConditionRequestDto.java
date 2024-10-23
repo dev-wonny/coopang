@@ -8,7 +8,6 @@ import java.util.UUID;
 @Getter
 @Setter
 public class SlackMessageSearchConditionRequestDto {
-
     private UUID slackMessageId;            // 슬랙 메시지 고유 ID
     private String receiveSlackId;          // 수신자 슬랙 ID (startsWith 조건)
     private UUID receiveUserId;             // 수신자 사용자 ID
