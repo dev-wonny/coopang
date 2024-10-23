@@ -1,7 +1,7 @@
 package com.coopang.user.domain.repository;
 
-import com.coopang.user.domain.entity.user.UserEntity;
 import com.coopang.user.application.request.UserSearchConditionDto;
+import com.coopang.user.domain.entity.user.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

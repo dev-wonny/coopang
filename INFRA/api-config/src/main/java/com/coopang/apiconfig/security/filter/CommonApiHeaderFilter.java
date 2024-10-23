@@ -57,9 +57,11 @@ public class CommonApiHeaderFilter extends OncePerRequestFilter {
             Collections.singleton(new SimpleGrantedAuthority(ROLE_PREFIX + userRole))
         );
 
-        // 부가 정보 추가 : userEmail, token
-        authenticationToken.setDetails(UserMetadata.of(userId, userEmail, token));
-        log.info("Authentication set for UserMetadata userId: {}, userEmail: {}, token: {}", userId, userEmail, token);
+        if (StringUtils.hasText(userEmail) && StringUtils.hasText(token)) {
+            // 부가 정보 추가 : userEmail, token
+            authenticationToken.setDetails(UserMetadata.of(userId, userEmail, token));
+            log.info("Authentication set for UserMetadata userId: {}, userEmail: {}, token: {}", userId, userEmail, token);
+        }
 
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         log.info("Authentication set for user: " + userId + " with role: " + userRole);

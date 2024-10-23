@@ -34,17 +34,17 @@ public class UserDomainService {
 
         // 회원 등록
         UserEntity newUser = UserEntity.create(
-                userDto.getUserId(),
-                userDto.getEmail(),
-                encodedPassword,
-                userDto.getUserName(),
-                userDto.getPhoneNumber(),
-                userDto.getRole(),
-                userDto.getSlackId(),
-                userDto.getZipCode(),
-                userDto.getAddress1(),
-                userDto.getAddress2(),
-                userDto.getNearHubId()
+            userDto.getUserId(),
+            userDto.getEmail(),
+            encodedPassword,
+            userDto.getUserName(),
+            userDto.getPhoneNumber(),
+            userDto.getRole(),
+            userDto.getSlackId(),
+            userDto.getZipCode(),
+            userDto.getAddress1(),
+            userDto.getAddress2(),
+            userDto.getNearHubId()
         );
 
         return userJpaRepository.save(newUser);

@@ -1,20 +1,29 @@
 package com.coopang.ainoti.application.service.noti;
 
 
+import com.coopang.ainoti.application.enums.SlackMessageStatus;
 import com.coopang.ainoti.application.request.noti.SlackMessageDto;
 import com.coopang.ainoti.application.request.noti.SlackMessageSearchConditionDto;
 import com.coopang.ainoti.application.response.noti.SlackMessageResponseDto;
 import com.coopang.ainoti.domain.entity.noti.SlackMessageEntity;
 import com.coopang.ainoti.domain.repository.noti.SlackMessageRepository;
 import com.coopang.ainoti.domain.service.noti.SlackMessageDomainService;
+import com.slack.api.Slack;
+import com.slack.api.methods.SlackApiException;
+import com.slack.api.methods.request.chat.ChatPostMessageRequest;
+import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,12 +32,17 @@ import java.util.UUID;
 @Service
 public class SlackMessageService {
 
+    @Value("${slack.token}")
+    private String slackToken;
     private final SlackMessageRepository slackMessageRepository;
     private final SlackMessageDomainService slackMessageDomainService;
+    private final Slack slackClient;
+
 
     public SlackMessageService(SlackMessageRepository slackMessageRepository, SlackMessageDomainService slackMessageDomainService) {
         this.slackMessageRepository = slackMessageRepository;
         this.slackMessageDomainService = slackMessageDomainService;
+        this.slackClient = Slack.getInstance();
     }
 
     /**
@@ -37,7 +51,7 @@ public class SlackMessageService {
     @Transactional
     public SlackMessageResponseDto createSlackMessage(SlackMessageDto slackMessageDto) {
         // UUID 생성
-        final UUID slackMessageId = slackMessageDto.getSlackMessageId() != null ? slackMessageDto.getSlackMessageId() : UUID.randomUUID();
+        final UUID slackMessageId = !ObjectUtils.isEmpty(slackMessageDto.getSlackMessageId()) ? slackMessageDto.getSlackMessageId() : UUID.randomUUID();
         slackMessageDto.createId(slackMessageId);
 
         SlackMessageEntity slackMessageEntity = slackMessageDomainService.createSlackMessage(slackMessageDto);
@@ -131,5 +145,86 @@ public class SlackMessageService {
         SlackMessageEntity slackMessageEntity = findValidSlackMessageById(slackMessageId);
         slackMessageEntity.setDeleted(true);
         log.debug("deleteSlackMessage slackMessageId:{}", slackMessageId);
+    }
+
+    /**
+     * Slack 메시지 전송
+     *
+     * @param channel Slack 채널 ID 또는 사용자 ID
+     * @param message 보낼 메시지 내용
+     */
+    public void sendSlackMessage(String channel, String message) throws IOException, SlackApiException {
+        ChatPostMessageRequest request = ChatPostMessageRequest.builder()
+            .token(slackToken)//RYqXLjYZnXlX6PRWsRXGDBCA
+            .channel(channel) // 채널 ID 또는 사용자 ID
+            .text(message)
+            .build();
+
+        ChatPostMessageResponse response = slackClient.methods(slackToken).chatPostMessage(request);
+
+        if (!response.isOk()) {
+            // Slack API 에러 메시지 처리
+            String errorMessage = String.format("Error posting message: %s - %s", response.getError(), response.getErrors());
+            String metadataInfo = !ObjectUtils.isEmpty(response.getResponseMetadata()) ? response.getResponseMetadata().toString() : "No metadata available";
+
+            log.error("Slack 메시지 전송 실패: {}. Response Metadata: {}", errorMessage, metadataInfo);
+
+            throw new IOException("Failed to send Slack message. " + errorMessage);
+        }
+
+        log.info("Slack 메시지 전송 성공: {}", response.getMessage().getText());
+    }
+
+    /**
+     * 상태별로 Slack 메시지 조회
+     *
+     * @param status 메시지 상태
+     * @return 상태에 맞는 메시지 리스트
+     */
+    @Transactional(readOnly = true)
+    public List<SlackMessageResponseDto> getMessagesByStatus(SlackMessageStatus status) {
+        List<SlackMessageEntity> slackMessageList = slackMessageRepository.findBySlackMessageStatusAndIsDeletedFalse(status);
+        return slackMessageList.stream()
+            .map(SlackMessageResponseDto::fromSlackMessage)
+            .toList();
+    }
+
+    /**
+     * Slack 메시지 상태 업데이트
+     *
+     * @param messageId 메시지 ID
+     * @param status    새로운 메시지 상태
+     */
+    @Transactional
+    public void updateMessageStatus(UUID messageId, SlackMessageStatus status) {
+        SlackMessageEntity messageEntity = findValidSlackMessageById(messageId);
+        messageEntity.changeSlackMessageStatus(status);
+        log.info("Slack 메시지 상태가 업데이트 되었습니다. 메시지 ID: {}, 새로운 상태: {}", messageId, status);
+    }
+
+    public void sendReadySlackMessages() {
+        // READY 상태의 메시지 가져오기
+        final List<SlackMessageResponseDto> readyMessageList = getMessagesByStatus(SlackMessageStatus.READY);
+        final LocalDateTime now = LocalDateTime.now(); // 현재 시간 가져오기
+
+        for (SlackMessageResponseDto message : readyMessageList) {
+            if (!ObjectUtils.isEmpty(message.getSentTime()) && now.isAfter(message.getSentTime())) {
+                try {
+                    // Slack 메시지 전송 시도
+                    sendSlackMessage(message.getReceiveSlackId(), message.getSlackMessage());
+
+                    // 성공 시 상태를 SUCCESS로 변경
+                    updateMessageStatus(message.getSlackMessageId(), SlackMessageStatus.SUCCESS);
+                    log.info("Slack 메시지 전송 성공: {}", message.getSlackMessageId());
+
+                } catch (Exception e) {
+                    // 실패 시 상태를 FAIL로 변경
+                    updateMessageStatus(message.getSlackMessageId(), SlackMessageStatus.FAIL);
+                    log.error("Slack 메시지 전송 실패: {}", message.getSlackMessageId(), e);
+                }
+            } else {
+                log.info("현재 시간에 맞지 않아 전송하지 않음: 메시지 ID: {}, 전송 예정 시간: {}", message.getSlackMessageId(), message.getSentTime());
+            }
+        }
     }
 }
