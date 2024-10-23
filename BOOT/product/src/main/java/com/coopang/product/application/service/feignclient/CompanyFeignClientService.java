@@ -1,13 +1,14 @@
 package com.coopang.product.application.service.feignclient;
 
 import com.coopang.apicommunication.feignclient.company.CompanyClientService;
-import com.coopang.apiconfig.feignClient.FeignConfig;
+import com.coopang.apiconfig.feignclient.FeignConfig;
 import com.coopang.apidata.application.company.request.CompanySearchConditionRequest;
 import com.coopang.apidata.application.company.response.CompanyResponse;
-import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -15,11 +16,11 @@ public class CompanyFeignClientService {
 
     private final CompanyClientService companyClientService;
     private final FeignConfig feignConfig;
-    
-    //내부통신을 이용하여 허브에 소속된 업체들을 조회 
+
+    //내부통신을 이용하여 허브에 소속된 업체들을 조회
     public List<UUID> getCompanyIdsInFeignClient(UUID hubId) {
 
-        try{
+        try {
             CompanySearchConditionRequest req = new CompanySearchConditionRequest();
             req.setHubId(hubId);
             req.setIsDeleted(false);
@@ -42,7 +43,7 @@ public class CompanyFeignClientService {
     //업체의 관리자 조회 - 내부통신이용
     public CompanyResponse getCompanyById(UUID companyId) {
 
-        try{
+        try {
 
             feignConfig.changeHeaderRoleToServer();
 
