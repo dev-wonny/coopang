@@ -162,4 +162,11 @@ public class SlackMessageController {
         slackMessageService.deleteSlackMessage(slackMessageId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @Secured({UserRoleEnum.Authority.SERVER, UserRoleEnum.Authority.MASTER})
+    @GetMapping("/send-slack")
+    public ResponseEntity<Void> sendReadySlackMessages() {
+        slackMessageService.sendReadySlackMessages();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
