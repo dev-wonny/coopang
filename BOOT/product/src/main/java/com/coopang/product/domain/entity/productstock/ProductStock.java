@@ -15,31 +15,31 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductStock {
 
-    @Column(nullable = false,name = "product_stock_current_quantity")
-    private Integer value;
+    @Column(nullable = false, name = "product_stock_current_quantity")
+    private Integer currentStockQuantity;
 
     //TODO : 에러 메시지는 api-data에 추후 추가후 수정예정
-    public ProductStock(int value) {
+    public ProductStock(int currentStockQuantity) {
 
-        if(value < 0) {
+        if (currentStockQuantity < 0) {
             throw new IllegalArgumentException("추가할 수량은 음수가 될 수 없습니다.");
         }
 
-        this.value = value == 0 ? 100 : value;
+        this.currentStockQuantity = currentStockQuantity == 0 ? 100 : currentStockQuantity;
 
     }
 
     public void addStock(int amount) {
         if (amount < 0) {
-            throw new IllegalArgumentException("추가할 수량은 음수가 될 수 없습니다.");
+            throw new IllegalArgumentException();
         }
-        this.value += amount;
+        this.currentStockQuantity += amount;
     }
 
     public void reduceStock(int amount) {
-        if (this.value - amount < 0) {
-            throw new IllegalArgumentException("재고 수량이 부족합니다.");
+        if (this.currentStockQuantity - amount < 0) {
+            throw new IllegalArgumentException();
         }
-        this.value -= amount;
+        this.currentStockQuantity -= amount;
     }
 }

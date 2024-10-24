@@ -1,8 +1,8 @@
 package com.coopang.product.domain.entity.productstock;
 
 import com.coopang.apidata.jpa.entity.base.BaseEntity;
-import com.coopang.product.domain.entity.productstockhistory.ProductStockHistoryEntity;
 import com.coopang.product.domain.entity.product.ProductEntity;
+import com.coopang.product.domain.entity.productstockhistory.ProductStockHistoryEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -14,15 +14,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Entity
@@ -52,13 +53,13 @@ public class ProductStockEntity extends BaseEntity {
     }
 
     @Builder(access = AccessLevel.PRIVATE)
-    public ProductStockEntity(UUID productStockId,ProductEntity productEntity, ProductStock productStock) {
+    public ProductStockEntity(UUID productStockId, ProductEntity productEntity, ProductStock productStock) {
         this.productStockId = productStockId;
         this.productEntity = productEntity;
         this.productStock = productStock;
     }
 
-    public static ProductStockEntity create(UUID productStockId,ProductEntity productEntity, ProductStock productStock) {
+    public static ProductStockEntity create(UUID productStockId, ProductEntity productEntity, ProductStock productStock) {
         return ProductStockEntity.builder()
             .productStockId(productStockId != null ? productStockId : UUID.randomUUID())
             .productEntity(productEntity)
@@ -67,20 +68,10 @@ public class ProductStockEntity extends BaseEntity {
     }
 
     public void increaseStock(int amount) {
-        try {
-            this.productStock.addStock(amount);
-        }catch(IllegalArgumentException e)
-        {
-            throw e;
-        }
+        this.productStock.addStock(amount);
     }
 
     public void decreaseStock(int amount) {
-        try {
-            this.productStock.reduceStock(amount);
-        }catch(IllegalArgumentException e)
-        {
-            throw e;
-        }
+        this.productStock.reduceStock(amount);
     }
 }

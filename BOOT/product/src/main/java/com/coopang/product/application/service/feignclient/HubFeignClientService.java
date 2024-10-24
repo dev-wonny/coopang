@@ -11,22 +11,16 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class HubFeignClientService {
-
     private final HubClientService hubClientService;
     private final FeignConfig feignConfig;
 
     public HubResponse getHubInfoById(UUID hubId) {
         try {
-
             feignConfig.changeHeaderRoleToServer();
-
-            HubResponse hubResponse = hubClientService.getHubInfo(hubId);
-
+            final HubResponse hubResponse = hubClientService.getHubInfo(hubId);
             return hubResponse;
         } finally {
             feignConfig.resetRole();
         }
-
     }
-
 }

@@ -29,9 +29,9 @@ public class ProductWithStockAndHistoryService {
     public ProductResponseDto createProductWithProductStockAndProductStockHistory(ProductDto productDto) {
         ProductEntity productEntity = productService.createProduct(productDto);
 
-        int stock = productDto.getProductStock();
-        ProductStockEntity productStockEntity = productStockService.createProductStock(productEntity, stock);
+        final int stock = productDto.getProductStock();
 
+        ProductStockEntity productStockEntity = productStockService.createProductStock(productEntity, stock);
         ProductStockHistoryEntity productStockHistoryEntity = productStockHistoryService.create(productStockEntity,stock);
 
         //4. 연관관계 설정

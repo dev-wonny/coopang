@@ -15,7 +15,7 @@ public class ProductStockResponseDto {
     public static ProductStockResponseDto of(ProductStockEntity productStock) {
         return ProductStockResponseDto.builder()
             .productStockId(productStock.getProductStockId())
-            .stock(productStock.getProductStock().getValue())
+            .stock(productStock.getProductStock().getCurrentStockQuantity())
             .build();
     }
 }

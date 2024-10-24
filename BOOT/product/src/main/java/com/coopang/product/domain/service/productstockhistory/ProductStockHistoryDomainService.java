@@ -8,17 +8,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProductStockHistoryDomainService {
 
-    public ProductStockHistoryEntity create(ProductStockEntity productStockEntity,int stock){
-
+    public ProductStockHistoryEntity create(ProductStockEntity productStockEntity, int stock) {
         //3. 재고 기록엔티티 생성
-        ProductStockHistoryEntity productStockHistoryEntity = makeProductStockHistory(productStockEntity,stock);
-
+        ProductStockHistoryEntity productStockHistoryEntity = makeProductStockHistory(productStockEntity, stock);
         return productStockHistoryEntity;
     }
 
-    private ProductStockHistoryEntity makeProductStockHistory(
-        ProductStockEntity productStockEntity,int stock
-    ) {
+    private ProductStockHistoryEntity makeProductStockHistory(ProductStockEntity productStockEntity, int stock) {
         return ProductStockHistoryEntity.create(
             null,
             productStockEntity,

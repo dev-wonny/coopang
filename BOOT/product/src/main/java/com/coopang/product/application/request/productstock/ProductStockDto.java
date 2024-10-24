@@ -1,9 +1,16 @@
 package com.coopang.product.application.request.productstock;
 
-import java.util.UUID;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+import java.util.UUID;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductStockDto {
     private int amount;
     private UUID orderId;

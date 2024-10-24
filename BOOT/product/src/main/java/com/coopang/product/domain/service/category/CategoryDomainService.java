@@ -15,14 +15,7 @@ public class CategoryDomainService {
 
     @Transactional
     public CategoryEntity create(CategoryDto categoryDto) {
-        CategoryEntity categoryEntity = categoryEntityToDto(categoryDto);
+        CategoryEntity categoryEntity = CategoryEntity.create(categoryDto.getCategoryId(), categoryDto.getCategoryName());
         return categoryJpaRepository.save(categoryEntity);
-    }
-
-    private CategoryEntity categoryEntityToDto(CategoryDto categoryDto){
-        return CategoryEntity.create(
-            null,
-            categoryDto.getCategoryName()
-        );
     }
 }

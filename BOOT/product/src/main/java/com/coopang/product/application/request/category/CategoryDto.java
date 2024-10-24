@@ -1,10 +1,15 @@
 package com.coopang.product.application.request.category;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.UUID;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class CategoryDto {
-    String categoryName;
+    private UUID categoryId;
+    private String categoryName;
 }

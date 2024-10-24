@@ -9,8 +9,6 @@ import com.coopang.product.presentation.request.category.CreateCategoryRequestDt
 import com.coopang.product.presentation.request.category.UpdateCategoryRequestDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +22,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.UUID;
+
 @Tag(name = "CategoryController API", description = "CategoryController API")
 @RestController
 @RequestMapping("/categories/v1/category")
@@ -35,40 +36,39 @@ public class CategoryController {
 
     @Secured({Authority.MASTER, Authority.HUB_MANAGER})
     @PostMapping
-    public ResponseEntity<CategoryResponseDto> createCategory(
-        @Valid @RequestBody CreateCategoryRequestDto requestDto) {
-
-        CategoryDto categoryDto = mapperConfig.strictMapper().map(requestDto, CategoryDto.class);
+    public ResponseEntity<CategoryResponseDto> createCategory(@Valid @RequestBody CreateCategoryRequestDto requestDto) {
+        final CategoryDto categoryDto = mapperConfig.strictMapper().map(requestDto, CategoryDto.class);
         CategoryResponseDto categoryResponseDto = categoryService.createCategory(categoryDto);
 
-        return new ResponseEntity<>(categoryResponseDto,HttpStatus.CREATED);
+        return new ResponseEntity<>(categoryResponseDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/{categoryId}")
     public ResponseEntity<CategoryResponseDto> getOneCategory(@PathVariable UUID categoryId) {
 
         CategoryResponseDto categoryResponseDto = categoryService.getCategoryById(categoryId);
-        return new ResponseEntity<>(categoryResponseDto,HttpStatus.OK);
+        return new ResponseEntity<>(categoryResponseDto, HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryResponseDto>> getAllCategory() {
-
-        List<CategoryResponseDto> categoryResponseDtoList = categoryService.getAllCategory();
-        return new ResponseEntity<>(categoryResponseDtoList,HttpStatus.OK);
+    public ResponseEntity<List<CategoryResponseDto>> getCategoryList() {
+        final List<CategoryResponseDto> categoryList = categoryService.getCategoryList();
+        return new ResponseEntity<>(categoryList, HttpStatus.OK);
     }
 
     @Secured({Authority.MASTER, Authority.HUB_MANAGER})
     @PatchMapping("/{categoryId}")
     public ResponseEntity<CategoryResponseDto> updateCategory(
         @PathVariable UUID categoryId
-        , @Valid @RequestBody UpdateCategoryRequestDto updateCategoryRequestDto)
-    {
-        CategoryDto categoryDto = mapperConfig.strictMapper().map(updateCategoryRequestDto,CategoryDto.class);
-        categoryService.updateCategory(categoryId,categoryDto);
-        CategoryResponseDto categoryResponseDto = categoryService.getCategoryById(categoryId);
-        return new ResponseEntity<>(categoryResponseDto,HttpStatus.OK);
+        , @Valid @RequestBody UpdateCategoryRequestDto updateCategoryRequestDto
+    ) {
+        CategoryDto categoryDto = mapperConfig.strictMapper().map(updateCategoryRequestDto, CategoryDto.class);
+        categoryService.updateCategory(categoryId, categoryDto);
+
+        final CategoryResponseDto categoryResponseDto = categoryService.getCategoryById(categoryId);
+        return new ResponseEntity<>(categoryResponseDto, HttpStatus.OK);
     }
+
     @Secured({Authority.MASTER, Authority.HUB_MANAGER})
     @DeleteMapping("/{categoryId}")
     public ResponseEntity<Void> deleteCategory(@PathVariable UUID categoryId) {
