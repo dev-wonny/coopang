@@ -8,6 +8,7 @@ import com.coopang.apidata.application.order.response.OrderResponse;
 import com.coopang.apidata.application.shipper.request.ShipperSearchConditionRequest;
 import com.coopang.apidata.application.shipper.response.ShipperResponse;
 import com.coopang.delivery.application.service.DeliveryHistoryService;
+import com.coopang.delivery.application.service.deliveryhubhistory.DeliveryHubHistoryService;
 import com.coopang.delivery.application.service.deliveryuserhistory.DeliveryUserHistoryService;
 import com.coopang.delivery.application.service.message.delivery.DeliveryMessageService;
 import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;
@@ -28,7 +29,7 @@ import java.util.UUID;
 @Transactional
 public class DeliveryScheduleService {
 
-    private final DeliveryHistoryService deliveryHistoryService;
+    private final DeliveryHubHistoryService deliveryHubHistoryService;
     private final DeliveryUserHistoryService deliveryUserHistoryService;
     private final DeliveryMessageService deliveryMessageService;
     private final DeliveryRepository deliveryRepository;
@@ -38,7 +39,7 @@ public class DeliveryScheduleService {
     private final OrderClientService orderClientService;
 
     public DeliveryScheduleService(
-            DeliveryHistoryService deliveryHistoryService,
+            DeliveryHubHistoryService deliveryHubHistoryService,
             DeliveryUserHistoryService deliveryUserHistoryService,
             DeliveryMessageService deliveryMessageService,
             ShipperClientService shipperClientService,
@@ -46,7 +47,7 @@ public class DeliveryScheduleService {
             DeliveryRepository deliveryRepository,
             DeliveryDomainService deliveryDomainService,
             OrderClientService orderClientService) {
-        this.deliveryHistoryService = deliveryHistoryService;
+        this.deliveryHubHistoryService = deliveryHubHistoryService;
         this.deliveryUserHistoryService = deliveryUserHistoryService;
         this.deliveryMessageService = deliveryMessageService;
         this.shipperClientService = shipperClientService;
@@ -110,7 +111,7 @@ public class DeliveryScheduleService {
             );
 
             // 허브 기록 테이블에 기록하기
-            deliveryHistoryService.createHubHistory(
+            deliveryHubHistoryService.createHubHistory(
                     deliveryEntity.getDeliveryId(),
                     deliveryEntity.getDepartureHubId(),
                     deliveryEntity.getDestinationHubId(),
@@ -155,7 +156,7 @@ public class DeliveryScheduleService {
     private void updateStatusDeliveryHub(List<DeliveryEntity> deliveries, DeliveryStatusEnum deliveryStatus) {
         for (DeliveryEntity deliveryEntity : deliveries) {
             deliveryEntity.setDeliveryStatus(deliveryStatus);
-            deliveryHistoryService.createHubHistory(
+            deliveryHubHistoryService.createHubHistory(
                     deliveryEntity.getDeliveryId(),
                     deliveryEntity.getDepartureHubId(),
                     deliveryEntity.getDestinationHubId(),
