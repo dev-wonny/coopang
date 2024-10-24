@@ -8,7 +8,6 @@ import com.coopang.ainoti.application.service.ai.AiRequestHistoryService;
 import com.coopang.ainoti.presentation.request.ai.AiRequestHistorySearchConditionRequestDto;
 import com.coopang.ainoti.presentation.request.ai.CreateAiRequestHistoryRequestDto;
 import com.coopang.ainoti.presentation.request.ai.UpdateAiRequestHistoryRequestDto;
-import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.apidata.application.ai.AiCategory;
 import com.coopang.coredata.user.enums.UserRoleEnum;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,11 +40,9 @@ import java.util.UUID;
 public class AiRequestHistoryController {
 
     private final AiRequestHistoryService aiRequestHistoryService;
-    private final ModelMapperConfig mapperConfig;
 
-    public AiRequestHistoryController(AiRequestHistoryService aiRequestHistoryService, ModelMapperConfig mapperConfig) {
+    public AiRequestHistoryController(AiRequestHistoryService aiRequestHistoryService) {
         this.aiRequestHistoryService = aiRequestHistoryService;
-        this.mapperConfig = mapperConfig;
     }
 
     /**
@@ -72,7 +69,7 @@ public class AiRequestHistoryController {
      */
     @Secured({UserRoleEnum.Authority.SERVER, UserRoleEnum.Authority.MASTER})
     @GetMapping("/{aiRequestHistoryId}")
-    public ResponseEntity<AiRequestHistoryResponseDto> getAiRequestHistoryById(@PathVariable UUID aiRequestHistoryId) {
+    public ResponseEntity<AiRequestHistoryResponseDto> getAiRequestHistoryInfo(@PathVariable UUID aiRequestHistoryId) {
         final AiRequestHistoryResponseDto aiRequestHistory = aiRequestHistoryService.getValidAiRequestHistoryById(aiRequestHistoryId);
         return new ResponseEntity<>(aiRequestHistory, HttpStatus.OK);
     }
@@ -89,7 +86,7 @@ public class AiRequestHistoryController {
         , @RequestParam(value = "isDeleted", required = false, defaultValue = "false") boolean isDeleted
         , Pageable pageable
     ) {
-        final AiRequestHistorySearchConditionDto condition = AiRequestHistorySearchConditionDto.from(
+        final AiRequestHistorySearchConditionDto condition = AiRequestHistorySearchConditionDto.of(
             aiRequestHistoryId
             , aiCategory
             , aiRequest
@@ -109,7 +106,7 @@ public class AiRequestHistoryController {
         if (ObjectUtils.isEmpty(req)) {
             condition = AiRequestHistorySearchConditionDto.empty();
         } else {
-            condition = AiRequestHistorySearchConditionDto.from(
+            condition = AiRequestHistorySearchConditionDto.of(
                 req.getAiRequestHistoryId()
                 , req.getAiCategory()
                 , req.getAiRequest()

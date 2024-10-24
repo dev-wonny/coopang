@@ -2,7 +2,7 @@ package com.coopang.ainoti.infrastructure.repository.noti;
 
 import static com.coopang.ainoti.domain.entity.noti.QSlackMessageEntity.slackMessageEntity;
 
-import com.coopang.ainoti.application.enums.SlackMessageStatus;
+import com.coopang.apidata.application.noti.enums.SlackMessageStatus;
 import com.coopang.ainoti.application.request.noti.SlackMessageSearchConditionDto;
 import com.coopang.ainoti.domain.entity.noti.SlackMessageEntity;
 import com.coopang.apiconfig.querydsl.Querydsl4RepositorySupport;

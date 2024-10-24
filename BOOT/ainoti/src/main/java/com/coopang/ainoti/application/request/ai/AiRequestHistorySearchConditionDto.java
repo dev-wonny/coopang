@@ -38,7 +38,7 @@ public class AiRequestHistorySearchConditionDto {
             .build();
     }
 
-    public static AiRequestHistorySearchConditionDto from(
+    public static AiRequestHistorySearchConditionDto of(
         UUID aiRequestHistoryId
         , String aiCategory
         , String aiRequest

@@ -3,6 +3,7 @@ package com.coopang.ainoti.application.response.ai;
 
 import com.coopang.ainoti.domain.entity.ai.AiRequestHistoryEntity;
 import com.coopang.apidata.application.ai.AiCategory;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,6 +18,7 @@ public class AiRequestHistoryResponseDto {
     private String aiResponse;
     private boolean isDeleted;
 
+    @Builder
     private AiRequestHistoryResponseDto(
         UUID aiRequestHistoryId,
         AiCategory aiCategory,
@@ -38,12 +40,12 @@ public class AiRequestHistoryResponseDto {
      * @return AiRequestHistoryResponseDto
      */
     public static AiRequestHistoryResponseDto fromAiRequestHistory(AiRequestHistoryEntity aiRequestHistory) {
-        return new AiRequestHistoryResponseDto(
-            aiRequestHistory.getAiRequestHistoryId(),
-            aiRequestHistory.getAiCategory(),
-            aiRequestHistory.getAiRequest(),
-            aiRequestHistory.getAiResponse(),
-            aiRequestHistory.isDeleted()
-        );
+        return AiRequestHistoryResponseDto.builder()
+            .aiRequestHistoryId(aiRequestHistory.getAiRequestHistoryId())
+            .aiCategory(aiRequestHistory.getAiCategory())
+            .aiRequest(aiRequestHistory.getAiRequest())
+            .aiResponse(aiRequestHistory.getAiResponse())
+            .isDeleted(aiRequestHistory.isDeleted())
+            .build();
     }
 }

@@ -1,7 +1,7 @@
 package com.coopang.ainoti.application.response.noti;
 
 
-import com.coopang.ainoti.application.enums.SlackMessageStatus;
+import com.coopang.apidata.application.noti.enums.SlackMessageStatus;
 import com.coopang.ainoti.domain.entity.noti.SlackMessageEntity;
 import lombok.Builder;
 import lombok.Getter;

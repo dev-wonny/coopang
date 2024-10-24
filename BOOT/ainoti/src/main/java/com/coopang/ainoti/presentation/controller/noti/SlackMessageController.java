@@ -1,7 +1,6 @@
 package com.coopang.ainoti.presentation.controller.noti;
 
 
-import com.coopang.ainoti.application.enums.SlackMessageStatus;
 import com.coopang.ainoti.application.request.noti.SlackMessageDto;
 import com.coopang.ainoti.application.request.noti.SlackMessageSearchConditionDto;
 import com.coopang.ainoti.application.response.noti.SlackMessageResponseDto;
@@ -10,6 +9,7 @@ import com.coopang.ainoti.presentation.request.noti.CreateSlackMessageRequestDto
 import com.coopang.ainoti.presentation.request.noti.SlackMessageSearchConditionRequestDto;
 import com.coopang.ainoti.presentation.request.noti.UpdateSlackMessageRequestDto;
 import com.coopang.apiconfig.datetime.DateTimeUtil;
+import com.coopang.apidata.application.noti.enums.SlackMessageStatus;
 import com.coopang.coredata.user.enums.UserRoleEnum;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -72,7 +72,7 @@ public class SlackMessageController {
      */
     @Secured({UserRoleEnum.Authority.SERVER, UserRoleEnum.Authority.MASTER})
     @GetMapping("/{slackMessageId}")
-    public ResponseEntity<SlackMessageResponseDto> getSlackMessageById(@PathVariable UUID slackMessageId) {
+    public ResponseEntity<SlackMessageResponseDto> getSlackMessageInfo(@PathVariable UUID slackMessageId) {
         final SlackMessageResponseDto slackMessage = slackMessageService.getValidSlackMessageById(slackMessageId);
         return new ResponseEntity<>(slackMessage, HttpStatus.OK);
     }
@@ -93,7 +93,7 @@ public class SlackMessageController {
         , @RequestParam(value = "isDeleted", required = false, defaultValue = "false") boolean isDeleted
         , Pageable pageable) {
 
-        final SlackMessageSearchConditionDto condition = SlackMessageSearchConditionDto.from(
+        final SlackMessageSearchConditionDto condition = SlackMessageSearchConditionDto.of(
             slackMessageId
             , receiveSlackId
             , receiveUserId
@@ -118,7 +118,7 @@ public class SlackMessageController {
         if (ObjectUtils.isEmpty(req)) {
             condition = SlackMessageSearchConditionDto.empty();
         } else {
-            condition = SlackMessageSearchConditionDto.from(
+            condition = SlackMessageSearchConditionDto.of(
                 req.getSlackMessageId()
                 , req.getReceiveSlackId()
                 , req.getReceiveUserId()

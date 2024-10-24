@@ -1,6 +1,6 @@
 package com.coopang.ainoti.application.request.noti;
 
-import com.coopang.ainoti.application.enums.SlackMessageStatus;
+import com.coopang.apidata.application.noti.enums.SlackMessageStatus;
 import lombok.Builder;
 import lombok.Getter;
 import org.apache.commons.lang3.ObjectUtils;
@@ -54,7 +54,7 @@ public class SlackMessageSearchConditionDto {
             .build();
     }
 
-    public static SlackMessageSearchConditionDto from(
+    public static SlackMessageSearchConditionDto of(
         UUID slackMessageId
         , String receiveSlackId
         , UUID receiveUserId

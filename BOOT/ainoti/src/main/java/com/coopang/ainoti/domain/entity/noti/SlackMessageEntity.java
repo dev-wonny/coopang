@@ -1,6 +1,6 @@
 package com.coopang.ainoti.domain.entity.noti;
 
-import com.coopang.ainoti.application.enums.SlackMessageStatus;
+import com.coopang.apidata.application.noti.enums.SlackMessageStatus;
 import com.coopang.apidata.jpa.entity.base.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

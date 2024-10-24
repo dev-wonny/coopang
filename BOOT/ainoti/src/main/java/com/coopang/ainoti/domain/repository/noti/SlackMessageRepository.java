@@ -1,6 +1,6 @@
 package com.coopang.ainoti.domain.repository.noti;
 
-import com.coopang.ainoti.application.enums.SlackMessageStatus;
+import com.coopang.apidata.application.noti.enums.SlackMessageStatus;
 import com.coopang.ainoti.application.request.noti.SlackMessageSearchConditionDto;
 import com.coopang.ainoti.domain.entity.noti.SlackMessageEntity;
 import org.springframework.data.domain.Page;

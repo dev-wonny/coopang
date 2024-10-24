@@ -1,7 +1,7 @@
 package com.coopang.ainoti.application.service.noti;
 
 
-import com.coopang.ainoti.application.enums.SlackMessageStatus;
+import com.coopang.apidata.application.noti.enums.SlackMessageStatus;
 import com.coopang.ainoti.application.request.noti.SlackMessageDto;
 import com.coopang.ainoti.application.request.noti.SlackMessageSearchConditionDto;
 import com.coopang.ainoti.application.response.noti.SlackMessageResponseDto;
