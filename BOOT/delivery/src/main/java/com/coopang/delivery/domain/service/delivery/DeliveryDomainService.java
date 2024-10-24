@@ -7,6 +7,7 @@ import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
 import com.coopang.apidata.application.shipper.request.ShipperSearchConditionRequest;
 import com.coopang.apidata.application.shipper.response.ShipperResponse;
 import com.coopang.delivery.application.request.delivery.DeliveryDto;
+import com.coopang.delivery.application.service.DeliveryHistoryService;
 import com.coopang.delivery.application.service.deliveryuserhistory.DeliveryUserHistoryService;
 import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;
 import com.coopang.delivery.infrastructure.repository.delivery.DeliveryJpaRepository;
@@ -26,20 +27,20 @@ public class DeliveryDomainService {
     Todo : 배송지 수정시 인접허브 찾아서 해당 배송 ID 수정이 일어나게 끔하기
      */
     private final DeliveryJpaRepository deliveryJpaRepository;
-    private final DeliveryHubHistoryService deliveryHubHistoryService;
+    private final DeliveryHistoryService deliveryHistoryService;
     private final DeliveryUserHistoryService deliveryUserHistoryService;
     private final ShipperClientService shipperClientService;
     private final FeignConfig feignConfig;
 
     public DeliveryDomainService(
             DeliveryJpaRepository deliveryJpaRepository,
-            DeliveryHubHistoryService deliveryHubHistoryService,
+            DeliveryHistoryService deliveryHistoryService,
             DeliveryUserHistoryService deliveryUserHistoryService,
             ShipperClientService shipperClientService,
             FeignConfig feignConfig
     ) {
         this.deliveryJpaRepository = deliveryJpaRepository;
-        this.deliveryHubHistoryService = deliveryHubHistoryService;
+        this.deliveryHistoryService = deliveryHistoryService;
         this.deliveryUserHistoryService = deliveryUserHistoryService;
         this.shipperClientService = shipperClientService;
         this.feignConfig = feignConfig;
@@ -97,7 +98,7 @@ public class DeliveryDomainService {
             hubDelivery.setDeliveryStatus(DeliveryStatusEnum.ARRIVED_AT_DESTINATION_HUB);
 
             // 허브 배송 기록 채우기
-            deliveryHubHistoryService.createHubHistory(
+            deliveryHistoryService.createHubHistory(
                     hubDelivery.getDeliveryId(),
                     hubDelivery.getDepartureHubId(),
                     hubDelivery.getDestinationHubId(),

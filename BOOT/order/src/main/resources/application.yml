@@ -1,14 +1,14 @@
 server:
-  port: 19096
+  port: 19095
 
 spring:
   #    profiles:
   #        active: local
   application:
-    name: delivery
+    name: order
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/coopang_delivery
+    url: jdbc:postgresql://localhost:5432/coopang_order
     username: coopang
     password: q1w2e3r4!!
 

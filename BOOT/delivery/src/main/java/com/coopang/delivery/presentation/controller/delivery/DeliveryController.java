@@ -177,14 +177,13 @@ public class DeliveryController {
     }
 
 
-
     @GetMapping("/delivery/test")
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER})
     public ResponseEntity<List<OrderResponse>> getList() {
         feignConfig.changeHeaderRoleToServer();
         List<OrderResponse> orders = orderClientService.getOrderList();
         feignConfig.resetRole();
-        return new ResponseEntity<>(orders,HttpStatus.OK);
+        return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
     @PostMapping("/delivery/test/20")

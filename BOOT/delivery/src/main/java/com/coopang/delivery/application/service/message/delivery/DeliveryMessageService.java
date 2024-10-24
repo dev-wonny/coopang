@@ -43,27 +43,7 @@ public class DeliveryMessageService implements MessageService {
         if (topic.equals("cancel_delivery")){
             handleCancelDelivery(message);
         }
-        //        switch (topic) {
-//            case "complete_delivery":
-//                handleCompleteDelivery(message);
-//                break;
-//            case "cancel_delivery":
-//                handleCancelDelivery(message);
-//                break;
-//            default:
-//                log.warn("Unknown topic {}", topic);
-//        }
     }
-
-//    private void handleCompleteDelivery(String message) {
-//        try {
-//            ProcessDelivery processDelivery = objectMapper.readValue(message, ProcessDelivery.class);
-//            deliveryService.processCreateDelivery(processDelivery);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     private void handleCancelDelivery(String message) {
         try {
             CancelDelivery cancelDelivery = objectMapper.readValue(message, CancelDelivery.class);
@@ -103,18 +83,18 @@ public class DeliveryMessageService implements MessageService {
     delivery_shipper_id
     message (배송 건 리스트에 담아서 보내기)
      */
-    public void hubDeliveryNotification(List<DeliveryEntity> deliveries) {
-        StringBuilder messageBuilder = new StringBuilder();
-        for (DeliveryEntity deliveryEntity : deliveries) {
-            messageBuilder.append(deliveryEntity.toString()).append("\n"); // 각 배송 정보를 줄 바꿈으로 구분
-        }
-
-        HubDeliveryNotification hubDeliveryNotification = new HubDeliveryNotification();
-        hubDeliveryNotification.setDeliveryShipperId(deliveries.get(0).getHubShipperId());
-        hubDeliveryNotification.setMessage(messageBuilder.toString());
-
-        sendMessage("hub_delivery_notification", hubDeliveryNotification);
-    }
+//    public void hubDeliveryNotification(List<DeliveryEntity> deliveries) {
+//        StringBuilder messageBuilder = new StringBuilder();
+//        for (DeliveryEntity deliveryEntity : deliveries) {
+//            messageBuilder.append(deliveryEntity.toString()).append("\n"); // 각 배송 정보를 줄 바꿈으로 구분
+//        }
+//
+//        HubDeliveryNotification hubDeliveryNotification = new HubDeliveryNotification();
+//        hubDeliveryNotification.setDeliveryShipperId(deliveries.get(0).getHubShipperId());
+//        hubDeliveryNotification.setMessage(messageBuilder.toString());
+//
+//        sendMessage("hub_delivery_notification", hubDeliveryNotification);
+//    }
 
     /*
      slack쪽으로 메세지 정보 보내기 (고객 배송)
@@ -122,19 +102,19 @@ public class DeliveryMessageService implements MessageService {
     delivery_shipper_id
     message (배송 건 리스트에 담아서 보내기)
      */
-    public void userDeliveryNotification(List<DeliveryEntity> deliveries) {
-
-        StringBuilder messageBuilder = new StringBuilder();
-        for (DeliveryEntity deliveryEntity : deliveries) {
-            messageBuilder.append(deliveryEntity.toString()).append("\n"); // 각 배송 정보를 줄 바꿈으로 구분
-        }
-
-        UserDeliveryNotification userDeliveryNotification = new UserDeliveryNotification();
-        userDeliveryNotification.setDeliveryShipperId(deliveries.get(0).getUserShipperId());
-        userDeliveryNotification.setMessage(messageBuilder.toString());
-
-        sendMessage("user_delivery_notification", userDeliveryNotification);
-    }
+//    public void userDeliveryNotification(List<DeliveryEntity> deliveries) {
+//
+//        StringBuilder messageBuilder = new StringBuilder();
+//        for (DeliveryEntity deliveryEntity : deliveries) {
+//            messageBuilder.append(deliveryEntity.toString()).append("\n"); // 각 배송 정보를 줄 바꿈으로 구분
+//        }
+//
+//        UserDeliveryNotification userDeliveryNotification = new UserDeliveryNotification();
+//        userDeliveryNotification.setDeliveryShipperId(deliveries.get(0).getUserShipperId());
+//        userDeliveryNotification.setMessage(messageBuilder.toString());
+//
+//        sendMessage("user_delivery_notification", userDeliveryNotification);
+//    }
 
     /*
     공통 메서드
