@@ -99,3 +99,171 @@ docker-compose down
 ```
 This will stop and clean up all the containers created by the docker-compose file.
 
+---
+
+## 🛠️ Multi-Module Application: Local Service Startup Order
+After setting up the settings.gradle, run the Gradle build.
+
+### Settings for settings.gradle
+
+```yml
+rootProject.name = 'coopang'
+
+// CLOUD (System)
+include 'CLOUD:eureka'
+
+// DATA (Domain)
+include 'DATA:api-data'
+include 'DATA:core-data'
+
+// INFRA (Integration)
+include 'INFRA:api-config'
+include 'INFRA:api-communication'
+include 'INFRA:auth-common'
+
+// BOOT (Server)
+include 'BOOT:gateway', 'BOOT:user', 'BOOT:hub'
+include 'BOOT:product'
+include 'BOOT:order', 'BOOT:delivery'
+include 'BOOT:ainoti'
+```
+
+
+----
+
+
+
+### 1. CLOUD:eureka Start
+- Port:19090
+
+
+### 2. BOOT:user Start
+- Port:19092
+- Seed Data:
+  - 4 Master users
+  - 11 Hub Managers
+  - 1 Customer per hub
+  - 33 Shippers (distributed across hubs)
+  - 2 Company users per hub
+- application.yml -> Make seed data
+
+```yml
+data:
+    init:
+        enabled: true  # Set to true to run initialization tasks, false to disable
+```
+- Dependencies:
+```gradle
+  implementation project(':DATA:core-data')
+  implementation project(':DATA:api-data')
+  implementation project(':INFRA:api-config')
+  implementation project(':INFRA:auth-common')
+```
+- swagger
+  http://localhost:19092/swagger-ui/index.html
+
+### 3. BOOT:hub Start 
+- Port:19093
+- Seed Data:
+  - 11 hubs
+  - 2 companies per hub
+  - 1 Shipper Hub per hub
+  - 2 Shipper Customers per hub
+- application.yml -> Make seed data
+```yml
+data:
+    init:
+        enabled: true  # Set to true to run initialization tasks, false to disable
+```
+- Dependencies:
+
+```gradle
+  implementation project(':DATA:core-data')
+  implementation project(':DATA:api-data')
+  implementation project(':INFRA:api-config')
+  implementation project(':INFRA:api-communication')
+```
+- swagger
+  http://localhost:19093/swagger-ui/index.html
+
+
+---
+
+## Kafka Prerequisite: Start  BOOT:product, BOOT:order, BOOT:delivery
+- Make sure Kafka is running before starting product, order, and delivery.
+- Check configuration in:
+- INFRA/api-communication/src/main/resources/application.yml.
+
+
+### 4. BOOT:product Start
+- Port:19094
+- Seed Data:
+  - 20 categories
+  - 10 products, 10 inventory items, 10 inventory records
+- application.yml -> Make seed data
+```yml
+data:
+    init:
+        enabled: true  # Set to true to run initialization tasks, false to disable
+```
+- Dependencies:
+
+```gradle
+  implementation project(':DATA:core-data')
+  implementation project(':DATA:api-data')
+  implementation project(':INFRA:api-config')
+  implementation project(':INFRA:api-communication')
+```
+- swagger
+  http://localhost:19094/swagger-ui/index.html
+
+
+### 5. BOOT:order Start 
+- Port:19095
+- Dependencies:
+
+```gradle
+  implementation project(':DATA:core-data')
+  implementation project(':DATA:api-data')
+  implementation project(':INFRA:api-config')
+  implementation project(':INFRA:api-communication')
+```
+- swagger
+  http://localhost:19095/swagger-ui/index.html
+
+### 6. BOOT:delivery Start 
+- Port:19096
+- Dependencies:
+
+```gradle
+  implementation project(':DATA:core-data')
+  implementation project(':DATA:api-data')
+  implementation project(':INFRA:api-config')
+  implementation project(':INFRA:api-communication')
+```
+- swagger
+  http://localhost:19096/swagger-ui/index.html
+
+### 7. BOOT:ainoti Start 
+- port:19097
+- Dependencies:
+
+```gradle
+  implementation project(':DATA:core-data')
+  implementation project(':DATA:api-data')
+  implementation project(':INFRA:api-config')
+  implementation project(':INFRA:api-communication')
+```
+- swagger
+  http://localhost:19097/swagger-ui/index.html
+
+### 8. BOOT:gateway Start 
+- Port:19091
+- Dependencies:
+
+```gradle
+  implementation project(':DATA:core-data')
+  implementation project(':INFRA:auth-common')
+ ```
+- swagger
+  http://localhost:19091/swagger-ui/index.html
