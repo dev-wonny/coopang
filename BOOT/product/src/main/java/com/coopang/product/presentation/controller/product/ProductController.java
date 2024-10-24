@@ -15,7 +15,8 @@ import com.coopang.product.application.response.ProductWithStockResponseDto;
 import com.coopang.product.application.response.product.ProductResponseDto;
 import com.coopang.product.application.service.ProductWithStockAndHistoryService;
 import com.coopang.product.application.service.ProductWithStockService;
-import com.coopang.product.application.service.product.ProductPermissionValidator;
+import com.coopang.product.application.service.feignclient.CompanyFeignClientService;
+import com.coopang.product.application.service.feignclient.HubManagerPermissionValidator;
 import com.coopang.product.application.service.product.ProductService;
 import com.coopang.product.presentation.request.product.CreateProductRequestDto;
 import com.coopang.product.presentation.request.product.ProductBaseSearchConditionRequestDto;
@@ -59,7 +60,8 @@ public class ProductController {
     private final ProductWithStockService productWithStockService;
     private final ProductWithStockAndHistoryService productWithStockAndHistoryService;
     private final ProductService productService;
-    private final ProductPermissionValidator productPermissionValidator;
+    private final HubManagerPermissionValidator hubManagerPermissionValidator;
+    private final CompanyFeignClientService companyFeignClientService;
 
     //상품 생성
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
@@ -191,9 +193,9 @@ public class ProductController {
     public ResponseEntity<ProductWithStockResponseDto> getProductById(@RequestHeader(HEADER_USER_ROLE) String role, @PathVariable UUID productId) {
 
         ProductWithStockResponseDto productWithStockResponseDto;
-        if (UserRoleEnum.isMaster(role)) {
+        if (UserRoleEnum.isMaster(role)) {//삭제된 상품 포함하여 조회
             productWithStockResponseDto = productWithStockService.getProductWithStockById(productId);
-        } else {
+        } else {//삭제된 상품 미포함하여 조회
             productWithStockResponseDto = productWithStockService.getValidProductWithStockById(productId);
         }
         return new ResponseEntity<>(productWithStockResponseDto, HttpStatus.OK);
@@ -215,9 +217,9 @@ public class ProductController {
      */
     private void validationHubOrCompany(String userRole, String userId, UUID targetId) {
         if (UserRoleEnum.isHubManager(userRole)) {
-            productPermissionValidator.verifyCompanyOfHubManager(userRole, UUID.fromString(userId), targetId);
+            companyFeignClientService.validateCompanyOwner(UUID.fromString(userId), targetId);
         } else {
-            productPermissionValidator.verifyCompanyOfCompanyManager(userRole, UUID.fromString(userId), targetId);
+            hubManagerPermissionValidator.validateHubManager(UUID.fromString(userId), targetId);
         }
     }
 
@@ -234,9 +236,9 @@ public class ProductController {
         UUID companyId = productResponseDto.getCompanyId();
 
         if (UserRoleEnum.isCompany(userRole)) {
-            productPermissionValidator.verifyCompanyOfCompanyManager(userRole, UUID.fromString(userId), companyId);
+            companyFeignClientService.validateCompanyOwner(UUID.fromString(userId), companyId);
         } else {
-            productPermissionValidator.verifyCompanyOfHubManager(userRole, UUID.fromString(userId), companyId);
+            hubManagerPermissionValidator.validateHubManager(UUID.fromString(userId), companyId);
         }
     }
 
