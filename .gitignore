@@ -32,13 +32,10 @@ release.properties
 .gradle/
 **/gradle/
 /build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 gradle-app.setting
 **/gradle-app.setting
-**/gradle/wrapper/gradle-wrapper.properties
 *.bat
 
 # STS (Spring Tool Suite) 관련

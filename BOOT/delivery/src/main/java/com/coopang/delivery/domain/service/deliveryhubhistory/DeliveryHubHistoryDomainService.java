@@ -21,18 +21,18 @@ public class DeliveryHubHistoryDomainService {
     }
 
     public void createHubHistory(
-            UUID deliveryId,
-            UUID departureHubId,
-            UUID arrivalHubId,
-            UUID hubShipperId,
-            DeliveryStatusEnum deliveryRouteHistoryStatus
+            UUID deliveryId
+            , UUID departureHubId
+            , UUID arrivalHubId
+            , UUID hubShipperId
+            , DeliveryStatusEnum deliveryRouteHistoryStatus
     ) {
         DeliveryHubHistoryEntity deliveryHubHistoryEntity = DeliveryHubHistoryEntity.create(
-                deliveryId,
-                departureHubId,
-                arrivalHubId,
-                hubShipperId,
-                deliveryRouteHistoryStatus
+                deliveryId
+                , departureHubId
+                , arrivalHubId
+                , hubShipperId
+                , deliveryRouteHistoryStatus
         );
 
         deliveryHubHistoryJpaRepository.save(deliveryHubHistoryEntity);

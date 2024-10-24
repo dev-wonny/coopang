@@ -18,12 +18,12 @@ public class DeliveryHistoryResponseDto {
     private UUID shipperId;
 
     public DeliveryHistoryResponseDto(
-            UUID deliveryId,
-            UUID departureHubId,
-            UUID destinationHubId,
-            DeliveryStatusEnum deliveryStatus,
-            LocalDateTime createdAt,
-            UUID shipperId
+            UUID deliveryId
+            , UUID departureHubId
+            , UUID destinationHubId
+            , DeliveryStatusEnum deliveryStatus
+            , LocalDateTime createdAt
+            , UUID shipperId
     ) {
         this.deliveryId = deliveryId;
         this.departureHubId = departureHubId;

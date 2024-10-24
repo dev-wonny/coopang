@@ -7,7 +7,6 @@ import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
 import com.coopang.apidata.application.shipper.request.ShipperSearchConditionRequest;
 import com.coopang.apidata.application.shipper.response.ShipperResponse;
 import com.coopang.delivery.application.request.delivery.DeliveryDto;
-import com.coopang.delivery.application.service.DeliveryHistoryService;
 import com.coopang.delivery.application.service.deliveryhubhistory.DeliveryHubHistoryService;
 import com.coopang.delivery.application.service.deliveryuserhistory.DeliveryUserHistoryService;
 import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;
@@ -24,9 +23,6 @@ import java.util.UUID;
 @Transactional
 public class DeliveryDomainService {
 
-    /*
-    Todo : 배송지 수정시 인접허브 찾아서 해당 배송 ID 수정이 일어나게 끔하기
-     */
     private final DeliveryJpaRepository deliveryJpaRepository;
     private final DeliveryHubHistoryService deliveryHubHistoryService;
     private final DeliveryUserHistoryService deliveryUserHistoryService;
@@ -34,11 +30,11 @@ public class DeliveryDomainService {
     private final FeignConfig feignConfig;
 
     public DeliveryDomainService(
-            DeliveryJpaRepository deliveryJpaRepository,
-            DeliveryHubHistoryService deliveryHubHistoryService,
-            DeliveryUserHistoryService deliveryUserHistoryService,
-            ShipperClientService shipperClientService,
-            FeignConfig feignConfig
+            DeliveryJpaRepository deliveryJpaRepository
+            , DeliveryHubHistoryService deliveryHubHistoryService
+            , DeliveryUserHistoryService deliveryUserHistoryService
+            , ShipperClientService shipperClientService
+            , FeignConfig feignConfig
     ) {
         this.deliveryJpaRepository = deliveryJpaRepository;
         this.deliveryHubHistoryService = deliveryHubHistoryService;
@@ -51,13 +47,13 @@ public class DeliveryDomainService {
             DeliveryDto deliveryDto
     ) {
         DeliveryEntity deliveryEntity = DeliveryEntity.create(
-                deliveryDto.getOrderId(),
-                deliveryDto.getDepartureHubId(),
-                deliveryDto.getDestinationHubId(),
-                deliveryDto.getZipCode(),
-                deliveryDto.getAddress1(),
-                deliveryDto.getAddress2(),
-                deliveryDto.getHubShipperId()
+                deliveryDto.getOrderId()
+                , deliveryDto.getDepartureHubId()
+                , deliveryDto.getDestinationHubId()
+                , deliveryDto.getZipCode()
+                , deliveryDto.getAddress1()
+                , deliveryDto.getAddress2()
+                , deliveryDto.getHubShipperId()
         );
 
         return deliveryJpaRepository.save(deliveryEntity);
@@ -65,23 +61,23 @@ public class DeliveryDomainService {
 
     // 배송 등록 - 주문 등록 후 바로 이어지는..
     public DeliveryEntity createProcessDelivery(
-            UUID orderId,
-            UUID productHubId,
-            UUID nearHubId,
-            String zipCode,
-            String address1,
-            String address2,
-            UUID hubShipperId
+            UUID orderId
+            , UUID productHubId
+            , UUID nearHubId
+            , String zipCode
+            , String address1
+            , String address2
+            , UUID hubShipperId
     ) {
         // 배송 정보 생성하기
         DeliveryEntity deliveryEntity = DeliveryEntity.create(
-                orderId,
-                productHubId,
-                nearHubId,
-                zipCode,
-                address1,
-                address2,
-                hubShipperId
+                orderId
+                , productHubId
+                , nearHubId
+                , zipCode
+                , address1
+                , address2
+                , hubShipperId
         );
         return deliveryJpaRepository.save(deliveryEntity);
     }
@@ -100,11 +96,11 @@ public class DeliveryDomainService {
 
             // 허브 배송 기록 채우기
             deliveryHubHistoryService.createHubHistory(
-                    hubDelivery.getDeliveryId(),
-                    hubDelivery.getDepartureHubId(),
-                    hubDelivery.getDestinationHubId(),
-                    hubDelivery.getHubShipperId(),
-                    hubDelivery.getDeliveryStatus()
+                    hubDelivery.getDeliveryId()
+                    , hubDelivery.getDepartureHubId()
+                    , hubDelivery.getDestinationHubId()
+                    , hubDelivery.getHubShipperId()
+                    , hubDelivery.getDeliveryStatus()
             );
         }
         // 1. 고객 배송기사님 정보 가져오기
@@ -129,13 +125,13 @@ public class DeliveryDomainService {
             // 고객 배송 기록 채우기
             userDelivery.setDeliveryStatus(DeliveryStatusEnum.CUSTOMER_DELIVERY_ASSIGNMENT_IN_PROGRESS);
             deliveryUserHistoryService.createUserHistory(
-                    userDelivery.getDeliveryId(),
-                    userDelivery.getDepartureHubId(),
-                    userDelivery.getAddressEntity().getZipCode(),
-                    userDelivery.getAddressEntity().getAddress1(),
-                    userDelivery.getAddressEntity().getAddress2(),
-                    userDelivery.getUserShipperId(),
-                    userDelivery.getDeliveryStatus()
+                    userDelivery.getDeliveryId()
+                    , userDelivery.getDepartureHubId()
+                    , userDelivery.getAddressEntity().getZipCode()
+                    , userDelivery.getAddressEntity().getAddress1()
+                    , userDelivery.getAddressEntity().getAddress2()
+                    , userDelivery.getUserShipperId()
+                    , userDelivery.getDeliveryStatus()
             );
         }
     }
@@ -145,13 +141,13 @@ public class DeliveryDomainService {
         deliveryEntity.setDeliveryStatus(DeliveryStatusEnum.DELIVERY_COMPLETED_TO_CUSTOMER);
 
         deliveryUserHistoryService.createUserHistory(
-                deliveryEntity.getDeliveryId(),
-                deliveryEntity.getDepartureHubId(),
-                deliveryEntity.getAddressEntity().getZipCode(),
-                deliveryEntity.getAddressEntity().getAddress1(),
-                deliveryEntity.getAddressEntity().getAddress2(),
-                deliveryEntity.getUserShipperId(),
-                DeliveryStatusEnum.DELIVERY_COMPLETED_TO_CUSTOMER
+                deliveryEntity.getDeliveryId()
+                , deliveryEntity.getDepartureHubId()
+                , deliveryEntity.getAddressEntity().getZipCode()
+                , deliveryEntity.getAddressEntity().getAddress1()
+                , deliveryEntity.getAddressEntity().getAddress2()
+                , deliveryEntity.getUserShipperId()
+                , DeliveryStatusEnum.DELIVERY_COMPLETED_TO_CUSTOMER
         );
     }
 }

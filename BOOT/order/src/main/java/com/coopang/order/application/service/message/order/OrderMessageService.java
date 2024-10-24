@@ -67,8 +67,6 @@ public class OrderMessageService implements MessageService {
             log.info("Product complete received: {}", completeProduct.getOrderId());
             // 주문 상태 변경
             orderService.updateOrderStatus(completeProduct.getOrderId(), OrderStatusEnum.PENDING);
-            // 배송쪽으로 보내기
-//            sendProcessDelivery(completeProduct.getOrderId());
         } catch (Exception e) {
             log.error("Error while processing listenCompleteProduct: {}", e.getMessage(), e);
             throw new RuntimeException(e); // 예외 처리

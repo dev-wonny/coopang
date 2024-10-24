@@ -7,5 +7,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface PaymentHistoryRepositoryCustom {
     Page<PaymentHistoryEntity> search(PaymentHistorySearchConditionDto paymentHistorySearchConditionDto, Pageable pageable);
+
     Page<PaymentHistoryEntity> findAll(PaymentHistorySearchConditionDto paymentHistorySearchConditionDto, Pageable pageable);
 }

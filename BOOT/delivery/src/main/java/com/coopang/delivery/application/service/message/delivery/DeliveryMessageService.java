@@ -26,10 +26,10 @@ public class DeliveryMessageService implements MessageService {
     private final DeliveryService deliveryService;
 
     public DeliveryMessageService(
-            ObjectMapper objectMapper,
-            MessageProducer messageProducer,
-            DeliveryDomainService deliveryDomainService,
-            DeliveryService deliveryService
+            ObjectMapper objectMapper
+            , MessageProducer messageProducer
+            , DeliveryDomainService deliveryDomainService
+            , DeliveryService deliveryService
     ) {
         this.objectMapper = objectMapper;
         this.messageProducer = messageProducer;
@@ -40,10 +40,11 @@ public class DeliveryMessageService implements MessageService {
     @Override
     public void processMessage(String topic, String message) {
         log.info("Processing delivery topic {} message {}", topic, message);
-        if (topic.equals("cancel_delivery")){
+        if (topic.equals("cancel_delivery")) {
             handleCancelDelivery(message);
         }
     }
+
     private void handleCancelDelivery(String message) {
         try {
             CancelDelivery cancelDelivery = objectMapper.readValue(message, CancelDelivery.class);

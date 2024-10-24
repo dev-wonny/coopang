@@ -47,13 +47,13 @@ public class PaymentHistoryEntity extends BaseEntity {
 
     @Builder
     private PaymentHistoryEntity(
-            UUID paymentHistoryId,
-            UUID pgPaymentId,
-            UUID orderId,
-            PaymentMethodEnum paymentMethod,
-            BigDecimal paymentPrice,
-            PaymentStatusEnum paymentStatus
-    ){
+            UUID paymentHistoryId
+            , UUID pgPaymentId
+            , UUID orderId
+            , PaymentMethodEnum paymentMethod
+            , BigDecimal paymentPrice
+            , PaymentStatusEnum paymentStatus
+    ) {
         this.paymentHistoryId = paymentHistoryId;
         this.pgPaymentId = pgPaymentId;
         this.orderId = orderId;
@@ -63,11 +63,11 @@ public class PaymentHistoryEntity extends BaseEntity {
     }
 
     public static PaymentHistoryEntity create(
-            UUID orderId,
-            UUID pgPaymentId,
-            PaymentMethodEnum paymentMethod,
-            BigDecimal paymentPrice
-    ){
+            UUID orderId
+            , UUID pgPaymentId
+            , PaymentMethodEnum paymentMethod
+            , BigDecimal paymentPrice
+    ) {
         return PaymentHistoryEntity.builder()
                 .orderId(orderId)
                 .pgPaymentId(pgPaymentId)

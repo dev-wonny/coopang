@@ -31,60 +31,63 @@ public class PaymentHistoryService {
     }
 
     /*
-    Todo : 결제 기록 생성
+    결제 기록 생성
      */
     public PaymentHistoryResponseDto createPaymentHistory(PaymentHistoryDto paymentHistoryDto) {
         PaymentHistoryEntity paymentHistoryEntity = paymentHistoryDomainService.createPaymentHistory(paymentHistoryDto);
         log.info("PaymentHistory created successfully: {}", paymentHistoryEntity);
         return PaymentHistoryResponseDto.fromPaymentHistory(paymentHistoryEntity);
     }
+
     /*
-    Todo : 결제 기록 단건 조회
+    결제 기록 단건 조회
      */
     @Transactional(readOnly = true)
     public PaymentHistoryResponseDto findById(UUID paymentHistoryId) {
         PaymentHistoryEntity paymentHistoryEntity = findByPaymentHistoryId(paymentHistoryId);
         return PaymentHistoryResponseDto.fromPaymentHistory(paymentHistoryEntity);
     }
+
     /*
-    Todo : 결제 기록 전체 조회
+    결제 기록 전체 조회
      */
     @Transactional(readOnly = true)
-    public Page<PaymentHistoryResponseDto> findAllPaymentHistory(PaymentHistorySearchConditionDto conditionDto,Pageable pageable) {
-        Page<PaymentHistoryEntity> paymentHistoryEntities = paymentHistoryRepository.findAll(conditionDto,pageable);
+    public Page<PaymentHistoryResponseDto> findAllPaymentHistory(PaymentHistorySearchConditionDto conditionDto, Pageable pageable) {
+        Page<PaymentHistoryEntity> paymentHistoryEntities = paymentHistoryRepository.findAll(conditionDto, pageable);
         return paymentHistoryEntities.map(PaymentHistoryResponseDto::fromPaymentHistory);
     }
 
     /*
-    Todo : 결제 기록 검색
+    결제 기록 검색
      */
     @Transactional(readOnly = true)
-    public Page<PaymentHistoryResponseDto> findAllSearchPaymentHistory(PaymentHistorySearchConditionDto conditionDto,Pageable pageable) {
-        Page<PaymentHistoryEntity> paymentHistoryEntities = paymentHistoryRepository.search(conditionDto,pageable);
+    public Page<PaymentHistoryResponseDto> findAllSearchPaymentHistory(PaymentHistorySearchConditionDto conditionDto, Pageable pageable) {
+        Page<PaymentHistoryEntity> paymentHistoryEntities = paymentHistoryRepository.search(conditionDto, pageable);
         return paymentHistoryEntities.map(PaymentHistoryResponseDto::fromPaymentHistory);
     }
 
     /*
-    Todo : 결제 기록 수정
+    결제 기록 수정
      */
-    public void updatePaymentHistory(UUID paymentHistoryId){
+    public void updatePaymentHistory(UUID paymentHistoryId) {
         PaymentHistoryEntity paymentHistoryEntity = findByPaymentHistoryId(paymentHistoryId);
         log.info("PaymentHistory update successfully: {}", paymentHistoryEntity);
     }
 
     /*
-    Todo : 결제 기록 삭제
+    결제 기록 삭제
      */
-    public void deletePaymentHistory(UUID paymentHistoryId){
+    public void deletePaymentHistory(UUID paymentHistoryId) {
         PaymentHistoryEntity paymentHistoryEntity = findByPaymentHistoryId(paymentHistoryId);
         paymentHistoryEntity.setDeleted(true);
         log.debug("deletePaymentHistory successfully: {}", paymentHistoryEntity);
     }
+
     /*
     공통 메서드
     1. id 값 찾기
      */
-    private PaymentHistoryEntity findByPaymentHistoryId(UUID paymentHistoryId){
+    private PaymentHistoryEntity findByPaymentHistoryId(UUID paymentHistoryId) {
         return paymentHistoryRepository.findById(paymentHistoryId)
                 .orElseThrow(() -> new IllegalArgumentException("PaymentHistory not found. paymentHistoryId=" + paymentHistoryId));
     }

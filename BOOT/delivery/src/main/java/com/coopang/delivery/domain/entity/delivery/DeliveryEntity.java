@@ -10,7 +10,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -53,13 +52,13 @@ public class DeliveryEntity extends BaseEntity {
 
     @Builder
     private DeliveryEntity(
-            UUID orderId,
-            UUID departureHubId,
-            UUID destinationHubId,
-            AddressEntity addressEntity,
-            UUID hubShipperId,
-            UUID userShipperId,
-            DeliveryStatusEnum deliveryStatus
+            UUID orderId
+            , UUID departureHubId
+            , UUID destinationHubId
+            , AddressEntity addressEntity
+            , UUID hubShipperId
+            , UUID userShipperId
+            , DeliveryStatusEnum deliveryStatus
     ) {
         this.orderId = orderId;
         this.departureHubId = departureHubId;
@@ -71,13 +70,13 @@ public class DeliveryEntity extends BaseEntity {
     }
 
     public static DeliveryEntity create(
-            UUID orderId,
-            UUID departureHubId,
-            UUID destinationHubId,
-            String zipCode,
-            String address1,
-            String address2,
-            UUID hubShipperId
+            UUID orderId
+            , UUID departureHubId
+            , UUID destinationHubId
+            , String zipCode
+            , String address1
+            , String address2
+            , UUID hubShipperId
     ) {
         return DeliveryEntity.builder()
                 .orderId(orderId)

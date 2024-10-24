@@ -61,18 +61,18 @@ public class OrderEntity extends BaseEntity {
 
     @Builder
     private OrderEntity(
-            UUID orderId,
-            UUID userId,
-            UUID productId,
-            AddressEntity addressEntity,
-            Integer orderQuantity,
-            BigDecimal orderSinglePrice,
-            BigDecimal orderTotalPrice,
-            UUID companyId,
-            UUID productHubId,
-            UUID nearHubId,
-            OrderStatusEnum orderStatus
-    ){
+            UUID orderId
+            , UUID userId
+            , UUID productId
+            , AddressEntity addressEntity
+            , Integer orderQuantity
+            , BigDecimal orderSinglePrice
+            , BigDecimal orderTotalPrice
+            , UUID companyId
+            , UUID productHubId
+            , UUID nearHubId
+            , OrderStatusEnum orderStatus
+    ) {
         this.orderId = orderId;
         this.userId = userId;
         this.productId = productId;
@@ -87,21 +87,21 @@ public class OrderEntity extends BaseEntity {
     }
 
     public static OrderEntity create(
-            UUID userId,
-            UUID productId,
-            String zipCode,
-            String address1,
-            String address2,
-            Integer orderQuantity,
-            BigDecimal orderSinglePrice,
-            BigDecimal orderTotalPrice,
-            UUID productHubId,
-            UUID nearHubId
-    ){
+            UUID userId
+            , UUID productId
+            , String zipCode
+            , String address1
+            , String address2
+            , Integer orderQuantity
+            , BigDecimal orderSinglePrice
+            , BigDecimal orderTotalPrice
+            , UUID productHubId
+            , UUID nearHubId
+    ) {
         return OrderEntity.builder()
                 .userId(userId)
                 .productId(productId)
-                .addressEntity(AddressEntity.create(zipCode,address1,address2))
+                .addressEntity(AddressEntity.create(zipCode, address1, address2))
                 .orderQuantity(orderQuantity)
                 .orderSinglePrice(orderSinglePrice)
                 .orderTotalPrice(orderTotalPrice)
@@ -112,13 +112,13 @@ public class OrderEntity extends BaseEntity {
     }
 
     public void updateOrder(
-            UUID nearHubId,
-            String zipCode,
-            String address1,
-            String address2
-    ){
+            UUID nearHubId
+            , String zipCode
+            , String address1
+            , String address2
+    ) {
         this.nearHubId = nearHubId;
-        this.addressEntity.updateAddress(zipCode,address1,address2);
+        this.addressEntity.updateAddress(zipCode, address1, address2);
     }
 
     public void setOrderStatus(OrderStatusEnum orderStatus) {

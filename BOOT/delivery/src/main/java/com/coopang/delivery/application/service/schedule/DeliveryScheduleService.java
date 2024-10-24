@@ -7,7 +7,6 @@ import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
 import com.coopang.apidata.application.order.response.OrderResponse;
 import com.coopang.apidata.application.shipper.request.ShipperSearchConditionRequest;
 import com.coopang.apidata.application.shipper.response.ShipperResponse;
-import com.coopang.delivery.application.service.DeliveryHistoryService;
 import com.coopang.delivery.application.service.deliveryhubhistory.DeliveryHubHistoryService;
 import com.coopang.delivery.application.service.deliveryuserhistory.DeliveryUserHistoryService;
 import com.coopang.delivery.application.service.message.delivery.DeliveryMessageService;
@@ -39,14 +38,15 @@ public class DeliveryScheduleService {
     private final OrderClientService orderClientService;
 
     public DeliveryScheduleService(
-            DeliveryHubHistoryService deliveryHubHistoryService,
-            DeliveryUserHistoryService deliveryUserHistoryService,
-            DeliveryMessageService deliveryMessageService,
-            ShipperClientService shipperClientService,
-            FeignConfig feignConfig,
-            DeliveryRepository deliveryRepository,
-            DeliveryDomainService deliveryDomainService,
-            OrderClientService orderClientService) {
+            DeliveryHubHistoryService deliveryHubHistoryService
+            , DeliveryUserHistoryService deliveryUserHistoryService
+            , DeliveryMessageService deliveryMessageService
+            , ShipperClientService shipperClientService
+            , FeignConfig feignConfig
+            , DeliveryRepository deliveryRepository
+            , DeliveryDomainService deliveryDomainService
+            , OrderClientService orderClientService
+    ) {
         this.deliveryHubHistoryService = deliveryHubHistoryService;
         this.deliveryUserHistoryService = deliveryUserHistoryService;
         this.deliveryMessageService = deliveryMessageService;
@@ -78,16 +78,12 @@ public class DeliveryScheduleService {
         2. 배송 등록하면서 허브배송 기사님 같이 등록하기
          */
         feignConfig.changeHeaderRoleToServer();
-
         List<OrderResponse> orders = orderClientService.getOrderList();
-
         // 2. 허브 배송기사님 정보 가져오기
         ShipperSearchConditionRequest shipperSearchConditionRequest = new ShipperSearchConditionRequest();
         shipperSearchConditionRequest.setShipperType("SHIPPER_HUB");
         List<ShipperResponse> shippers = shipperClientService.getShipperList(shipperSearchConditionRequest);
-
         feignConfig.resetRole();
-
         // 3. 배송기사님 정보를 Map으로 변환 (허브 ID를 키로 사용)
         Map<UUID, UUID> shipperMap = new HashMap<>();
         for (ShipperResponse shipper : shippers) {
@@ -98,18 +94,16 @@ public class DeliveryScheduleService {
         for (OrderResponse order : orders) {
             // 출발지 허브 ID에 대한 배송기사님 찾기
             UUID hubShipperId = shipperMap.get(order.getProductHubId());
-
             // 1. 배송 등록
             DeliveryEntity deliveryEntity = deliveryDomainService.createProcessDelivery(
-                    order.getOrderId(),
-                    order.getProductHubId(),
-                    order.getNearHubId(),
-                    order.getAddress().getZipCode(),
-                    order.getAddress().getAddress1(),
-                    order.getAddress().getAddress2(),
-                    hubShipperId
+                    order.getOrderId()
+                    , order.getProductHubId()
+                    , order.getNearHubId()
+                    , order.getAddress().getZipCode()
+                    , order.getAddress().getAddress1()
+                    , order.getAddress().getAddress2()
+                    , hubShipperId
             );
-
             // 허브 기록 테이블에 기록하기
             deliveryHubHistoryService.createHubHistory(
                     deliveryEntity.getDeliveryId(),
@@ -118,7 +112,6 @@ public class DeliveryScheduleService {
                     deliveryEntity.getHubShipperId(),
                     deliveryEntity.getDeliveryStatus()
             );
-
             deliveryMessageService.processHubChangeStatus(deliveryEntity.getOrderId(), "HUB_DELIVERY_ASSIGNMENT_IN_PROGRESS");
         }
     }
@@ -145,7 +138,7 @@ public class DeliveryScheduleService {
     }
 
     // 스케줄링 - 고객 배송 출발 : 08시
-    @Scheduled(cron = "0 06 3 * * *")
+    @Scheduled(cron = "0 0 8 * * *")
     public void userDeliveryStart() {
         List<DeliveryEntity> deliveries = findByDeliveryStatus(DeliveryStatusEnum.CUSTOMER_DELIVERY_ASSIGNMENT_COMPLETED);
         updateStatusDeliveryUser(deliveries, DeliveryStatusEnum.MOVING_TO_CUSTOMER);
@@ -157,13 +150,12 @@ public class DeliveryScheduleService {
         for (DeliveryEntity deliveryEntity : deliveries) {
             deliveryEntity.setDeliveryStatus(deliveryStatus);
             deliveryHubHistoryService.createHubHistory(
-                    deliveryEntity.getDeliveryId(),
-                    deliveryEntity.getDepartureHubId(),
-                    deliveryEntity.getDestinationHubId(),
-                    deliveryEntity.getHubShipperId(),
-                    deliveryStatus
+                    deliveryEntity.getDeliveryId()
+                    , deliveryEntity.getDepartureHubId()
+                    , deliveryEntity.getDestinationHubId()
+                    , deliveryEntity.getHubShipperId()
+                    , deliveryStatus
             );
-
         }
     }
 
@@ -171,13 +163,13 @@ public class DeliveryScheduleService {
         for (DeliveryEntity deliveryEntity : deliveries) {
             deliveryEntity.setDeliveryStatus(deliveryStatus);
             deliveryUserHistoryService.createUserHistory(
-                    deliveryEntity.getDeliveryId(),
-                    deliveryEntity.getDepartureHubId(),
-                    deliveryEntity.getAddressEntity().getZipCode(),
-                    deliveryEntity.getAddressEntity().getAddress1(),
-                    deliveryEntity.getAddressEntity().getAddress2(),
-                    deliveryEntity.getUserShipperId(),
-                    deliveryStatus
+                    deliveryEntity.getDeliveryId()
+                    , deliveryEntity.getDepartureHubId()
+                    , deliveryEntity.getAddressEntity().getZipCode()
+                    , deliveryEntity.getAddressEntity().getAddress1()
+                    , deliveryEntity.getAddressEntity().getAddress2()
+                    , deliveryEntity.getUserShipperId()
+                    , deliveryStatus
             );
         }
     }

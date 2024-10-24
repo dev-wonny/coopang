@@ -28,22 +28,22 @@ public class DeliveryUserHistoryService {
     }
 
     public void createUserHistory(
-            UUID deliveryId,
-            UUID departureHubId,
-            String zipCode,
-            String address1,
-            String address2,
-            UUID userShipperId,
-            DeliveryStatusEnum deliveryRouteHistoryStatus
+            UUID deliveryId
+            , UUID departureHubId
+            , String zipCode
+            , String address1
+            , String address2
+            , UUID userShipperId
+            , DeliveryStatusEnum deliveryRouteHistoryStatus
     ) {
         deliveryUserHistoryDomainService.createUserHistory(
-                deliveryId,
-                departureHubId,
-                zipCode,
-                address1,
-                address2,
-                userShipperId,
-                deliveryRouteHistoryStatus
+                deliveryId
+                , departureHubId
+                , zipCode
+                , address1
+                , address2
+                , userShipperId
+                , deliveryRouteHistoryStatus
         );
     }
 

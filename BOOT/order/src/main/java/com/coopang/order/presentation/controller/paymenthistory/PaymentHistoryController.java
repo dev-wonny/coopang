@@ -39,7 +39,7 @@ public class PaymentHistoryController {
     Todo : 결제기록 생성
      */
     @PostMapping("/payment-history")
-    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
+    @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.CUSTOMER})
     public ResponseEntity<PaymentHistoryResponseDto> createPaymentHistory(@RequestBody PaymentHistoryRequestDto paymentHistoryRequestDto) {
         PaymentHistoryDto paymentHistoryDto = mapperConfig.standardMapper().map(paymentHistoryRequestDto, PaymentHistoryDto.class);
         PaymentHistoryResponseDto paymentHistoryResponseDto = paymentHistoryService.createPaymentHistory(paymentHistoryDto);
@@ -50,7 +50,7 @@ public class PaymentHistoryController {
     Todo : 결제기록 단건 조회
      */
     @GetMapping("/payment-history/{paymentHistoryId}")
-    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
+    @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.CUSTOMER})
     public ResponseEntity<PaymentHistoryResponseDto> getPaymentHistory(@PathVariable UUID paymentHistoryId) {
         PaymentHistoryResponseDto paymentHistoryResponseDto = paymentHistoryService.findById(paymentHistoryId);
         return new ResponseEntity<>(paymentHistoryResponseDto, HttpStatus.OK);
@@ -60,12 +60,12 @@ public class PaymentHistoryController {
     Todo : 결제기록 전체 조회
      */
     @GetMapping("/payment-history")
-    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
+    @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.CUSTOMER})
     public ResponseEntity<Page<PaymentHistoryResponseDto>> getAllPaymentHistory(
             PaymentHistorySearchConditionDto conditionDto,
             Pageable pageable
-    ){
-        Page<PaymentHistoryResponseDto> paymentHistoryResponseDtos = paymentHistoryService.findAllPaymentHistory(conditionDto,pageable);
+    ) {
+        Page<PaymentHistoryResponseDto> paymentHistoryResponseDtos = paymentHistoryService.findAllPaymentHistory(conditionDto, pageable);
         return new ResponseEntity<>(paymentHistoryResponseDtos, HttpStatus.OK);
     }
 
@@ -74,12 +74,12 @@ public class PaymentHistoryController {
     Todo : 결제기록 검색
      */
     @GetMapping("/payment-history/search")
-    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
+    @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.CUSTOMER})
     public ResponseEntity<Page<PaymentHistoryResponseDto>> getAllSearchPaymentHistory(
             PaymentHistorySearchConditionDto conditionDto,
             Pageable pageable
-    ){
-        Page<PaymentHistoryResponseDto> paymentHistoryResponseDtos = paymentHistoryService.findAllSearchPaymentHistory(conditionDto,pageable);
+    ) {
+        Page<PaymentHistoryResponseDto> paymentHistoryResponseDtos = paymentHistoryService.findAllSearchPaymentHistory(conditionDto, pageable);
         return new ResponseEntity<>(paymentHistoryResponseDtos, HttpStatus.OK);
     }
 
@@ -87,7 +87,7 @@ public class PaymentHistoryController {
     Todo : 결제기록 수정
      */
     @PutMapping("/payment-history/{paymentHistoryId}")
-    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
+    @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.CUSTOMER})
     public ResponseEntity<PaymentHistoryResponseDto> updatePaymentHistory(
             @PathVariable UUID paymentHistoryId
     ) {
@@ -100,10 +100,10 @@ public class PaymentHistoryController {
     Todo : 결제기록 삭제
      */
     @DeleteMapping("/payment-history/{paymentHistoryId}")
-    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
+    @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.CUSTOMER})
     public ResponseEntity<Void> deletePaymentHistory(
             @PathVariable UUID paymentHistoryId
-    ){
+    ) {
         paymentHistoryService.deletePaymentHistory(paymentHistoryId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

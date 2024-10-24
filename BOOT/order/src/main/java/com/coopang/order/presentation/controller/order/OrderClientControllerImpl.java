@@ -6,5 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class OrderClientControllerImpl extends OrderClientController {
-    public OrderClientControllerImpl(OrderClientService orderClientService) {super(orderClientService);}
+    public OrderClientControllerImpl(OrderClientService orderClientService) {
+        super(orderClientService);
+    }
 }

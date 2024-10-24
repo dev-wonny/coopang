@@ -1,6 +1,5 @@
 package com.coopang.delivery.application.service.delivery;
 
-import com.coopang.apicommunication.kafka.message.ProcessDelivery;
 import com.coopang.delivery.application.request.delivery.DeliveryDto;
 import com.coopang.delivery.application.response.delivery.DeliveryResponseDto;
 import com.coopang.delivery.domain.entity.delivery.DeliveryEntity;
@@ -88,10 +87,6 @@ public class DeliveryService {
         return deliveries.map(DeliveryResponseDto::fromDelivery);
     }
 
-    // 수정 //
-
-    // 배송지 수정
-
     // 배송 상태 변경 - 목적지 허브 도착 : 허브 배송 기사님 용
     public void arrivedHub(UUID destinationHubId, UUID hubSipperId) {
         List<DeliveryEntity> deliveries = deliveryRepository.findAllByDestinationHubIdAndHubShipperId(destinationHubId, hubSipperId);
@@ -112,7 +107,6 @@ public class DeliveryService {
         deliveryEntity.setDeleted(true);
         log.debug("deletedelivery deliveryId : {}", deliveryId);
     }
-
     // 공통 메서드 //
 
     // 배달ID로 값 찾기

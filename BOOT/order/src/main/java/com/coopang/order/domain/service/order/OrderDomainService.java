@@ -24,18 +24,18 @@ public class OrderDomainService {
     }
 
     // 주문 생성
-    public OrderEntity createOrder(OrderDto orderDto){
+    public OrderEntity createOrder(UUID userId, OrderDto orderDto){
         OrderEntity orderEntity = OrderEntity.create(
-                UUID.randomUUID(), // 임시로 랜덤 원래는 사용자 ID 넣기
-                orderDto.getProductId(),
-                orderDto.getZipCode(),
-                orderDto.getAddress1(),
-                orderDto.getAddress2(),
-                orderDto.getOrderQuantity(),
-                orderDto.getOrderSinglePrice(),
-                orderDto.getOrderTotalPrice(),
-                orderDto.getProductHubId(),
-                orderDto.getNearHubId()
+                 userId
+                , orderDto.getProductId()
+                , orderDto.getZipCode()
+                , orderDto.getAddress1()
+                , orderDto.getAddress2()
+                , orderDto.getOrderQuantity()
+                , orderDto.getOrderSinglePrice()
+                , orderDto.getOrderTotalPrice()
+                , orderDto.getProductHubId()
+                , orderDto.getNearHubId()
         );
 
         return orderJpaRepository.save(orderEntity);

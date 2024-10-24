@@ -26,20 +26,21 @@ public class DeliveryHubHistoryService {
         this.deliveryHubHistoryDomainService = deliveryHubHistoryDomainService;
         this.deliveryHubHistoryRepository = deliveryHubHistoryRepository;
     }
+
     // 배송 기록 등록
     public void createHubHistory(
-            UUID deliveryId,
-            UUID departureHubId,
-            UUID arrivalHubId,
-            UUID hubShipperId,
-            DeliveryStatusEnum deliveryRouteHistoryStatus
-    ){
+            UUID deliveryId
+            , UUID departureHubId
+            , UUID arrivalHubId
+            , UUID hubShipperId
+            , DeliveryStatusEnum deliveryRouteHistoryStatus
+    ) {
         deliveryHubHistoryDomainService.createHubHistory(
-                deliveryId,
-                departureHubId,
-                arrivalHubId,
-                hubShipperId,
-                deliveryRouteHistoryStatus
+                deliveryId
+                , departureHubId
+                , arrivalHubId
+                , hubShipperId
+                , deliveryRouteHistoryStatus
         );
     }
 

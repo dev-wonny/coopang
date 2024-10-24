@@ -1,6 +1,7 @@
 package com.coopang.order.application.response.paymenthistory;
 
 import com.coopang.order.domain.entity.paymenthistory.PaymentHistoryEntity;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,15 +20,16 @@ public class PaymentHistoryResponseDto {
     private String paymentStatus;
     private boolean isDeleted;
 
+    @Builder
     private PaymentHistoryResponseDto(
-            UUID paymentHistoryId,
-            UUID pgPaymentId,
-            UUID orderId,
-            String paymentMethod,
-            BigDecimal paymentPrice,
-            String paymentStatus,
-            boolean isDeleted
-            ) {
+            UUID paymentHistoryId
+            , UUID pgPaymentId
+            , UUID orderId
+            , String paymentMethod
+            , BigDecimal paymentPrice
+            , String paymentStatus
+            , boolean isDeleted
+    ) {
         this.paymentHistoryId = paymentHistoryId;
         this.pgPaymentId = pgPaymentId;
         this.orderId = orderId;
@@ -37,17 +39,16 @@ public class PaymentHistoryResponseDto {
         this.isDeleted = isDeleted;
     }
 
-    public static PaymentHistoryResponseDto fromPaymentHistory(
-            PaymentHistoryEntity paymentHistory
-    ){
-        return new PaymentHistoryResponseDto(
-                paymentHistory.getPaymentHistoryId(),
-                paymentHistory.getPgPaymentId(),
-                paymentHistory.getOrderId(),
-                paymentHistory.getPaymentMethod().toString(),
-                paymentHistory.getPaymentPrice(),
-                paymentHistory.getPaymentStatus().toString(),
-                paymentHistory.isDeleted()
-        );
+    public static PaymentHistoryResponseDto fromPaymentHistory(PaymentHistoryEntity paymentHistory) {
+        return PaymentHistoryResponseDto
+                .builder()
+                .paymentHistoryId(paymentHistory.getPaymentHistoryId())
+                .pgPaymentId(paymentHistory.getPgPaymentId())
+                .orderId(paymentHistory.getOrderId())
+                .paymentMethod(paymentHistory.getPaymentMethod().toString())
+                .paymentPrice(paymentHistory.getPaymentPrice())
+                .paymentStatus(paymentHistory.getPaymentStatus().toString())
+                .isDeleted(paymentHistory.isDeleted())
+                .build();
     }
 }

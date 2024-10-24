@@ -4,7 +4,6 @@ import com.coopang.apidata.application.delivery.enums.DeliveryStatusEnum;
 import com.coopang.apidata.jpa.entity.address.AddressEntity;
 import com.coopang.apidata.jpa.entity.base.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,12 +45,12 @@ public class DeliveryUserHistoryEntity extends BaseEntity {
 
     @Builder
     private DeliveryUserHistoryEntity(
-            UUID deliveryUserRouteHistoryId,
-            UUID deliveryId,
-            UUID departureHubId,
-            AddressEntity addressEntity,
-            UUID userShipperId,
-            DeliveryStatusEnum deliveryRouteHistoryStatus
+            UUID deliveryUserRouteHistoryId
+            , UUID deliveryId
+            , UUID departureHubId
+            , AddressEntity addressEntity
+            , UUID userShipperId
+            , DeliveryStatusEnum deliveryRouteHistoryStatus
     ) {
         this.deliveryUserRouteHistoryId = deliveryUserRouteHistoryId;
         this.deliveryId = deliveryId;
@@ -62,13 +61,13 @@ public class DeliveryUserHistoryEntity extends BaseEntity {
     }
 
     public static DeliveryUserHistoryEntity create(
-            UUID deliveryId,
-            UUID departureHubId,
-            String zipCode,
-            String address1,
-            String address2,
-            UUID userShipperId,
-            DeliveryStatusEnum deliveryRouteHistoryStatus
+            UUID deliveryId
+            , UUID departureHubId
+            , String zipCode
+            , String address1
+            , String address2
+            , UUID userShipperId
+            , DeliveryStatusEnum deliveryRouteHistoryStatus
     ) {
         return DeliveryUserHistoryEntity.builder()
                 .deliveryId(deliveryId)

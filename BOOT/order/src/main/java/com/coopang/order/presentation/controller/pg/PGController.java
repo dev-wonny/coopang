@@ -19,29 +19,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/payments/v1/pg")
 public class PGController {
 
-    /*
-    Todo : 결제 확인을 위한 PGPaymentId 를 임의의로 생성해서 전달
-     */
     private final PGService pgService;
 
     public PGController(PGService pgService) {
         this.pgService = pgService;
     }
 
-    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
+    @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.CUSTOMER})
     @PostMapping
     public ResponseEntity<String> tryPayPG(
             @RequestBody PGRequestDto requestDto
-            ){
+    ) {
         final String result = pgService.processPaymentRequest(requestDto);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @Secured({UserRoleEnum.Authority.MASTER,UserRoleEnum.Authority.CUSTOMER})
+    @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.CUSTOMER})
     @PostMapping("/cancel")
     public ResponseEntity<String> tryCancelPG(
             @RequestBody PGRequestDto requestDto
-    ){
+    ) {
         final String result = pgService.cancelPaymentRequest(requestDto);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

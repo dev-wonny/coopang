@@ -10,7 +10,6 @@ import com.coopang.delivery.application.response.delivery.DeliveryResponseDto;
 import com.coopang.delivery.application.service.delivery.DeliveryService;
 import com.coopang.delivery.application.service.message.delivery.DeliveryMessageService;
 import com.coopang.delivery.application.service.schedule.DeliveryScheduleService;
-import com.coopang.delivery.domain.service.delivery.DeliveryDomainService;
 import com.coopang.delivery.presentation.request.delivery.DeliveryRequestDto;
 import com.coopang.delivery.presentation.request.delivery.DeliverySearchCondition;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,12 +40,12 @@ public class DeliveryController {
 
 
     public DeliveryController(
-            DeliveryService deliveryService,
-            ModelMapperConfig mapperConfig,
-            DeliveryMessageService deliveryMessageService,
-            DeliveryScheduleService deliveryScheduleService,
-            FeignConfig feignConfig,
-            OrderClientService orderClientService
+            DeliveryService deliveryService
+            , ModelMapperConfig mapperConfig
+            , DeliveryMessageService deliveryMessageService
+            , DeliveryScheduleService deliveryScheduleService
+            , FeignConfig feignConfig
+            , OrderClientService orderClientService
     ) {
         this.deliveryService = deliveryService;
         this.mapperConfig = mapperConfig;
@@ -150,7 +149,7 @@ public class DeliveryController {
     }
 
     // 16시 종합본
-    @GetMapping("deliveries/v1/delivery/16")
+    @PatchMapping("deliveries/v1/delivery/16")
     @Secured(UserRoleEnum.Authority.MASTER)
     public ResponseEntity<Void> mapHubDelivery() {
         deliveryScheduleService.readyDelivery();
@@ -158,7 +157,7 @@ public class DeliveryController {
     }
 
     // 배송 상태 변경 - 목적지 도착
-    @PutMapping("delivery/{deliveryId}/arrived")
+    @PatchMapping("delivery/{deliveryId}/arrived")
     @Secured({UserRoleEnum.Authority.MASTER, UserRoleEnum.Authority.HUB_MANAGER, UserRoleEnum.Authority.SHIPPER})
     public ResponseEntity<Void> arrivedCustomer(
             @PathVariable UUID deliveryId
@@ -186,28 +185,28 @@ public class DeliveryController {
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
-    @PostMapping("/delivery/test/20")
+    @PatchMapping("/delivery/test/20")
     @Secured({UserRoleEnum.Authority.MASTER})
     public ResponseEntity<String> sendToSlackHubDelivery() {
         deliveryScheduleService.sendToSlackHubDelivery();
         return new ResponseEntity<>("// 스케줄링 - 허브 배송 물건 상차 및 주문 상태값 변경 : 20시", HttpStatus.OK);
     }
 
-    @PostMapping("/delivery/test/21")
+    @PatchMapping("/delivery/test/21")
     @Secured({UserRoleEnum.Authority.MASTER})
     public ResponseEntity<String> hubDeliveryStart() {
         deliveryScheduleService.hubDeliveryStart();
         return new ResponseEntity<>("스케줄링 - 허브 배송 출발 : 21시", HttpStatus.OK);
     }
 
-    @PostMapping("/delivery/test/6")
+    @PatchMapping("/delivery/test/6")
     @Secured({UserRoleEnum.Authority.MASTER})
     public ResponseEntity<String> sendToSlackCustomerDelivery() {
         deliveryScheduleService.sendToSlackCustomerDelivery();
         return new ResponseEntity<>("고객 배송 물건 상차 및 slack 메세지 발송 : 06시", HttpStatus.OK);
     }
 
-    @PostMapping("/delivery/test/8")
+    @PatchMapping("/delivery/test/8")
     @Secured({UserRoleEnum.Authority.MASTER})
     public ResponseEntity<String> userDeliveryStart() {
         deliveryScheduleService.userDeliveryStart();

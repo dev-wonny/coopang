@@ -17,7 +17,9 @@ import static com.coopang.order.domain.entity.paymenthistory.QPaymentHistoryEnti
 @Repository
 public class PaymentHistoryRepositoryCustomImpl extends Querydsl4RepositorySupport implements PaymentHistoryRepositoryCustom {
 
-    public PaymentHistoryRepositoryCustomImpl() {super(PaymentHistoryEntity.class);}
+    public PaymentHistoryRepositoryCustomImpl() {
+        super(PaymentHistoryEntity.class);
+    }
 
     @Override
     public Page<PaymentHistoryEntity> search(PaymentHistorySearchConditionDto searchCondition, Pageable pageable) {
@@ -42,6 +44,7 @@ public class PaymentHistoryRepositoryCustomImpl extends Querydsl4RepositorySuppo
                         .where(paymentHistoryDateBetween(searchCondition.getStartDate(), searchCondition.getEndDate()))
         );
     }
+
     private BooleanExpression orderIdEq(UUID orderId) {
         return orderId != null ? orderEntity.orderId.eq(orderId) : null;
     }
