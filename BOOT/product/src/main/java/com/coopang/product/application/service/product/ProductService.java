@@ -58,9 +58,10 @@ public class ProductService {
     @Transactional(readOnly = true)
     public ProductResponseDto getProductById(UUID productId) {
 
-        ProductEntity productEntity = productRepository.getOneByProductIdWithCategory(productId).orElseThrow(
-            () -> new IllegalArgumentException("존재하지 않는 상품입니다.")
-        );
+        ProductEntity productEntity = productRepository.getOneByProductIdWithCategory(productId)
+            .orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 상품입니다.")
+            );
 
         return ProductResponseDto.of(productEntity);
     }
@@ -77,21 +78,23 @@ public class ProductService {
     @Cacheable(value = "allProducts", key = "#condition")
     @Transactional(readOnly = true)
     public Page<ProductResponseDto> getAllProductInHub(
-        ProductBaseSearchConditionDto condition,Pageable pageable) {
+        ProductBaseSearchConditionDto condition, Pageable pageable) {
 
         UUID hubId = condition.getHubId();
 
         List<UUID> companyIds = companyFeignClientService.getCompanyIdsInFeignClient(hubId);
 
-        return productRepository.findAllWithStockAndCategoryByCompanyIds(companyIds, pageable).map(ProductResponseDto::of);
+        return productRepository.findAllWithStockAndCategoryByCompanyIds(companyIds, pageable)
+            .map(ProductResponseDto::of);
     }
 
     //업체 관리자일 경우 자신의 상품들만 조회
     @Cacheable(value = "allProducts", key = "#condition")
     @Transactional(readOnly = true)
     public Page<ProductResponseDto> getAllProductInCompany(
-        ProductBaseSearchConditionDto condition,Pageable pageable) {
-        return productRepository.findAllWithStockAndCategoryByCompanyId(condition.getCompanyId(), pageable).map(ProductResponseDto::of);
+        ProductBaseSearchConditionDto condition, Pageable pageable) {
+        return productRepository.findAllWithStockAndCategoryByCompanyId(condition.getCompanyId(),
+            pageable).map(ProductResponseDto::of);
     }
 
     //모든 상품들을 조회
@@ -107,7 +110,8 @@ public class ProductService {
     public Page<ProductResponseDto> getProductWithCategory(UUID categoryId, Pageable pageable) {
 
         CategoryEntity categoryEntity = findByCategoryId(categoryId);
-        Page<ProductEntity> productEntities = productRepository.findAllWithStockAndCategoryByCategoryId(categoryEntity.getCategoryId(), pageable);
+        Page<ProductEntity> productEntities = productRepository.findAllWithStockAndCategoryByCategoryId(
+            categoryEntity.getCategoryId(), pageable);
 
         return productEntities.map(ProductResponseDto::of);
     }
@@ -122,7 +126,12 @@ public class ProductService {
 
         ProductEntity productEntity = findByProductId(productId);
         CategoryEntity categoryEntity = findByCategoryId(productDto.getCategoryId());
-        productEntity.updateProduct(productDto.getProductName(),productDto.getCompanyId(),categoryEntity,productDto.getProductPrice());
+        productEntity.updateProduct(
+            productDto.getProductName()
+            , productDto.getCompanyId()
+            , categoryEntity
+            , productDto.getProductPrice()
+        );
 
     }
 
@@ -136,15 +145,11 @@ public class ProductService {
 
         ProductEntity productEntity = findByProductId(productId);
 
-        boolean isHidden = productHiddenAndSaleDto.getIsHidden();
-
-        if(isHidden == true)
-        {
+        if (productHiddenAndSaleDto.getIsHidden()) {
             productEntity.activateHidden();
-        }else{
+        } else {
             productEntity.deactivateHidden();
         }
-
     }
 
     //특정 상품에 대한 판매가능 여부 처리
@@ -157,16 +162,11 @@ public class ProductService {
 
         ProductEntity productEntity = findByProductId(productId);
 
-        boolean isSale = productHiddenAndSaleDto.getIsSale();
-
-        if(isSale == true)
-        {
+        if (productHiddenAndSaleDto.getIsSale()) {
             productEntity.activateSale();
-        }else
-        {
+        } else {
             productEntity.deactivateSale();
         }
-
     }
 
 
@@ -179,29 +179,27 @@ public class ProductService {
     public void deleteProductById(UUID productId) {
 
         ProductEntity productEntity = findByProductId(productId);
-
         productEntity.setDeleted(true);
-
         productEntity.deactivateSale();
 
     }
 
     //키워드로 상품 검색
-    @Cacheable(value = "allProducts", key = "#searchCondition.toString() + '-' + #pageable.pageNumber + '-' + #pageable.pageSize"  )
+    @Cacheable(value = "allProducts", key = "#searchCondition.toString() + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     @Transactional(readOnly = true)
-    public Page<ProductResponseDto> searchProduct(ProductSearchConditionDto searchCondition, Pageable pageable) {
+    public Page<ProductResponseDto> searchProduct(ProductSearchConditionDto searchCondition,
+        Pageable pageable) {
 
-        Page <ProductEntity> productEntities = productRepository.search(searchCondition, pageable);
-
+        Page<ProductEntity> productEntities = productRepository.search(searchCondition, pageable);
         return productEntities.map(ProductResponseDto::of);
     }
 
-    private ProductEntity findByProductId(UUID productId){
+    private ProductEntity findByProductId(UUID productId) {
         return productRepository.getOneByProductIdWithCategory(productId).orElseThrow(
             () -> new IllegalArgumentException("존재하지 않는 상품입니다."));
     }
 
-    private CategoryEntity findByCategoryId(UUID categoryId){
+    private CategoryEntity findByCategoryId(UUID categoryId) {
         return categoryJpaRepository.findById(categoryId).orElseThrow
             (() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
     }

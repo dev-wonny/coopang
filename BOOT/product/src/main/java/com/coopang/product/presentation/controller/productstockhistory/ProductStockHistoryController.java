@@ -36,7 +36,9 @@ public class ProductStockHistoryController {
 
     @Secured({Authority.MASTER,Authority.COMPANY,Authority.HUB_MANAGER})
     @GetMapping("/{productId}/product-stock-history")
-    public ResponseEntity<Page<ProductStockHistoryResponseDto>> getStockHistoriesByProductId(@PathVariable UUID productId, Pageable pageable) {
+    public ResponseEntity<Page<ProductStockHistoryResponseDto>> getStockHistoriesByProductId(
+        @PathVariable UUID productId
+        , Pageable pageable) {
 
         Page<ProductStockHistoryResponseDto> responseDtos = productStockHistoryService.getStockHistoriesByProductId(productId,pageable);
         return new ResponseEntity<>(responseDtos,HttpStatus.OK);
@@ -53,19 +55,22 @@ public class ProductStockHistoryController {
 
     @Secured({Authority.MASTER,Authority.HUB_MANAGER})
     @PutMapping("/{productId}/product-stock-history/{productStockHistoryId}")
-    public ResponseEntity<ProductStockHistoryResponseDto> updateProductStockHistory(@PathVariable UUID productId, @PathVariable UUID productStockHistoryId,
-        @RequestBody @Valid UpdateStockHistoryRequestDto request) {
+    public ResponseEntity<ProductStockHistoryResponseDto> updateProductStockHistory(
+        @PathVariable UUID productId
+        , @PathVariable UUID productStockHistoryId
+        , @RequestBody @Valid UpdateStockHistoryRequestDto request) {
 
         ProductStockHistoryDto productStockHistoryDto = mapperConfig.strictMapper().map(request, ProductStockHistoryDto.class);
         productStockHistoryService.updateProductStockHistory(productStockHistoryDto,productId,productStockHistoryId);
         ProductStockHistoryResponseDto historyInfo = productStockHistoryService.getProductStockHistoryById(productStockHistoryId);
-
         return new ResponseEntity<>(historyInfo, HttpStatus.OK);
     }
 
     @Secured({Authority.MASTER,Authority.HUB_MANAGER})
     @DeleteMapping("/{productId}/product-stock-history/{productStockHistoryId}")
-    public ResponseEntity<Void> deleteProductStockHistoryById(@PathVariable UUID productId, @PathVariable UUID productStockHistoryId) {
+    public ResponseEntity<Void> deleteProductStockHistoryById(
+        @PathVariable UUID productId
+        , @PathVariable UUID productStockHistoryId) {
 
         productStockHistoryService.deleteProductStockHistory(productId,productStockHistoryId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
