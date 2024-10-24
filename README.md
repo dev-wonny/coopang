@@ -1,42 +1,101 @@
-# 📦 Coopang 📦
+# 📦 Coopang Fulfillment Service 📦
 ![Logo](./image/coopangLogo.png)
 
-## 🚚 COOPANG 서비스 소개
-* 본 시스템은 MSA(Microservices Architecture)와 스프링 부트(Spring Boot)를 기반으로 하며, 쿠팡의 풀필먼트 서비스에서 영감을 받아 설계되었습니다.
-* 상품의 입고부터 출고, 배송에 이르는 전체 물류 프로세스를 효율적으로 관리할 수 있도록 구성되었습니다.
-* 시스템은 허브스포크(Hub-and-Spoke) 방식으로 설계되어, 물품이 물류 허브에서 고객 근처의 허브로 이동한 후 최종적으로 고객에게 전달됩니다.
-
+## 🚚 Service Overview
+* The Coopang system is based on Microservices Architecture (MSA) and Spring Boot, inspired by Coupang's fulfillment services. It efficiently manages the entire logistics process from inbound to outbound and delivery.
+* Designed with a Hub-and-Spoke architecture, items are first routed through a central logistics hub before reaching regional hubs closer to the customer, ultimately ensuring smooth and efficient delivery.
 
 
 ## ✅ How to start
-### To start the Docker services you defined in your docker-compose.yml file, follow these steps:
+To start the Docker services you defined in your docker-compose.yml file, follow these steps:
 
-1. Ensure Docker and Docker Compose are installed: Make sure Docker is running on your machine and Docker Compose is installed.
+### 1. Prerequisites
+Ensure both Docker and Docker Compose are installed and running on your machine.
 
-2. Navigate to the directory where your docker-compose.yml file is located.
-
-3. Start the services: Run the following command in the terminal:
-
+### 2. Navigate to the Project Directory
+Move to the directory where your docker-compose.yml file is located.
 ```bash
-docker-compose up -d
+cd path/to/your/project
 ```
 
-4. Verify the services are running: To check if the containers are up and running, you can use:
+### 3. Create the Coopang Network
+Before launching the services, create a custom Docker network:
 
 ```bash
-docker ps
+docker network create coopang
+```
+
+### 4. Start the Services
+To bring up all services defined in the docker-compose.yml, run the following command:
+
+```bash
+docker compose -f docker-compose.yml up -d
+```
+This starts the containers in detached mode.
+
+
+### 5. Verify Running Services
+After starting the services, verify that all containers are running:
+
+```bash
+docker ps -a
 ```
 This will show the list of running containers, including postgres, redis-stack, prometheus, grafana, and loki.
 
+---
 
-If you want to stop the services later, run:
+## ⚙️ Setting Up Monitoring in Grafana
+
+### 6. Access Grafana
+* Navigate to http://localhost:3000 in your browser.
+* Default Username: admin
+* Default Password: admin
+
+### 7. Add Prometheus as a Data Source in Grafana
+1. In Grafana, go to Data Sources.
+2. Add a new data source and select Prometheus.
+3. For the URL, input:
+```http
+   http://host.docker.internal:9090
+```
+   ![img.png](image/img.png)
+
+### 8. Create a Grafana Dashboard
+  - Import an existing dashboard or create your own.
+![img_1.png](image/img_1.png)
+
+For a detailed guide, refer to this blog: -> [Blog: Setting Prometheus in Grafana](https://cutewonny.tistory.com/entry/Grafana)
+
+
+
+---
+## 🔔 Setting Up Slack Alerts in Grafana
+### 9. Setting slack in Grafana
+1. Create a Slack app via [SLACK-Developer.](https://api.slack.com/)
+2. Set up the bot, select your workspace, and configure it in Grafana.
+3. Follow the steps outlined in this blog: -> [Blog: Setting Up Slack in Grafana.](https://cutewonny.tistory.com/entry/grafana-slack-%EC%97%B0%EB%8F%99)
+
+
+---
+## 🔍 Setting Up Loki for Logs in Grafana
+### 10. Add Loki as a Data Source in Grafana
+1. Go to Data Sources in Grafana.
+2. Add a new data source and select Loki.
+3. For the URL, input:
+
+```http
+   http://host.docker.internal:3100
+```
+
+![img_2.png](image/img_2.png)
+For detailed instructions, refer to this blog:  -> [Blog: Setting Up Loki in Grafana.](https://cutewonny.tistory.com/entry/loki-grafana)
+
+---
+
+### 11. Stopping the Services
 
 ```bash
 docker-compose down
 ```
-This will stop and remove all the containers created by this compose file.
+This will stop and clean up all the containers created by the docker-compose file.
 
-
-
-```bash
-```
