@@ -9,6 +9,34 @@
 
 
 ## ✅ How to start
-* 
-* 
+### To start the Docker services you defined in your docker-compose.yml file, follow these steps:
 
+1. Ensure Docker and Docker Compose are installed: Make sure Docker is running on your machine and Docker Compose is installed.
+
+2. Navigate to the directory where your docker-compose.yml file is located.
+
+3. Start the services: Run the following command in the terminal:
+
+```bash
+docker-compose up -d
+```
+
+4. Verify the services are running: To check if the containers are up and running, you can use:
+
+```bash
+docker ps
+```
+This will show the list of running containers, including postgres, redis-stack, prometheus, grafana, and loki.
+
+
+If you want to stop the services later, run:
+
+```bash
+docker-compose down
+```
+This will stop and remove all the containers created by this compose file.
+
+
+
+```bash
+```
