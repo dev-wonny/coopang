@@ -2,13 +2,17 @@ package com.coopang.apidata.application.noti.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateSlackMessageRequest {
     @NotBlank(message = "Receiver Slack ID is required")
     private String receiveSlackId; // 필수: 수신자의 Slack ID
