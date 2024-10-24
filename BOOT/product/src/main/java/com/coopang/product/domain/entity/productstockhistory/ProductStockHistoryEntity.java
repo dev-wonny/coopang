@@ -12,13 +12,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.util.UUID;
 
 @Getter
 @Entity
@@ -33,23 +34,23 @@ public class ProductStockHistoryEntity extends BaseEntity {
     private UUID productStockHistoryId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_stock_id",nullable = false)
+    @JoinColumn(name = "product_stock_id", nullable = false)
     private ProductStockEntity productStockEntity;
 
     @Column(name = "order_id")
     private UUID orderId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "product_stock_history_change_type",nullable = false)
+    @Column(name = "product_stock_history_change_type", nullable = false)
     private ProductStockHistoryChangeType productStockHistoryChangeType;
 
-    @Column(name = "product_stock_history_change_quantity",nullable = false)
+    @Column(name = "product_stock_history_change_quantity", nullable = false)
     private int productStockHistoryChangeQuantity;
 
-    @Column(name = "product_stock_history_previous_quantity",nullable = false)
+    @Column(name = "product_stock_history_previous_quantity", nullable = false)
     private int productStockHistoryPreviousQuantity;
 
-    @Column(name = "product_stock_history_current_quantity",nullable = false)
+    @Column(name = "product_stock_history_current_quantity", nullable = false)
     private int productStockHistoryCurrentQuantity;
 
     @Column(name = "product_stock_history_additional_info")
@@ -60,10 +61,16 @@ public class ProductStockHistoryEntity extends BaseEntity {
     }
 
     @Builder(access = AccessLevel.PRIVATE)
-    public ProductStockHistoryEntity(UUID productStockHistoryId,ProductStockEntity productStockEntity, UUID orderId,
-        ProductStockHistoryChangeType productStockHistoryChangeType,
-        int productStockHistoryChangeQuantity, int productStockHistoryPreviousQuantity,int productStockHistoryCurrentQuantity,
-        String productStockHistoryAdditionalInfo) {
+    public ProductStockHistoryEntity(
+        UUID productStockHistoryId
+        , ProductStockEntity productStockEntity
+        , UUID orderId
+        , ProductStockHistoryChangeType productStockHistoryChangeType
+        , int productStockHistoryChangeQuantity
+        , int productStockHistoryPreviousQuantity
+        , int productStockHistoryCurrentQuantity
+        , String productStockHistoryAdditionalInfo
+    ) {
         this.productStockHistoryId = productStockHistoryId;
         this.productStockEntity = productStockEntity;
         this.orderId = orderId;
@@ -75,11 +82,15 @@ public class ProductStockHistoryEntity extends BaseEntity {
     }
 
     public static ProductStockHistoryEntity create(
-        UUID productStockHistoryId,ProductStockEntity productStockEntity, UUID orderId,
-        ProductStockHistoryChangeType productStockHistoryChangeType,
-        int productStockHistoryChangeQuantity, int productStockHistoryPreviousQuantity, int productStockHistoryCurrentQuantity,
-        String productStockHistoryAdditionalInfo)
-    {
+        UUID productStockHistoryId
+        , ProductStockEntity productStockEntity
+        , UUID orderId
+        , ProductStockHistoryChangeType productStockHistoryChangeType
+        , int productStockHistoryChangeQuantity
+        , int productStockHistoryPreviousQuantity
+        , int productStockHistoryCurrentQuantity
+        , String productStockHistoryAdditionalInfo
+    ) {
         return ProductStockHistoryEntity.builder()
             .productStockHistoryId(productStockHistoryId != null ? productStockHistoryId : UUID.randomUUID())
             .productStockEntity(productStockEntity)
@@ -93,13 +104,12 @@ public class ProductStockHistoryEntity extends BaseEntity {
     }
 
     public void updateProductStockHistory(
-         int productStockHistoryChangeQuantity,
-         int productStockHistoryPreviousQuantity,
-         int productStockHistoryCurrentQuantity,
-         String productStockHistoryAdditionalInfo,
-         ProductStockHistoryChangeType productStockHistoryChangeType
-    )
-    {
+        int productStockHistoryChangeQuantity
+        , int productStockHistoryPreviousQuantity
+        , int productStockHistoryCurrentQuantity
+        , String productStockHistoryAdditionalInfo
+        , ProductStockHistoryChangeType productStockHistoryChangeType
+    ) {
         this.productStockHistoryChangeQuantity = productStockHistoryChangeQuantity;
         this.productStockHistoryPreviousQuantity = productStockHistoryPreviousQuantity;
         this.productStockHistoryCurrentQuantity = productStockHistoryCurrentQuantity;

@@ -1,13 +1,17 @@
 package com.coopang.product.application.service.message.product;
 
+import com.coopang.apicommunication.feignclient.noti.NotiClientService;
 import com.coopang.apicommunication.kafka.consumer.MessageService;
 import com.coopang.apicommunication.kafka.message.CompleteProduct;
 import com.coopang.apicommunication.kafka.message.ErrorProduct;
-import com.coopang.apicommunication.kafka.message.LowStockNotification;
 import com.coopang.apicommunication.kafka.message.ProcessProduct;
 import com.coopang.apicommunication.kafka.message.RollbackProduct;
 import com.coopang.apicommunication.kafka.producer.MessageProducer;
+import com.coopang.apiconfig.datetime.DateTimeUtil;
 import com.coopang.apidata.application.company.response.CompanyResponse;
+import com.coopang.apidata.application.noti.enums.SlackMessageStatus;
+import com.coopang.apidata.application.noti.request.CreateSlackMessageRequest;
+import com.coopang.apidata.application.user.response.UserResponse;
 import com.coopang.product.application.request.productstock.ProductStockDto;
 import com.coopang.product.application.response.product.ProductResponseDto;
 import com.coopang.product.application.service.feignclient.CompanyFeignClientService;
@@ -21,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Slf4j(topic = "ProductMessageService")
@@ -34,6 +39,7 @@ public class ProductMessageService implements MessageService {
     private final ProductService productService;
     private final CompanyFeignClientService companyFeignClientService;
     private final UserFeignClientService userFeignClientService;
+    private final NotiClientService notiClientService;
     private static final int STOCK_LOW_NOTIFICATION_NUM = 10;
 
     /* listener
@@ -69,7 +75,7 @@ public class ProductMessageService implements MessageService {
             productStockDto.setAmount(processProduct.getOrderQuantity());
             productStockDto.setOrderId(processProduct.getOrderId());
 
-            int currentQuantity = productStockService.reduceProductStock(processProduct.getProductId(), productStockDto);
+            final int currentQuantity = productStockService.reduceProductStock(processProduct.getProductId(), productStockDto);
 
             if (currentQuantity <= STOCK_LOW_NOTIFICATION_NUM) {
                 sendLowStockNotification(processProduct.getProductId(), currentQuantity);
@@ -127,21 +133,25 @@ public class ProductMessageService implements MessageService {
     }
 
     //주문 재고 10개이하 일경우 메시지알림
-    private void sendLowStockNotification(UUID productId, int quantity) {
+    public void sendLowStockNotification(UUID productId, int currentQuantity) {
         //상품의 업체 조회
         final ProductResponseDto productResponseDto = productService.getProductById(productId);
 
         //업체의 관리자 조회 - 내부통신이용
-        CompanyResponse companyResponse = companyFeignClientService.getCompanyById(productResponseDto.getCompanyId());
+        final CompanyResponse companyResponse = companyFeignClientService.getCompanyById(productResponseDto.getCompanyId());
 
         //슬랙 아이디 조회 - 내부통신
-        final String slackId = userFeignClientService.getUserById(companyResponse.getCompanyManagerId()).getSlackId();
-        LowStockNotification lowStockNotification = new LowStockNotification();
-        lowStockNotification.setProductId(productId);
-        lowStockNotification.setQuantity(quantity);
-        lowStockNotification.setSlackId(slackId);
+        final UserResponse user = userFeignClientService.getUserById(companyResponse.getCompanyManagerId());
 
-        sendMessage("low_stock_notification", lowStockNotification);
+
+        CreateSlackMessageRequest req = new CreateSlackMessageRequest();
+        req.setReceiveSlackId(user.getSlackId());
+        req.setReceiveUserId(user.getUserId());
+        req.setSlackMessageStatus(SlackMessageStatus.READY.name());
+        req.setSlackMessage("currentQuantity: " + currentQuantity + ", productId: " + productId + ", companyId: " + companyResponse.getCompanyId());
+        req.setSentTime(DateTimeUtil.formatLocalDateTime(LocalDateTime.now()));
+        req.setSlackMessageSenderId("coopang-bot");
+        notiClientService.createSlackMessage(req);
     }
 
     //공통함수 : 메세지 보내기
@@ -153,5 +163,4 @@ public class ProductMessageService implements MessageService {
             log.error("Error while sending message to topic {}: {}", topic, e.getMessage(), e);
         }
     }
-
 }

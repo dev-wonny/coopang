@@ -8,7 +8,7 @@ public class ProductStockConverter implements AttributeConverter<ProductStock, I
 
     @Override
     public Integer convertToDatabaseColumn(ProductStock productStock) {
-        return productStock.getValue();
+        return productStock.getCurrentStockQuantity();
     }
 
     @Override

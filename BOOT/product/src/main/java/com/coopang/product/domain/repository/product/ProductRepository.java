@@ -24,7 +24,7 @@ public interface ProductRepository {
 
     Optional<ProductEntity> findByProductIdAndIsDeletedFalse(UUID productId);
 
-    @Query("SELECT p FROM ProductEntity p JOIN FETCH p.productStockEntity s JOIN FETCH p.categoryEntity c WHERE p.isDeleted = false and p.isHidden = false and p.isSale = true and s.productStock.value > 0")
+    @Query("SELECT p FROM ProductEntity p JOIN FETCH p.productStockEntity s JOIN FETCH p.categoryEntity c WHERE p.isDeleted = false and p.isHidden = false and p.isSale = true and s.productStock.currentStockQuantity > 0")
     Page<ProductEntity> findAllWithStockAndCategory(Pageable pageable);
 
     @Query("SELECT p FROM ProductEntity p JOIN FETCH p.productStockEntity s JOIN FETCH p.categoryEntity c WHERE p.companyId = :companyId")
@@ -40,7 +40,7 @@ public interface ProductRepository {
     Page<ProductEntity> search(ProductSearchConditionDto productSearchCondition, Pageable pageable);
 
     @Query("SELECT p FROM ProductEntity p JOIN FETCH p.productStockEntity s JOIN FETCH p.categoryEntity c "
-        + "WHERE p.categoryEntity.categoryId = :categoryId and p.isDeleted = false and p.isHidden = false and p.isSale = true and s.productStock.value > 0" )
+        + "WHERE p.categoryEntity.categoryId = :categoryId and p.isDeleted = false and p.isHidden = false and p.isSale = true and s.productStock.currentStockQuantity > 0" )
     Page<ProductEntity> findAllWithStockAndCategoryByCategoryId(UUID categoryId,Pageable pageable);
 
     @Query("SELECT p FROM ProductEntity p JOIN FETCH p.productStockEntity s JOIN FETCH p.categoryEntity c")

@@ -40,21 +40,29 @@ public class ProductStockService {
     //상품의 재고 수량을 증가시키는 함수
     @Transactional
     public void addProductStock(UUID productId, ProductStockDto productStockDto) {
-        final int amount = productStockDto.getAmount();
+        final int addQuantity = productStockDto.getAmount();
         //비관적 락을 이용하여 조회 -> 다른 트랜잭션은 읽기와 쓰기 불가능
         ProductStockEntity productStockEntity = productStockRepository.findAndLockProductStock(productId);
 
-        int previousStock = productStockEntity.getProductStock().getValue();
+        final int previousStock = productStockEntity.getProductStock().getCurrentStockQuantity();
 
         try {
-            productStockEntity.increaseStock(amount);
-            ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(null, productStockEntity, productStockDto.getOrderId(), ProductStockHistoryChangeType.INCREASE,
-                amount, previousStock, productStockEntity.getProductStock().getValue(), "Increase");
+            productStockEntity.increaseStock(addQuantity);
+            ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(
+                null
+                , productStockEntity
+                , productStockDto.getOrderId()
+                , ProductStockHistoryChangeType.INCREASE
+                , addQuantity
+                , previousStock
+                , productStockEntity.getProductStock().getCurrentStockQuantity()
+                , ProductStockHistoryChangeType.INCREASE.name()
+            );
 
             productStockEntity.addStockHistory(stockHistory);
         } catch (IllegalArgumentException e) {
             log.error(e.getMessage());
-            throw new IllegalArgumentException("재고의 수량은 음수가 될 수 없습니다.");
+            throw new IllegalArgumentException("재고의 수량은 음수가 될 수 없습니다." + e.getMessage());
         }
 
     }
@@ -62,19 +70,27 @@ public class ProductStockService {
     //상품의 재고 수량을 감소하는 함수 - 비관적 락 사용
     @Transactional
     public int reduceProductStock(UUID productId, ProductStockDto productStockDto) {
-        int amount = productStockDto.getAmount();
+        final int reduceQuantity = productStockDto.getAmount();
         //비관적 락을 이용하여 조회 -> 다른 트랜잭션은 읽기와 쓰기 불가능
         ProductStockEntity productStockEntity = productStockRepository.findAndLockProductStock(productId);
 
-        int previousStock = productStockEntity.getProductStock().getValue();
+        int previousStock = productStockEntity.getProductStock().getCurrentStockQuantity();
 
         try {
             //재고 수량 감소
-            productStockEntity.decreaseStock(amount);
+            productStockEntity.decreaseStock(reduceQuantity);
 
             //재고 기록 등록
-            ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(null, productStockEntity, productStockDto.getOrderId(), ProductStockHistoryChangeType.DECREASE,
-                amount, previousStock, productStockEntity.getProductStock().getValue(), "Decrease");
+            ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(
+                null
+                , productStockEntity
+                , productStockDto.getOrderId()
+                , ProductStockHistoryChangeType.DECREASE
+                , reduceQuantity
+                , previousStock
+                , productStockEntity.getProductStock().getCurrentStockQuantity()
+                , ProductStockHistoryChangeType.DECREASE.name()
+            );
 
             //재고 기록과 재고와 연결
             productStockEntity.addStockHistory(stockHistory);
@@ -82,10 +98,10 @@ public class ProductStockService {
         } catch (IllegalArgumentException e) {
             //재고 수량 부족 시 주문 서버에 error product 메시지 요청
             log.error(e.getMessage());
-            throw new IllegalArgumentException("주문 수량보다 재고 수량이 부족합니다.");
+            throw new IllegalArgumentException("주문 수량보다 재고 수량이 부족합니다." + e.getMessage());
         }
 
-        return productStockEntity.getProductStock().getValue();
+        return productStockEntity.getProductStock().getCurrentStockQuantity();
     }
 
     /**
@@ -97,14 +113,14 @@ public class ProductStockService {
         //비관적 락을 이용하여 조회 -> 다른 트랜잭션은 읽기와 쓰기 불가능
         ProductStockEntity productStockEntity = productStockRepository.findAndLockProductStock(productId);
 
-        int previousStock = productStockEntity.getProductStock().getValue();
+        int previousStock = productStockEntity.getProductStock().getCurrentStockQuantity();
 
         try {
 
             productStockEntity.increaseStock(orderQuantity);
 
             ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(null, productStockEntity, orderId, ProductStockHistoryChangeType.INCREASE,
-                orderQuantity, previousStock, productStockEntity.getProductStock().getValue(), "Rollback Product");
+                orderQuantity, previousStock, productStockEntity.getProductStock().getCurrentStockQuantity(), "Rollback Product");
 
             productStockEntity.addStockHistory(stockHistory);
         } catch (IllegalArgumentException e) {
@@ -126,14 +142,14 @@ public class ProductStockService {
         //비관적 락을 이용하여 조회 -> 다른 트랜잭션은 읽기와 쓰기 불가능
         ProductStockEntity productStockEntity = productStockRepository.findAndLockProductStock(productId);
 
-        int previousStock = productStockEntity.getProductStock().getValue();
+        int previousStock = productStockEntity.getProductStock().getCurrentStockQuantity();
 
         try {
 
             productStockEntity.increaseStock(orderQuantity);
 
             ProductStockHistoryEntity stockHistory = ProductStockHistoryEntity.create(null, productStockEntity, orderId, ProductStockHistoryChangeType.INCREASE,
-                orderQuantity, previousStock, productStockEntity.getProductStock().getValue(), "Cancel Order and Product Stock increase");
+                orderQuantity, previousStock, productStockEntity.getProductStock().getCurrentStockQuantity(), "Cancel Order and Product Stock increase");
 
             productStockEntity.addStockHistory(stockHistory);
 
