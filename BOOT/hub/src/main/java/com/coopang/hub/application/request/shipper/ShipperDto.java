@@ -3,10 +3,14 @@ package com.coopang.hub.application.request.shipper;
 import com.coopang.apidata.application.hub.enums.ShipperTypeEnum;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.UUID;
 
 @Getter
+@Setter
+@NoArgsConstructor
 public class ShipperDto {
     private UUID shipperId;
     private UUID hubId;

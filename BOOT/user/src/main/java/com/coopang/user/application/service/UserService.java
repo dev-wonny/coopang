@@ -62,7 +62,7 @@ public class UserService {
 
         // 서비스 레이어에서 UUID 생성
         final UUID userId = userDto.getUserId() != null ? userDto.getUserId() : UUID.randomUUID();
-        userDto.setUserId(userId);
+        userDto.createId(userId);
 
         log.debug("try join email:{}", userDto.getEmail());
         return UserResponseDto.fromUser(userDomainService.createUser(userDto));
