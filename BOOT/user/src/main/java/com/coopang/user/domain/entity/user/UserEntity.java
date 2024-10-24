@@ -67,16 +67,16 @@ public class UserEntity extends BaseEntity {
 
     @Builder
     private UserEntity(
-        UUID userId,
-        String email,
-        String password,
-        String userName,
-        String phoneNumber,
-        UserRoleEnum role,
-        String slackId,
-        AddressEntity addressEntity,
-        UUID nearHubId,
-        boolean isBlock
+        UUID userId
+        , String email
+        , String password
+        , String userName
+        , String phoneNumber
+        , UserRoleEnum role
+        , String slackId
+        , AddressEntity addressEntity
+        , UUID nearHubId
+        , boolean isBlock
     ) {
         this.userId = userId;
         this.email = email;
@@ -91,17 +91,17 @@ public class UserEntity extends BaseEntity {
     }
 
     public static UserEntity create(
-        UUID userId,
-        String email,
-        String passwordEncode,
-        String userName,
-        String phoneNumber,
-        String role,
-        String slackId,
-        String zipCode,
-        String address1,
-        String address2,
-        UUID nearHubId
+        UUID userId
+        , String email
+        , String passwordEncode
+        , String userName
+        , String phoneNumber
+        , String role
+        , String slackId
+        , String zipCode
+        , String address1
+        , String address2
+        , UUID nearHubId
     ) {
         return UserEntity.builder()
             .userId(userId)
@@ -116,10 +116,11 @@ public class UserEntity extends BaseEntity {
             .build();
     }
 
-    public void updateUserInfo(String userName,
-                               String phoneNumber,
-                               UserRoleEnum role,
-                               String slackId
+    public void updateUserInfo(
+        String userName
+        , String phoneNumber
+        , UserRoleEnum role
+        , String slackId
     ) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
@@ -127,10 +128,7 @@ public class UserEntity extends BaseEntity {
         this.slackId = slackId;
     }
 
-    public void updateMyInfo(String userName,
-                             String phoneNumber,
-                             String slackId
-    ) {
+    public void updateMyInfo(String userName, String phoneNumber, String slackId) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.slackId = slackId;

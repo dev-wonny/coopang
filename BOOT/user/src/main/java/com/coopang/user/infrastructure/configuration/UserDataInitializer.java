@@ -23,7 +23,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -49,6 +51,9 @@ public class UserDataInitializer implements CommandLineRunner {
     }
 
     private int uuidIndex = 0;
+    private int slackIdIndex = 0; // Slack ID 인덱스 관리
+
+    private final static String SLACK_CHANNEL_PROJECT = "project";
 
     public UserDataInitializer(UserService userService) {
         this.userService = userService;
@@ -178,12 +183,29 @@ public class UserDataInitializer implements CommandLineRunner {
 //            "62c5850e-005f-47ae-8f0f-559df09fe681"
     };
 
+    // 고정된 Slack ID 리스트
+    private final List<String> fixedSlackIdList = Arrays.asList(
+        "U07MTTJ21ND", // devwonny
+        "U07SPE4EN3Z", // ttlcc1364
+        "U07T14V2VS9", // pkjeogus
+        "U07T40TB6E6",  // dlworn0216
+        "U07MCBQ391B" // coopangbot
+    );
+
     // 고정된 UUID 배열에서 하나를 가져오는 메소드
     private UUID getNextFixedUuid() {
         if (uuidIndex >= fixedUuids.length) {
             throw new IllegalStateException("고정된 UUID가 부족합니다.");
         }
         return UUID.fromString(fixedUuids[uuidIndex++]);
+    }
+
+    // 고정된 Slack ID 배열에서 하나를 가져오는 메소드
+    private String getNextSlackId() {
+        if (slackIdIndex >= fixedSlackIdList.size()) {
+            throw new IllegalStateException("고정된 Slack ID가 부족합니다.");
+        }
+        return fixedSlackIdList.get(slackIdIndex++);
     }
 
     // 공통 메서드: User 생성
@@ -201,7 +223,7 @@ public class UserDataInitializer implements CommandLineRunner {
                 , "Master" + i
                 , "010-1111-1111"
                 , UserRoleEnum.MASTER.name()
-                , "master" + i
+                , getNextSlackId()
                 , "11111"
                 , "서울특별시 송파구 송파대로 570"
                 , "101동"
@@ -223,7 +245,7 @@ public class UserDataInitializer implements CommandLineRunner {
                 , "HubManager" + (i + 1)
                 , "010-1111-1111"
                 , UserRoleEnum.HUB_MANAGER.name()
-                , "HubManager" + (i + 1)
+                , SLACK_CHANNEL_PROJECT
                 , "11111"
                 , hubRegions[i]
                 , "102동"
@@ -247,7 +269,7 @@ public class UserDataInitializer implements CommandLineRunner {
                 , "Customer-" + hubRegions[i]
                 , "010-1111-1111"
                 , UserRoleEnum.CUSTOMER.name()
-                , "Customer" + i
+                , SLACK_CHANNEL_PROJECT
                 , "11111"
                 , hubName
                 , "103동"
@@ -273,7 +295,7 @@ public class UserDataInitializer implements CommandLineRunner {
                 , "ShipperHub-" + hubRegions[i]
                 , "010-1111-1111"
                 , UserRoleEnum.SHIPPER.name()
-                , "ShipperHub" + i
+                , SLACK_CHANNEL_PROJECT
                 , "11111"
                 , hubName
                 , "104동"
@@ -291,7 +313,7 @@ public class UserDataInitializer implements CommandLineRunner {
                     , "ShipperCustomer " + j + " - " + hubRegions[i]
                     , "010-1111-1111"
                     , UserRoleEnum.SHIPPER.name()
-                    , "ShipperCustomer" + i
+                    , SLACK_CHANNEL_PROJECT
                     , "11111"
                     , hubName
                     , "105동"
@@ -318,7 +340,7 @@ public class UserDataInitializer implements CommandLineRunner {
                     , "CompanyManager " + j + " - " + hubRegions[i]
                     , "010-1111-1111"
                     , UserRoleEnum.COMPANY.name()
-                    , "CompanyManager" + j
+                    , SLACK_CHANNEL_PROJECT
                     , "11111"
                     , hubName
                     , "106동"
