@@ -19,7 +19,7 @@ public class ProductPermissionValidator {
     private final HubFeignClientService hubFeignClientService;
 
     //업체 관리자 권한 확인
-    public void verifyCompanyOfCompanyManager(String userRole, UUID companyManagerId,UUID companyId){
+    public void verifyCompanyOfCompanyManager(String userRole, UUID companyManagerId, UUID companyId){
         if(UserRoleEnum.isCompany(userRole))
         {
             CompanyResponse companyResponse = companyFeignClientService.getCompanyById(companyId);
@@ -32,13 +32,11 @@ public class ProductPermissionValidator {
     }
 
     //소속 허브 관리자 권한 확인 및 허브에 소속 업체인지 확인
-    public void verifyCompanyOfHubManager(String userRole, UUID hubManagerId,UUID companyId){
+    public void verifyCompanyOfHubManager(String userRole, UUID hubManagerId, UUID companyId){
         if(UserRoleEnum.isHubManager(userRole))
         {
             CompanyResponse companyResponse = companyFeignClientService.getCompanyById(companyId);
-
             UUID hubId = companyResponse.getHubId();
-
             HubResponse hubResponse = hubFeignClientService.getHubInfoById(hubId);
 
             if(!hubManagerId.equals(hubResponse.getHubManagerId()))

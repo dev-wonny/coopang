@@ -7,6 +7,7 @@ import com.coopang.product.application.response.category.CategoryResponseDto;
 import com.coopang.product.application.service.category.CategoryService;
 import com.coopang.product.presentation.request.category.CreateCategoryRequestDto;
 import com.coopang.product.presentation.request.category.UpdateCategoryRequestDto;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "CategoryController API", description = "CategoryController API")
 @RestController
 @RequestMapping("/categories/v1/category")
 @RequiredArgsConstructor
@@ -58,8 +60,9 @@ public class CategoryController {
 
     @Secured({Authority.MASTER, Authority.HUB_MANAGER})
     @PatchMapping("/{categoryId}")
-    public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable UUID categoryId,
-        @Valid @RequestBody UpdateCategoryRequestDto updateCategoryRequestDto)
+    public ResponseEntity<CategoryResponseDto> updateCategory(
+        @PathVariable UUID categoryId
+        , @Valid @RequestBody UpdateCategoryRequestDto updateCategoryRequestDto)
     {
         CategoryDto categoryDto = mapperConfig.strictMapper().map(updateCategoryRequestDto,CategoryDto.class);
         categoryService.updateCategory(categoryId,categoryDto);

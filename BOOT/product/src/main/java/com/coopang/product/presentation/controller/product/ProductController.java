@@ -34,6 +34,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -55,7 +56,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductController {
 
     private final ModelMapperConfig mapperConfig;
-
     private final ProductWithStockService productWithStockService;
     private final ProductWithStockAndHistoryService productWithStockAndHistoryService;
     private final ProductService productService;
@@ -65,15 +65,13 @@ public class ProductController {
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PostMapping("/product")
     public ResponseEntity<ProductResponseDto> createProduct(
-        @RequestHeader(HEADER_USER_ROLE) String userRole,
-        @RequestHeader(HEADER_USER_ID) String userId,
-        @Valid @RequestBody CreateProductRequestDto createProductRequestDto) {
+        @RequestHeader(HEADER_USER_ROLE) String userRole
+        , @RequestHeader(HEADER_USER_ID) String userId
+        , @Valid @RequestBody CreateProductRequestDto createProductRequestDto) {
 
-        validationHubOrCompany(userRole,userId,createProductRequestDto.getCompanyId());
-
+        validationHubOrCompany(userRole, userId, createProductRequestDto.getCompanyId());
         final ProductDto productDto = mapperConfig.strictMapper().map(createProductRequestDto, ProductDto.class);
         final ProductResponseDto productResponseDto = productWithStockAndHistoryService.createProductWithProductStockAndProductStockHistory(productDto);
-
         return new ResponseEntity<>(productResponseDto, HttpStatus.CREATED);
     }
 
@@ -81,28 +79,29 @@ public class ProductController {
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PutMapping("/product/{productId}")
     public ResponseEntity<ProductResponseDto> updateProduct(
-        @RequestHeader(HEADER_USER_ROLE) String userRole,
-        @RequestHeader(HEADER_USER_ID) String userId,
-        @Valid @RequestBody UpdateProductRequestDto updateProductRequestDto,
-        @PathVariable UUID productId) {
+        @RequestHeader(HEADER_USER_ROLE) String userRole
+        , @RequestHeader(HEADER_USER_ID) String userId
+        , @Valid @RequestBody UpdateProductRequestDto updateProductRequestDto
+        , @PathVariable UUID productId) {
 
-        validationHubOrCompany(userRole,userId,updateProductRequestDto.getCompanyId());
-        ProductDto productDto = mapperConfig.strictMapper().map(updateProductRequestDto, ProductDto.class);
+        validationHubOrCompany(userRole, userId, updateProductRequestDto.getCompanyId());
+        final ProductDto productDto = mapperConfig.strictMapper().map(updateProductRequestDto, ProductDto.class);
         productService.updateProduct(productDto, productId);
-        ProductResponseDto productInfo = productService.getProductById(productId);
-
-        return new ResponseEntity<>(productInfo,HttpStatus.OK);
+        final ProductResponseDto productInfo = productService.getProductById(productId);
+        return new ResponseEntity<>(productInfo, HttpStatus.OK);
     }
 
     //특정 상품의 숨김 상태 여부 변경
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PatchMapping("/product/{productId}/hidden")
     public ResponseEntity<Void> updateProductHidden(
-        @RequestHeader(HEADER_USER_ROLE) String userRole,
-        @RequestHeader(HEADER_USER_ID) String userId,
-        @Valid @RequestBody UpdateProductHiddenRequestDto request, @PathVariable UUID productId) {
-        validateHubOrCompanyByProductId(userRole,userId,productId);
-        ProductHiddenAndSaleDto productHiddenAndSaleDto = mapperConfig.strictMapper().map(request, ProductHiddenAndSaleDto.class);
+        @RequestHeader(HEADER_USER_ROLE) String userRole
+        , @RequestHeader(HEADER_USER_ID) String userId
+        , @Valid @RequestBody UpdateProductHiddenRequestDto request
+        , @PathVariable UUID productId) {
+
+        validateHubOrCompanyByProductId(userRole, userId, productId);
+        final ProductHiddenAndSaleDto productHiddenAndSaleDto = mapperConfig.strictMapper().map(request, ProductHiddenAndSaleDto.class);
         productService.updateProductHidden(productHiddenAndSaleDto, productId);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -112,14 +111,14 @@ public class ProductController {
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PatchMapping("/product/{productId}/sale")
     public ResponseEntity<Void> updateProductSale(
-        @RequestHeader(HEADER_USER_ROLE) String userRole,
-        @RequestHeader(HEADER_USER_ID) String userId,
-        @Valid @RequestBody UpdateProductSaleRequestDto request, @PathVariable UUID productId) {
-        validateHubOrCompanyByProductId(userRole,userId,productId);
-        ProductHiddenAndSaleDto productHiddenAndSaleDto = mapperConfig.strictMapper()
-            .map(request, ProductHiddenAndSaleDto.class);
-        productService.updateProductSale(productHiddenAndSaleDto, productId);
+        @RequestHeader(HEADER_USER_ROLE) String userRole
+        , @RequestHeader(HEADER_USER_ID) String userId
+        , @Valid @RequestBody UpdateProductSaleRequestDto request
+        , @PathVariable UUID productId) {
 
+        validateHubOrCompanyByProductId(userRole, userId, productId);
+        final ProductHiddenAndSaleDto productHiddenAndSaleDto = mapperConfig.strictMapper().map(request, ProductHiddenAndSaleDto.class);
+        productService.updateProductSale(productHiddenAndSaleDto, productId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -127,25 +126,24 @@ public class ProductController {
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @DeleteMapping("/product/{productId}")
     public ResponseEntity<Void> deleteProduct(
-        @RequestHeader(HEADER_USER_ROLE) String userRole,
-        @RequestHeader(HEADER_USER_ID) String userId,
-        @PathVariable UUID productId) {
-        validateHubOrCompanyByProductId(userRole,userId,productId);
+        @RequestHeader(HEADER_USER_ROLE) String userRole
+        , @RequestHeader(HEADER_USER_ID) String userId
+        , @PathVariable UUID productId) {
 
+        validateHubOrCompanyByProductId(userRole, userId, productId);
         productService.deleteProductById(productId);
-
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     //상품 목록 조회 - 페이징, 정렬 지원
     @GetMapping("/product")
-    public ResponseEntity<Page<ProductResponseDto>> getAllProducts(@ModelAttribute ProductBaseSearchConditionRequestDto condition, @RequestHeader(HEADER_USER_ROLE) String role, Pageable pageable) {
+    public ResponseEntity<Page<ProductResponseDto>> getAllProducts(
+        @ModelAttribute ProductBaseSearchConditionRequestDto condition
+        , @RequestHeader(HEADER_USER_ROLE) String role, Pageable pageable) {
 
         Page<ProductResponseDto> productResponseDto;
-
-        validateSearchCondition(role,condition);
-
-        ProductBaseSearchConditionDto productBaseSearchConditionDto = ProductBaseSearchConditionDto.from(condition);
+        validateSearchCondition(role, condition);
+        final ProductBaseSearchConditionDto productBaseSearchConditionDto = ProductBaseSearchConditionDto.from(condition);
 
         if (UserRoleEnum.isMaster(role)) {
             productResponseDto = productService.getAllProductsByMaster(pageable);
@@ -156,20 +154,20 @@ public class ProductController {
         } else {
             productResponseDto = productService.getAllProductByEvery(pageable);
         }
-
         return new ResponseEntity<>(productResponseDto, HttpStatus.OK);
     }
 
     //상품 목록 조회 - 키워드 검색, 페이징, 정렬 지원
     @PostMapping("/product/search")
     public ResponseEntity<Page<ProductResponseDto>> searchProduct(
-        @RequestBody(required = false) ProductSearchConditionRequestDto searchCondition,
-        @RequestHeader(HEADER_USER_ROLE) String role, Pageable pageable) {
+        @RequestBody(required = false) ProductSearchConditionRequestDto searchCondition
+        , @RequestHeader(HEADER_USER_ROLE) String role
+        , Pageable pageable) {
 
         ProductSearchConditionDto productSearchConditionDto = Optional.ofNullable(searchCondition)
-            .map(conditionDto -> {
-                return ProductSearchConditionDto.from(
-                      conditionDto.getProductId()
+            .map(conditionDto ->
+                  ProductSearchConditionDto.from(
+                    conditionDto.getProductId()
                     , conditionDto.getProductName()
                     , conditionDto.getCompanyId()
                     , conditionDto.getMinProductPrice()
@@ -177,86 +175,79 @@ public class ProductController {
                     , DateTimeUtil.parseToLocalDateTime(conditionDto.getStartDate())
                     , DateTimeUtil.parseToLocalDateTime(conditionDto.getEndDate())
                     , conditionDto.getIsAbleToWatchDeleted()
-                );
-            } )
+                )
+            )
             .orElseGet(ProductSearchConditionDto::empty);
-
         //마스터인 경우 모든 상품을 봄 - 삭제된 상품까지
         if (UserRoleEnum.isMaster(role)) {
             productSearchConditionDto.setIsAbleToWatchDeleted();
         }
-
         Page<ProductResponseDto> products = productService.searchProduct(productSearchConditionDto, pageable);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     //특정 상품 조회
     @GetMapping("/product/{productId}")
-    public ResponseEntity<ProductWithStockResponseDto> getProductById(
-        @RequestHeader(HEADER_USER_ROLE) String role, @PathVariable UUID productId) {
-        ProductWithStockResponseDto productWithStockResponseDto;
+    public ResponseEntity<ProductWithStockResponseDto> getProductById(@RequestHeader(HEADER_USER_ROLE) String role, @PathVariable UUID productId) {
 
+        ProductWithStockResponseDto productWithStockResponseDto;
         if (UserRoleEnum.isMaster(role)) {
-            productWithStockResponseDto = productWithStockService.getProductWithStockById(
-                productId);
+            productWithStockResponseDto = productWithStockService.getProductWithStockById(productId);
         } else {
-            productWithStockResponseDto = productWithStockService.getValidProductWithStockById(
-                productId);
+            productWithStockResponseDto = productWithStockService.getValidProductWithStockById(productId);
         }
         return new ResponseEntity<>(productWithStockResponseDto, HttpStatus.OK);
     }
 
     //카테고리별로 상품들을 조회
     @GetMapping("/category/{categoryId}/product")
-    public ResponseEntity<Page<ProductResponseDto>> getProductWithCategory(
-        @PathVariable UUID categoryId, Pageable pageable) {
-
-        Page<ProductResponseDto> productResponseDtos = productService.getProductWithCategory(
-            categoryId, pageable);
-
-        return new ResponseEntity<>(productResponseDtos, HttpStatus.OK);
+    public ResponseEntity<Page<ProductResponseDto>> getProductWithCategory(@PathVariable UUID categoryId, Pageable pageable) {
+        Page<ProductResponseDto> products = productService.getProductWithCategory(categoryId, pageable);
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     /**
      * 허브매니저와 업체관리자에 대한 권한 및 소속검증
+     *
      * @param userRole 권한
-     * @param userId : login ID
+     * @param userId   : login ID
      * @param targetId : companyId
      */
-    private void validationHubOrCompany(String userRole,String userId,UUID targetId){
-        if(UserRoleEnum.isHubManager(userRole)){
-            productPermissionValidator.verifyCompanyOfHubManager(userRole,UUID.fromString(userId),targetId);
-        }else{
-            productPermissionValidator.verifyCompanyOfCompanyManager(userRole,UUID.fromString(userId),targetId);
+    private void validationHubOrCompany(String userRole, String userId, UUID targetId) {
+        if (UserRoleEnum.isHubManager(userRole)) {
+            productPermissionValidator.verifyCompanyOfHubManager(userRole, UUID.fromString(userId), targetId);
+        } else {
+            productPermissionValidator.verifyCompanyOfCompanyManager(userRole, UUID.fromString(userId), targetId);
         }
     }
 
     /**
      * 허브매니저와 업체관리자에 대한 권한 검증
-     * @param userRole 권한
-     * @param userId Login Id
+     *
+     * @param userRole  권한
+     * @param userId    Login Id
      * @param productId
      */
-    private void validateHubOrCompanyByProductId(String userRole,String userId, UUID productId) {
+    private void validateHubOrCompanyByProductId(String userRole, String userId, UUID productId) {
 
         ProductResponseDto productResponseDto = productService.getValidProductById(productId);
         UUID companyId = productResponseDto.getCompanyId();
 
-        if(UserRoleEnum.isCompany(userRole)) {
-            productPermissionValidator.verifyCompanyOfCompanyManager(userRole,UUID.fromString(userId),companyId);
-        }else {
-            productPermissionValidator.verifyCompanyOfCompanyManager(userRole,UUID.fromString(userId),companyId);
+        if (UserRoleEnum.isCompany(userRole)) {
+            productPermissionValidator.verifyCompanyOfCompanyManager(userRole, UUID.fromString(userId), companyId);
+        } else {
+            productPermissionValidator.verifyCompanyOfHubManager(userRole, UUID.fromString(userId), companyId);
         }
     }
 
     //Search 시 hub, company 인 경우 companyId, hubId 검증
     private void validateSearchCondition(String role, ProductBaseSearchConditionRequestDto condition) {
-        if (UserRoleEnum.isCompany(role) && (condition == null || condition.getCompanyId() == null)) {
+
+        if (UserRoleEnum.isCompany(role) && (ObjectUtils.isEmpty(condition) || ObjectUtils.isEmpty(condition.getCompanyId()))) {
             throw new IllegalArgumentException("Company ID cannot be null for company role");
         }
-        if (UserRoleEnum.isHubManager(role) && (condition == null || condition.getHubId() == null)) {
+        if (UserRoleEnum.isHubManager(role) && (ObjectUtils.isEmpty(condition) || ObjectUtils.isEmpty(condition.getHubId()))) {
             throw new IllegalArgumentException("Hub ID cannot be null for hub manager role");
         }
     }
-
 }
