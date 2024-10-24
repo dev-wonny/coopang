@@ -9,7 +9,6 @@ spring:
     url: jdbc:postgresql://localhost:5432/coopang_product
     username: coopang
     password: q1w2e3r4!!
-
   jpa:
     hibernate:
       ddl-auto: create
@@ -30,7 +29,9 @@ spring:
     cache-names: products, allProducts
     caffeine:
       spec: maximumSize=500,expireAfterAccess=60m
-
+  kafka:
+    bootstrap-servers: localhost:9092
+    group-id: product-sever-group
 springdoc:
   api-docs:
     path: /v3/api-docs

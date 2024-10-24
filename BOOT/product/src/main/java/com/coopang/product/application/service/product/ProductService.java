@@ -67,7 +67,7 @@ public class ProductService {
     }
 
     //모든 상품 조회 - 마스터인 경우
-    @Cacheable(value = "allProducts", key = "#pageable.pageNumber")
+    @Cacheable(value = "allProducts", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
     @Transactional(readOnly = true)
     public Page<ProductResponseDto> getAllProductsByMaster(Pageable pageable) {
 
@@ -75,7 +75,7 @@ public class ProductService {
     }
 
     //허브 관리자일 경우 소속된 업체들의 상품들 조회
-    @Cacheable(value = "allProducts", key = "#condition")
+    @Cacheable(value = "allProducts", key = "#condition+'-'+#pageable.pageNumber + '-' + #pageable.pageSize")
     @Transactional(readOnly = true)
     public Page<ProductResponseDto> getAllProductInHub(
         ProductBaseSearchConditionDto condition, Pageable pageable) {
@@ -89,7 +89,7 @@ public class ProductService {
     }
 
     //업체 관리자일 경우 자신의 상품들만 조회
-    @Cacheable(value = "allProducts", key = "#condition")
+    @Cacheable(value = "allProducts", key = "#condition+'-'+#pageable.pageNumber + '-' + #pageable.pageSize")
     @Transactional(readOnly = true)
     public Page<ProductResponseDto> getAllProductInCompany(
         ProductBaseSearchConditionDto condition, Pageable pageable) {
@@ -105,7 +105,7 @@ public class ProductService {
     }
 
     //카테고리별로 상품 조회
-    @Cacheable(value = "allProducts", key = "#pageable.pageNumber+ '-' + #pageable.pageSize")
+    @Cacheable(value = "allProducts", key = "#categoryId + '-' +#pageable.pageNumber+ '-' + #pageable.pageSize")
     @Transactional(readOnly = true)
     public Page<ProductResponseDto> getProductWithCategory(UUID categoryId, Pageable pageable) {
 
