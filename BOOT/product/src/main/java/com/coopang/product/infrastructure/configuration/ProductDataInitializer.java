@@ -261,7 +261,7 @@ class ProductDataInitializer implements ApplicationRunner {
             product1.setProductName(productName);
             product1.setCompanyId(UUID.randomUUID());
             product1.setCategoryId(findCategoryId(savedCategories, categoryValues[categoryIndex++%20]));
-            double price = Math.round(random.nextDouble() * 400000 * 10) / 10.0;
+            double price = (double) random.nextInt(400001);
             product1.setProductPrice(price);
             product1.setProductStock(random.nextInt(201));
             productDtos.add(product1);

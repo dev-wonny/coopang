@@ -10,38 +10,29 @@ spring:
         gateway:
             routes:
                 -   id: user
-                    uri: http://192.168.0.10:19092
+                    uri: lb://user
                     predicates:
-                        - Path=/users/**
-                        - Path=/auth/**
+                        - Path=/users/**, /auth/**
                 -   id: hub
                     uri: lb://hub
                     predicates:
-                        - Path=/hubs/**
-                        - Path=/companies/**
-                        - Path=/shippers/**
+                        - Path=/hubs/**, /companies/**, /shippers/**
                 -   id: product
                     uri: lb://product
                     predicates:
-                        - Path=/products/**
-                        - Path=/product-stocks/**
-                        - Path=/product-stock-histories/**
+                        - Path=/products/**, /product-stocks/**, /product-stock-histories/**
                 -   id: order
                     uri: lb://order
                     predicates:
-                        - Path=/orders/**
-                        - Path=/payments/**
-                        - Path=/payment-histories/**
+                        - Path=/orders/**, /payments/**, /payment-histories/**
                 -   id: delivery
                     uri: lb://delivery
                     predicates:
-                        - Path=/deliveries/**
-                        - Path=/delivery-route-histories/**
+                        - Path=/deliveries/**, /delivery-route-histories/**
                 -   id: ainoti
                     uri: lb://ainoti
                     predicates:
-                        - Path=/ai-request-histories/**
-                        - Path=/slack-messages/**
+                        - Path=/ai-request-histories/**, /slack-messages/**
             discovery:
                 locator:
                     enabled: true
@@ -49,10 +40,10 @@ spring:
         redis:
             host: localhost
             port: 6379
-            password: q1w2e3r4!!
+            password: ${REDIS_PASSWORD}
 service:
     jwt:
-        secret-key: "7Iqk7YyM66W07YOA7L2U65Sp7YG065+9U3ByaW5n6rCV7J2Y7Yqc7YSw7LWc7JuQ67mI7J6F64uI64ukLg=="
+        secret-key: ${JWT_SECRET_KEY}
         expiration-time: 3600000
 
 eureka:
@@ -86,11 +77,18 @@ jwt:
 springdoc:
     api-docs:
         path: /v3/api-docs
-    packages-to-scan: com.coopang.hub.presentation.controller
-    default-consumes-media-type: application/json;charset=UTF-8
-    default-produces-media-type: application/json;charset=UTF-8
     swagger-ui:
         path: /swagger-ui.html
-        disable-swagger-default-url: true
-        display-request-duration: true
         operations-sorter: alpha
+        display-request-duration: true
+    openapi:
+        gateway:
+            routes:
+                -   name: user-service
+                    url: lb://user/v3/api-docs  # user 서비스의 Swagger 문서 경로
+                -   name: product-service
+                    url: lb://product/v3/api-docs  # product 서비스의 Swagger 문서 경로
+                -   name: order-service
+                    url: lb://order/v3/api-docs  # order 서비스의 Swagger 문서 경로
+                -   name: delivery-service
+                    url: lb://delivery/v3/api-docs  # delivery 서비스의 Swagger 문서 경로
