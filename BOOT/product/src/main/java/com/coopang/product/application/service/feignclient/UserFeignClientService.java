@@ -1,11 +1,11 @@
 package com.coopang.product.application.service.feignclient;
 
 import com.coopang.apicommunication.feignclient.user.UserClientService;
+import com.coopang.apiconfig.feignclient.FeignConfig;
 import com.coopang.apidata.application.user.response.UserResponse;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import com.coopang.apiconfig.feignclient.FeignConfig;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +25,7 @@ public class UserFeignClientService {
             String slackId = userResponse.getSlackId();
 
             return slackId;
-        }
-        finally {
+        } finally {
             feignConfig.resetRole();
         }
     }

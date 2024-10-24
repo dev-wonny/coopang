@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-@Slf4j
+@Slf4j(topic = "CustomPostFilter")
 @Component
 public class CustomPostFilter implements GlobalFilter, Ordered {
 

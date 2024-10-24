@@ -18,12 +18,12 @@ public class HubDomainService {
 
     public HubEntity createHub(HubDto hubDto) {
         HubEntity hubEntity = HubEntity.create(
-                hubDto.getHubId()
-                , hubDto.getHubName()
-                , hubDto.getHubManagerId()
-                , hubDto.getZipCode()
-                , hubDto.getAddress1()
-                , hubDto.getAddress2()
+            hubDto.getHubId()
+            , hubDto.getHubName()
+            , hubDto.getHubManagerId()
+            , hubDto.getZipCode()
+            , hubDto.getAddress1()
+            , hubDto.getAddress2()
         );
         return hubJpaRepository.save(hubEntity);
     }
