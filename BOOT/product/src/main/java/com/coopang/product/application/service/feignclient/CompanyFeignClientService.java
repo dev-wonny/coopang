@@ -1,14 +1,14 @@
 package com.coopang.product.application.service.feignclient;
 
 import com.coopang.apicommunication.feignclient.company.CompanyClientService;
+import com.coopang.apiconfig.error.AccessDeniedException;
 import com.coopang.apiconfig.feignclient.FeignConfig;
 import com.coopang.apidata.application.company.request.CompanySearchConditionRequest;
 import com.coopang.apidata.application.company.response.CompanyResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -16,11 +16,11 @@ public class CompanyFeignClientService {
 
     private final CompanyClientService companyClientService;
     private final FeignConfig feignConfig;
-
-    //내부통신을 이용하여 허브에 소속된 업체들을 조회
+    
+    //내부통신을 이용하여 허브에 소속된 업체들을 조회 
     public List<UUID> getCompanyIdsInFeignClient(UUID hubId) {
 
-        try {
+        try{
             CompanySearchConditionRequest req = new CompanySearchConditionRequest();
             req.setHubId(hubId);
             req.setIsDeleted(false);
@@ -32,7 +32,6 @@ public class CompanyFeignClientService {
             List<UUID> companyIds = companyLists.stream()
                 .map(CompanyResponse::getCompanyId)
                 .toList();
-
             return companyIds;
         } finally {
             // 역할을 초기화
@@ -43,16 +42,22 @@ public class CompanyFeignClientService {
     //업체의 관리자 조회 - 내부통신이용
     public CompanyResponse getCompanyById(UUID companyId) {
 
-        try {
-
+        try{
             feignConfig.changeHeaderRoleToServer();
-
             CompanyResponse companyResponse = companyClientService.getCompanyInfo(companyId);
-
             return companyResponse;
         } finally {
             // 역할을 초기화
             feignConfig.resetRole();
+        }
+    }
+
+    public void validateCompanyOwner(UUID companyManagerId, UUID companyId){
+        CompanyResponse companyResponse = companyClientService.getCompanyInfo(companyId);
+
+        if(!companyManagerId.equals(companyResponse.getCompanyManagerId()))
+        {
+            throw new AccessDeniedException("업체 관리자만 상품관리를 할 수 있습니다.");
         }
     }
 }

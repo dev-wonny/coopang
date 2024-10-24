@@ -30,52 +30,45 @@ public class ProductStockController {
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PatchMapping("/{productId}/restock")
-    public ResponseEntity<Void> addProductStock(@PathVariable UUID productId,
-                                                  @Valid @RequestBody AddStockRequestDto addStockRequestDto) {
+    public ResponseEntity<Void> addProductStock(
+        @PathVariable UUID productId
+        , @Valid @RequestBody AddStockRequestDto addStockRequestDto) {
 
         ProductStockDto productStockDto = mapperConfig.strictMapper().map(addStockRequestDto, ProductStockDto.class);
-
         productStockService.addProductStock(productId, productStockDto);
-
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PatchMapping("/{productId}/reduce")
     public ResponseEntity<Void> reduceProductStock(
-            @PathVariable UUID productId,
-            @Valid @RequestBody UpdateStockRequestDto updateStockRequestDto) {
+        @PathVariable UUID productId
+        , @Valid @RequestBody UpdateStockRequestDto updateStockRequestDto) {
 
         ProductStockDto productStockDto = mapperConfig.strictMapper().map(updateStockRequestDto, ProductStockDto.class);
-
         productStockService.reduceProductStock(productId, productStockDto);
-
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PatchMapping("/{productId}/rollback-increase")
     public ResponseEntity<Void> rollbackProductStock(
-            @PathVariable UUID productId,
-            @Valid @RequestBody UpdateStockRequestDto updateStockRequestDto) {
+        @PathVariable UUID productId
+        , @Valid @RequestBody UpdateStockRequestDto updateStockRequestDto) {
 
         ProductStockDto productStockDto = mapperConfig.strictMapper().map(updateStockRequestDto, ProductStockDto.class);
-
         productStockService.rollbackProduct(productStockDto.getOrderId(), productId, productStockDto.getAmount());
-
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Secured({Authority.MASTER, Authority.COMPANY, Authority.HUB_MANAGER})
     @PatchMapping("/{productId}/cancel-increase")
     public ResponseEntity<Void> cancelProductStock(
-            @PathVariable UUID productId,
-            @Valid @RequestBody UpdateStockRequestDto updateStockRequestDto) {
+        @PathVariable UUID productId
+        , @Valid @RequestBody UpdateStockRequestDto updateStockRequestDto) {
 
         ProductStockDto productStockDto = mapperConfig.strictMapper().map(updateStockRequestDto, ProductStockDto.class);
-
         productStockService.cancelProduct(productStockDto.getOrderId(), productId, productStockDto.getAmount());
-
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

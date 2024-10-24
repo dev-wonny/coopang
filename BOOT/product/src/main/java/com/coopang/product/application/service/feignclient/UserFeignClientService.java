@@ -5,7 +5,6 @@ import com.coopang.apiconfig.feignclient.FeignConfig;
 import com.coopang.apidata.application.user.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.UUID;
 
 @Service
