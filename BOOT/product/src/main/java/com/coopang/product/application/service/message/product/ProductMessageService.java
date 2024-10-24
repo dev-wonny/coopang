@@ -16,11 +16,12 @@ import com.coopang.product.application.service.product.ProductService;
 import com.coopang.product.application.service.productstock.ProductStockService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.math.BigDecimal;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.UUID;
 
 @Slf4j(topic = "ProductMessageService")
 @Service("productMessageService")
@@ -59,57 +60,52 @@ public class ProductMessageService implements MessageService {
     }
 
     private void handleProcessProduct(String message) {
-
         log.info("Process Product received for , message: {}", message);
         ProcessProduct processProduct = null;
 
-        try{
+        try {
             processProduct = objectMapper.readValue(message, ProcessProduct.class);
             ProductStockDto productStockDto = new ProductStockDto();
             productStockDto.setAmount(processProduct.getOrderQuantity());
             productStockDto.setOrderId(processProduct.getOrderId());
 
-            int currentQuantity = productStockService.reduceProductStock(processProduct.getProductId(),productStockDto);
+            int currentQuantity = productStockService.reduceProductStock(processProduct.getProductId(), productStockDto);
 
-            if(currentQuantity <= STOCK_LOW_NOTIFICATION_NUM)
-            {
-                sendLowStockNotification(processProduct.getProductId(),currentQuantity);
+            if (currentQuantity <= STOCK_LOW_NOTIFICATION_NUM) {
+                sendLowStockNotification(processProduct.getProductId(), currentQuantity);
             }
-            sendCompleteProduct(processProduct.getProductId(),processProduct.getOrderId(),
+            sendCompleteProduct(processProduct.getProductId(), processProduct.getOrderId(),
                 processProduct.getOrderQuantity(), processProduct.getOrderTotalPrice());
-        }
-        catch (IllegalArgumentException e)
-        {
-            if(processProduct != null) {
+        } catch (IllegalArgumentException e) {
+            if (processProduct != null) {
                 sendErrorProduct(processProduct.getOrderId());
             }
 
             log.error("Error processing product: {}", e.getMessage());
-        }
-        catch (JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             log.error(e.getMessage());
         }
     }
 
     private void handleRollbackProduct(String message) {
-        try{
+        try {
             log.info("Rollback Product received for , message: {}", message);
             RollbackProduct rollbackProduct = objectMapper.readValue(message, RollbackProduct.class);
 
-            productStockService.rollbackProduct(rollbackProduct.getOrderId(),rollbackProduct.getProductId(),
+            productStockService.rollbackProduct(rollbackProduct.getOrderId(), rollbackProduct.getProductId(),
                 rollbackProduct.getOrderQuantity());
 
-        }catch (JsonProcessingException e){
+        } catch (JsonProcessingException e) {
             log.error(e.getMessage());
         }
     }
 
     /* send
-    * 재고 차감 완료 후 메세지 전송
-    * 주문 수량이 재고 수량보다 많을 경우 에러메시지
-    * 주문 재고 10개이하 일경우 관리자에게 메시지 알림
+     * 재고 차감 완료 후 메세지 전송
+     * 주문 수량이 재고 수량보다 많을 경우 에러메시지
+     * 주문 재고 10개이하 일경우 관리자에게 메시지 알림
      */
-    public void sendCompleteProduct(UUID productId,UUID orderId,int orderQuantity, BigDecimal orderTotalPrice){
+    public void sendCompleteProduct(UUID productId, UUID orderId, int orderQuantity, BigDecimal orderTotalPrice) {
         ProductResponseDto productResponseDto = productService.getProductById(productId);
         //재고수량 차감 완료 메시지 생성 및 주문 서버에 send
         CompleteProduct completeProduct = new CompleteProduct();
@@ -118,35 +114,34 @@ public class ProductMessageService implements MessageService {
         completeProduct.setOrderTotalPrice(orderTotalPrice);
         completeProduct.setOrderQuantity(orderQuantity);
 
-        sendMessage("complete_product",completeProduct);
+        sendMessage("complete_product", completeProduct);
     }
 
     //주문 수량이 재고 수량보다 많을 경우 에러메시지 주문서버에 전달
-    private void sendErrorProduct(UUID orderId)
-    {
+    private void sendErrorProduct(UUID orderId) {
         ErrorProduct errorProduct = new ErrorProduct();
         errorProduct.setOrderId(orderId);
         errorProduct.setErrorMessage("재고수량이 부족합니다.");
 
-        sendMessage("error_product",errorProduct);
+        sendMessage("error_product", errorProduct);
     }
 
     //주문 재고 10개이하 일경우 메시지알림
-    private void sendLowStockNotification(UUID productId,int quantity){
+    private void sendLowStockNotification(UUID productId, int quantity) {
         //상품의 업체 조회
-        ProductResponseDto productResponseDto = productService.getProductById(productId);
+        final ProductResponseDto productResponseDto = productService.getProductById(productId);
 
         //업체의 관리자 조회 - 내부통신이용
         CompanyResponse companyResponse = companyFeignClientService.getCompanyById(productResponseDto.getCompanyId());
-        //슬랙 아이디 조회 - 내부통신
-        String slackId = userFeignClientService.getSlackIdByUserId(companyResponse.getCompanyManagerId());
 
+        //슬랙 아이디 조회 - 내부통신
+        final String slackId = userFeignClientService.getUserById(companyResponse.getCompanyManagerId()).getSlackId();
         LowStockNotification lowStockNotification = new LowStockNotification();
         lowStockNotification.setProductId(productId);
         lowStockNotification.setQuantity(quantity);
         lowStockNotification.setSlackId(slackId);
 
-        sendMessage("low_stock_notification",lowStockNotification);
+        sendMessage("low_stock_notification", lowStockNotification);
     }
 
     //공통함수 : 메세지 보내기
@@ -158,5 +153,5 @@ public class ProductMessageService implements MessageService {
             log.error("Error while sending message to topic {}: {}", topic, e.getMessage(), e);
         }
     }
-    
+
 }

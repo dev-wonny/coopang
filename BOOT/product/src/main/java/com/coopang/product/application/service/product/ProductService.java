@@ -11,10 +11,6 @@ import com.coopang.product.domain.entity.product.ProductEntity;
 import com.coopang.product.domain.repository.product.ProductRepository;
 import com.coopang.product.domain.service.product.ProductDomainService;
 import com.coopang.product.infrastructure.repository.category.CategoryJpaRepository;
-import com.coopang.product.presentation.request.product.ProductBaseSearchConditionRequestDto;
-import com.coopang.product.presentation.request.product.ProductSearchConditionRequestDto;
-import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -24,6 +20,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -57,12 +56,8 @@ public class ProductService {
     @Cacheable(value = "products", key = "#productId")
     @Transactional(readOnly = true)
     public ProductResponseDto getProductById(UUID productId) {
-
         ProductEntity productEntity = productRepository.getOneByProductIdWithCategory(productId)
-            .orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 상품입니다.")
-            );
-
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
         return ProductResponseDto.of(productEntity);
     }
 
@@ -183,7 +178,7 @@ public class ProductService {
     @Cacheable(value = "allProducts", key = "#searchCondition.toString() + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     @Transactional(readOnly = true)
     public Page<ProductResponseDto> searchProduct(ProductSearchConditionDto searchCondition,
-        Pageable pageable) {
+                                                  Pageable pageable) {
 
         Page<ProductEntity> productEntities = productRepository.search(searchCondition, pageable);
         return productEntities.map(ProductResponseDto::of);

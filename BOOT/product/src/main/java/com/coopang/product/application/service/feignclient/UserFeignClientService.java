@@ -5,6 +5,7 @@ import com.coopang.apiconfig.feignclient.FeignConfig;
 import com.coopang.apidata.application.user.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.UUID;
 
 @Service
@@ -15,16 +16,10 @@ public class UserFeignClientService {
     private final FeignConfig feignConfig;
 
     //슬랙 아이디 조회
-    public String getSlackIdByUserId(UUID userId) {
+    public UserResponse getUserById(UUID userId) {
         try {
-
             feignConfig.changeHeaderRoleToServer();
-
-            UserResponse userResponse = userClientService.getUserInfo(userId);
-
-            String slackId = userResponse.getSlackId();
-
-            return slackId;
+            return userClientService.getUserInfo(userId);
         } finally {
             feignConfig.resetRole();
         }

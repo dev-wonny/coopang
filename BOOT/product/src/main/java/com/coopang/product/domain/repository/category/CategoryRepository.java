@@ -6,8 +6,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CategoryRepository {
-
     Optional<CategoryEntity> findByCategoryIdAndIsDeletedFalse(UUID categoryId);
-
     List<CategoryEntity> findAllByIsDeletedFalse();
 }
