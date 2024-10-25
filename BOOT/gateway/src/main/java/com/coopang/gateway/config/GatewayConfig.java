@@ -15,7 +15,7 @@ public class GatewayConfig {
                 .uri("lb://user"))
             .route("hub", r -> r.path("/hubs/**", "/companies/**", "/shippers/**")
                 .uri("lb://hub"))
-            .route("product", r -> r.path("/products/**", "/product-stocks/**", "/product-stock-histories/**")
+            .route("product", r -> r.path("/products/**", "/productMessages/**", "/product-stocks/**", "/product-stock-histories/**")
                 .uri("lb://product"))
             .route("order", r -> r.path("/orders/**", "/payments/**", "/payment-histories/**")
                 .uri("lb://order"))

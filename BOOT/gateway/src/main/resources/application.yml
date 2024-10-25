@@ -20,7 +20,7 @@ spring:
                 -   id: product
                     uri: lb://product
                     predicates:
-                        - Path=/products/**, /product-stocks/**, /product-stock-histories/**
+                        - Path=/products/**, /productMessages/**, /product-stocks/**, /product-stock-histories/**
                 -   id: order
                     uri: lb://order
                     predicates:
