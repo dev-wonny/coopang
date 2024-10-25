@@ -5,6 +5,19 @@
 * The Coopang system is based on Microservices Architecture (MSA) and Spring Boot, inspired by Coupang's fulfillment services. It efficiently manages the entire logistics process from inbound to outbound and delivery.
 * Designed with a Hub-and-Spoke architecture, items are first routed through a central logistics hub before reaching regional hubs closer to the customer, ultimately ensuring smooth and efficient delivery.
 
+---
+
+## 🎤 Detailed Information
+For more information about the technology stack, scenarios, timelines, technical decisions, troubleshooting, and contributors, please visit the following link:
+- [👉 Coopang Wiki - More Information](https://github.com/dev-wonny/coopang/wiki)
+
+---
+
+## 💻 AWS EC2 TEST, POSTMAN
+To test the APIs on an AWS EC2 environment, you can use the following Postman collection:
+- [POSTMAN EC2 Link](https://speeding-meteor-518657.postman.co/workspace/COOPANG~a7a4b327-60be-4249-9974-2f290f682ac2/collection/16013172-6da18e83-50fd-491e-8399-bf9f8b643b6b?action=share&creator=30517563)
+
+---
 
 ## ✅ How to start
 To start the Docker services you defined in your docker-compose.yml file, follow these steps:
