@@ -31,6 +31,7 @@ public class CompanyService {
     }
 
     @Transactional
+    @CacheEvict(value = {"companies", "companyList", "allCompanies"}, allEntries = true)
     public CompanyResponseDto createCompany(CompanyDto companyDto) {
         // 서비스 레이어에서 UUID 생성
         final UUID companyId = companyDto.getCompanyId() != null ? companyDto.getCompanyId() : UUID.randomUUID();
@@ -76,7 +77,7 @@ public class CompanyService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "companyList", key = "#condition")
+    @Cacheable(value = "companyList", key = "#condition.toString()")
     public List<CompanyResponseDto> getCompanyList(CompanySearchConditionDto condition) {
         final List<CompanyEntity> companyList = companyRepository.findCompanyList(condition);
         return companyList.stream()

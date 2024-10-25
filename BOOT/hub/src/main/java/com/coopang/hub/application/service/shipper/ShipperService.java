@@ -32,6 +32,7 @@ public class ShipperService {
     }
 
     @Transactional
+    @CacheEvict(value = {"shippers", "shipperList", "allShippers"}, allEntries = true)
     public ShipperResponseDto createShipper(ShipperDto shipperDto) {
         // 서비스 레이어에서 UUID 생성
         final UUID userId = shipperDto.getShipperId() != null ? shipperDto.getShipperId() : UUID.randomUUID();
@@ -78,7 +79,7 @@ public class ShipperService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "shipperList", key = "#condition")
+    @Cacheable(value = "shipperList", key = "#condition.toString()")
     public List<ShipperResponseDto> getShipperList(ShipperSearchConditionDto condition) {
         final List<ShipperEntity> shippers = shipperRepository.findShipperList(condition);
         return shippers.stream()

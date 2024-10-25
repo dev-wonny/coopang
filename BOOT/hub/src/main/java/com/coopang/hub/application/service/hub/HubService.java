@@ -30,6 +30,7 @@ public class HubService {
     }
 
     @Transactional
+    @CacheEvict(value = {"hubs", "hubList", "allHubs"}, allEntries = true)
     public HubResponseDto createHub(HubDto hubDto) {
         // 서비스 레이어에서 UUID 생성
         final UUID hubId = hubDto.getHubId() != null ? hubDto.getHubId() : UUID.randomUUID();
@@ -66,7 +67,7 @@ public class HubService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "hubList", key = "#condition")
+    @Cacheable(value = "hubList", key = "#condition.toString()")
     public List<HubResponseDto> getHubList(HubSearchConditionDto condition) {
         List<HubEntity> hubs = hubRepository.findHubList(condition);
         return hubs.stream()

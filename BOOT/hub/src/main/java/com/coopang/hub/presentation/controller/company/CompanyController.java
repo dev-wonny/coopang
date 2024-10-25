@@ -3,6 +3,8 @@ package com.coopang.hub.presentation.controller.company;
 
 import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ID;
 import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ROLE;
+import static com.coopang.coredata.user.enums.UserRoleEnum.isMaster;
+import static com.coopang.coredata.user.enums.UserRoleEnum.isServer;
 
 import com.coopang.apiconfig.mapper.ModelMapperConfig;
 import com.coopang.coredata.user.enums.UserRoleEnum;
@@ -107,7 +109,7 @@ public class CompanyController {
     ) {
         CompanyResponseDto company;
         // 마스터면 delete도 보임, 그외 권한 delete 안 보임
-        if (UserRoleEnum.isMaster(roleHeader)) {
+        if (isMaster(roleHeader)) {
             company = companyService.getCompanyById(companyId);
         } else {
             company = companyService.getValidCompanyById(companyId);
@@ -151,7 +153,7 @@ public class CompanyController {
         );
 
         // 마스터 권한이면 클라이언트에서 받은 isDeleted 값을 사용하고, 그외 권한은 삭제되지 않은 항목만 조회하도록 false로 설정
-        if (!UserRoleEnum.isMaster(roleHeader)) {
+        if (!isMaster(roleHeader)) {
             condition.setIsDeletedFalse();
         }
 
@@ -330,6 +332,9 @@ public class CompanyController {
      * @param userRole
      */
     private void validateRoleHubManaagerAndCompanyAccess(UUID companyId, UUID userId, String userRole) {
+        if (isMaster(userRole) || isServer(userRole)) {
+            return;
+        }
         // 수정하려는 company 이전 정보 조회
         CompanyEntity companyEntity = companyService.findValidCompanyById(companyId);
 

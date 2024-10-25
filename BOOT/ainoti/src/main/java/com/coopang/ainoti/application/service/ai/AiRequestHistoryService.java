@@ -35,6 +35,7 @@ public class AiRequestHistoryService {
      * AI 요청 기록 생성
      */
     @Transactional
+    @CacheEvict(value = {"aiRequestHistories", "aiRequestHistoryList", "allAiRequestHistories"}, allEntries = true)
     public AiRequestHistoryResponseDto createAiRequestHistory(AiRequestHistoryDto aiRequestHistoryDto) {
         // UUID 생성
         final UUID aiRequestHistoryId = aiRequestHistoryDto.getAiRequestHistoryId() != null ? aiRequestHistoryDto.getAiRequestHistoryId() : UUID.randomUUID();
@@ -88,7 +89,7 @@ public class AiRequestHistoryService {
      * AI 요청 기록 리스트 조회
      */
     @Transactional(readOnly = true)
-    @Cacheable(value = "aiRequestHistoryList", key = "#condition")
+    @Cacheable(value = "aiRequestHistoryList", key = "#condition.toString()")
     public List<AiRequestHistoryResponseDto> getAiRequestHistoryList(AiRequestHistorySearchConditionDto condition) {
         final List<AiRequestHistoryEntity> aiRequestHistories = aiRequestHistoryRepository.findAiRequestHistoryList(condition);
         return aiRequestHistories.stream()

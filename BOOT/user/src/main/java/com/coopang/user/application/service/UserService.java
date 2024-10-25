@@ -54,6 +54,7 @@ public class UserService {
      * @return the created user information.
      * @throws IllegalArgumentException if the email already exists.
      */
+    @CacheEvict(value = {"users", "userList", "allUsers"}, allEntries = true)
     public UserResponseDto join(UserDto userDto) {
         // email 중복 확인
         if (userRepository.existsByEmail(userDto.getEmail())) {
@@ -184,7 +185,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "userList", key = "#condition")
+    @Cacheable(value = "userList", key = "#condition.toString()")
     public List<UserResponseDto> getUserList(UserSearchConditionDto condition) {
         final List<UserEntity> userList = userRepository.findUserList(condition);
         return userList.stream()

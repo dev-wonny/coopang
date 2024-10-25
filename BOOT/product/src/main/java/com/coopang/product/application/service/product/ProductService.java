@@ -35,6 +35,7 @@ public class ProductService {
     private final CompanyFeignClientService companyFeignClientService;
 
     //특정 상품 생성
+    @CacheEvict(value = {"products", "allProducts"}, allEntries = true)
     public ProductEntity createProduct(ProductDto productDto) {
 
         ProductEntity productEntity = productDomainService.create(productDto);

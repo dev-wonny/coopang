@@ -49,6 +49,7 @@ public class SlackMessageService {
      * Slack 메시지 생성
      */
     @Transactional
+    @CacheEvict(value = {"slackMessages", "slackMessageList", "allSlackMessages"}, allEntries = true)
     public SlackMessageResponseDto createSlackMessage(SlackMessageDto slackMessageDto) {
         // UUID 생성
         final UUID slackMessageId = !ObjectUtils.isEmpty(slackMessageDto.getSlackMessageId()) ? slackMessageDto.getSlackMessageId() : UUID.randomUUID();
@@ -102,7 +103,7 @@ public class SlackMessageService {
      * Slack 메시지 리스트 조회
      */
     @Transactional(readOnly = true)
-    @Cacheable(value = "slackMessageList", key = "#condition")
+    @Cacheable(value = "slackMessageList", key = "#condition.toString()")
     public List<SlackMessageResponseDto> getSlackMessageList(SlackMessageSearchConditionDto condition) {
         List<SlackMessageEntity> slackMessages = slackMessageRepository.findSlackMessageList(condition);
         return slackMessages.stream()
