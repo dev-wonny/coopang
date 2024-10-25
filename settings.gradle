@@ -5,10 +5,15 @@ include 'CLOUD:eureka'
 
 // DATA (Domain)
 include 'DATA:api-data'
+include 'DATA:core-data'
 
 // INFRA (Integration)
 include 'INFRA:api-config'
 include 'INFRA:api-communication'
+include 'INFRA:auth-common'
 
 // BOOT (Server)
 include 'BOOT:gateway', 'BOOT:user', 'BOOT:hub'
+include 'BOOT:product'
+include 'BOOT:order', 'BOOT:delivery'
+include 'BOOT:ainoti'

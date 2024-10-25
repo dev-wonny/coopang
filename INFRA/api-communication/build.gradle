@@ -27,6 +27,7 @@ tasks.named('jar') {
 
 dependencies {
 	// multi module
+	implementation project(':DATA:core-data')
 	implementation project(':DATA:api-data')
 	implementation project(':INFRA:api-config')
 
@@ -42,9 +43,15 @@ dependencies {
 	// openfeign
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
+	// Swagger for API documentation
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
 	implementation 'org.springframework.boot:spring-boot-starter'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// Kafka
+	implementation 'org.springframework.kafka:spring-kafka'
 }
 
 tasks.named('test') {

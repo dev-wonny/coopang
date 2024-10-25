@@ -1,5 +1,7 @@
 package com.coopang.apiconfig.swagger;
 
+import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ID;
+import static com.coopang.coredata.user.constants.HeaderConstants.HEADER_USER_ROLE;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -47,13 +49,13 @@ public class SwaggerConfig {
             pathItem.readOperations().forEach(operation -> {
                 operation.addParametersItem(new Parameter()
                         .in("header")
-                        .name("X-User-Id")
+                        .name(HEADER_USER_ID)
                         .required(false)
                         .description("User ID Header"));
 
                 operation.addParametersItem(new Parameter()
                         .in("header")
-                        .name("X-User-Role")
+                        .name(HEADER_USER_ROLE)
                         .required(false)
                         .description("User Role Header"));
             });

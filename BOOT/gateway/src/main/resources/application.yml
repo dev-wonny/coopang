@@ -1,0 +1,94 @@
+server:
+    port: 19091
+
+spring:
+    application:
+        name: gateway
+    main:
+        web-application-type: reactive
+    cloud:
+        gateway:
+            routes:
+                -   id: user
+                    uri: lb://user
+                    predicates:
+                        - Path=/users/**, /auth/**
+                -   id: hub
+                    uri: lb://hub
+                    predicates:
+                        - Path=/hubs/**, /companies/**, /shippers/**
+                -   id: product
+                    uri: lb://product
+                    predicates:
+                        - Path=/products/**, /productMessages/**, /product-stocks/**, /product-stock-histories/**
+                -   id: order
+                    uri: lb://order
+                    predicates:
+                        - Path=/orders/**, /payments/**, /payment-histories/**
+                -   id: delivery
+                    uri: lb://delivery
+                    predicates:
+                        - Path=/deliveries/**, /delivery-route-histories/**
+                -   id: ainoti
+                    uri: lb://ainoti
+                    predicates:
+                        - Path=/ai-request-histories/**, /slack-messages/**
+            discovery:
+                locator:
+                    enabled: true
+    data:
+        redis:
+            host: localhost
+            port: 6379
+            password: ${REDIS_PASSWORD}
+service:
+    jwt:
+        secret-key: ${JWT_SECRET_KEY}
+        expiration-time: 3600000
+
+eureka:
+    client:
+        service-url:
+            defaultZone: http://localhost:19090/eureka/
+
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: prometheus
+    prometheus:
+        metrics:
+            export:
+                enabled: true
+auth:
+    server:
+        url: http://localhost:19092
+jwt:
+    excluded-paths:
+        - /get
+        - /post
+        - /users/v1/join
+        - /users/v1/login
+        - /swagger-ui
+        - /v3/api-docs
+        - /actuator
+
+springdoc:
+    api-docs:
+        path: /v3/api-docs
+    swagger-ui:
+        path: /swagger-ui.html
+        operations-sorter: alpha
+        display-request-duration: true
+    openapi:
+        gateway:
+            routes:
+                -   name: user-service
+                    url: lb://user/v3/api-docs  # user 서비스의 Swagger 문서 경로
+                -   name: product-service
+                    url: lb://product/v3/api-docs  # product 서비스의 Swagger 문서 경로
+                -   name: order-service
+                    url: lb://order/v3/api-docs  # order 서비스의 Swagger 문서 경로
+                -   name: delivery-service
+                    url: lb://delivery/v3/api-docs  # delivery 서비스의 Swagger 문서 경로

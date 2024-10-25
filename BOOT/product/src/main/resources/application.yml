@@ -1,0 +1,80 @@
+server:
+    port: 19094
+
+spring:
+    #    profiles:
+    #        active: local
+    application:
+        name: product
+    datasource:
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:5432/coopang_product
+        username: ${DB_USERNAME}
+        password: ${DB_PASSWORD}
+    jpa:
+        hibernate:
+            ddl-auto: create
+        properties:
+            hibernate:
+                format_sql: true
+                use_sql_comments: true
+    jackson:
+        serialization:
+            write-dates-as-timestamps: false
+    data:
+        redis:
+            host: localhost
+            port: 6379
+            password: ${REDIS_PASSWORD}
+    cache:
+        type: caffeine
+        cache-names: products, allProducts
+        caffeine:
+            spec: maximumSize=500,expireAfterAccess=60m
+    kafka:
+        bootstrap-servers: localhost:9092
+        group-id: product-sever-group
+
+springdoc:
+    api-docs:
+        path: /v3/api-docs
+    packages-to-scan: com.coopang.product.presentation.controller
+    default-consumes-media-type: application/json;charset=UTF-8
+    default-produces-media-type: application/json;charset=UTF-8
+    swagger-ui:
+        path: /swagger-ui.html
+        disable-swagger-default-url: true
+        display-request-duration: true
+        operations-sorter: alpha
+
+logging:
+    level:
+        org.hibernate.SQL: debug
+        org.hibernate.type: trace
+        org.springframework.cache: debug
+
+eureka:
+    client:
+        service-url:
+            defaultZone: http://localhost:19090/eureka/
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: prometheus
+    prometheus:
+        metrics:
+            export:
+                enabled: true
+common:
+    api:
+        filter:
+            enabled: true
+            paths:
+                - /swagger-ui
+                - /v3/api-docs
+                - /actuator
+data:
+    init:
+        enabled: true # 초기화 작업을 실행하려면 true, 비활성화하려면 false로 설정

@@ -1,9 +1,11 @@
-package com.coopang.apicommunication.feignClient.user;
+package com.coopang.apicommunication.feignclient.user;
 
-import com.coopang.apidata.application.user.enums.UserRoleEnum;
+import com.coopang.coredata.user.enums.UserRoleEnum;
+import com.coopang.apidata.application.user.request.UserSearchConditionRequest;
 import com.coopang.apidata.application.user.response.UserResponse;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -20,5 +22,9 @@ public class UserClientService {
 
     public UserRoleEnum getRole(UUID userId) {
         return userClient.getUserInfo(userId).getRole();
+    }
+
+    public List<UserResponse> getUserList(UserSearchConditionRequest req) {
+        return userClient.getUserList(req);
     }
 }

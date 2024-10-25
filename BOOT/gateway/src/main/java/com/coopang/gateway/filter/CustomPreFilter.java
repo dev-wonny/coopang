@@ -9,10 +9,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-@Slf4j
+@Slf4j(topic = "CustomPreFilter")
 @Component
 public class CustomPreFilter implements GlobalFilter, Ordered {
-
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {

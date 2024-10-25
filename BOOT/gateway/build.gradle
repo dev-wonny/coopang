@@ -22,6 +22,14 @@ ext {
 }
 
 dependencies {
+    // multi module
+    implementation project(':DATA:core-data')
+    implementation project(':INFRA:auth-common')
+
+    // Mac
+    implementation 'io.netty:netty-resolver-dns-native-macos:4.1.93.Final:osx-aarch_64'
+
+
     // actuator
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
@@ -41,7 +49,7 @@ dependencies {
     implementation 'com.github.loki4j:loki-logback-appender:1.5.1'
 
     // Swagger for API documentation
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+    implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.2'
 
     // JWT for authentication
     implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'

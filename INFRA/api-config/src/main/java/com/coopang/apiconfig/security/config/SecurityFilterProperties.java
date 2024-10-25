@@ -1,21 +1,19 @@
 package com.coopang.apiconfig.security.config;
 
+import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@Getter
 @ConfigurationProperties(prefix = "common.api.filter")
 public class SecurityFilterProperties {
-
+    private final boolean enabled;
     private List<String> paths;
 
-    public List<String> getPaths() {
-        return paths;
-    }
-
-    public void setPaths(List<String> paths) {
-        this.paths = paths;
+    public SecurityFilterProperties(boolean enabled, List<String> paths) {
+        this.enabled = enabled;
+        this.paths = paths != null ? paths : new ArrayList<>();
     }
 }
