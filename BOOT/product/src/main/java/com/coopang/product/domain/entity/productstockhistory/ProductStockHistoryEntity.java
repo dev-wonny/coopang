@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,7 +24,13 @@ import java.util.UUID;
 
 @Getter
 @Entity
-@Table(name = "p_product_stock_histories")
+@Table(
+    name = "p_product_stock_histories",
+    uniqueConstraints = @UniqueConstraint(
+        name = "uk_product_stock_history_order_change",
+        columnNames = {"product_stock_id", "order_id", "product_stock_history_change_type"}
+    )
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(value = {AuditingEntityListener.class})
 @SQLRestriction("is_deleted = false")
