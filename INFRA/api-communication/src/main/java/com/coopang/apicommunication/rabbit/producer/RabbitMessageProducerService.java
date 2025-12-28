@@ -51,5 +51,6 @@ public class RabbitMessageProducerService implements MessageProducer {
             Thread.currentThread().interrupt();
             throw new IllegalStateException("RabbitMQ retry backoff interrupted.", e);
         }
+        rabbitTemplate.convertAndSend("", topic, message);
     }
 }

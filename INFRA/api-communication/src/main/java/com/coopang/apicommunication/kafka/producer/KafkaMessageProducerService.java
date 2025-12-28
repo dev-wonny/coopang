@@ -42,7 +42,6 @@ public class KafkaMessageProducerService implements MessageProducer{
             }
         }
     }
-
     private void sleepBackoff() {
         try {
             Thread.sleep(backoffMillis);
