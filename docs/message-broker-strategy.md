@@ -94,6 +94,9 @@ public class RabbitMessageProducerService implements MessageProducer {
   ```yaml
   message:
     broker: kafka   # 또는 rabbit
+    retry:
+      max-attempts: 3
+      backoff-ms: 200
   ```
 
 ---
@@ -142,4 +145,3 @@ public class RabbitMessageProducerService implements MessageProducer {
 - **전략 패턴 기반 설계 능력**
 - **메시징 인프라 추상화 및 교체 가능 구조**
 - **Spring Boot 조건부 빈 등록을 통한 런타임 전략 선택**
-
