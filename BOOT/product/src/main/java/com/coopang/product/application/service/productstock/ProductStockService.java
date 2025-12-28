@@ -42,7 +42,7 @@ public class ProductStockService {
     public void addProductStock(UUID productId, ProductStockDto productStockDto) {
         final int addQuantity = productStockDto.getAmount();
         //비관적 락을 이용하여 조회 -> 다른 트랜잭션은 읽기와 쓰기 불가능
-        ProductStockEntity productStockEntity = productStockRepository.findAndLockProductStock(productId);
+        ProductStockEntity productStockEntity = getLockedProductStock(productId);
 
         final int previousStock = productStockEntity.getProductStock().getCurrentStockQuantity();
 
@@ -72,7 +72,7 @@ public class ProductStockService {
     public int reduceProductStock(UUID productId, ProductStockDto productStockDto) {
         final int reduceQuantity = productStockDto.getAmount();
         //비관적 락을 이용하여 조회 -> 다른 트랜잭션은 읽기와 쓰기 불가능
-        ProductStockEntity productStockEntity = productStockRepository.findAndLockProductStock(productId);
+        ProductStockEntity productStockEntity = getLockedProductStock(productId);
 
         int previousStock = productStockEntity.getProductStock().getCurrentStockQuantity();
 
@@ -111,7 +111,7 @@ public class ProductStockService {
     public void rollbackProduct(UUID orderId, UUID productId, int orderQuantity) {
 
         //비관적 락을 이용하여 조회 -> 다른 트랜잭션은 읽기와 쓰기 불가능
-        ProductStockEntity productStockEntity = productStockRepository.findAndLockProductStock(productId);
+        ProductStockEntity productStockEntity = getLockedProductStock(productId);
 
         int previousStock = productStockEntity.getProductStock().getCurrentStockQuantity();
 
@@ -140,7 +140,7 @@ public class ProductStockService {
     public void cancelProduct(UUID orderId, UUID productId, int orderQuantity) {
 
         //비관적 락을 이용하여 조회 -> 다른 트랜잭션은 읽기와 쓰기 불가능
-        ProductStockEntity productStockEntity = productStockRepository.findAndLockProductStock(productId);
+        ProductStockEntity productStockEntity = getLockedProductStock(productId);
 
         int previousStock = productStockEntity.getProductStock().getCurrentStockQuantity();
 
@@ -158,5 +158,13 @@ public class ProductStockService {
             throw new IllegalArgumentException("재고의 수량은 음수가 될 수 없습니다.");
         }
 
+    }
+
+    private ProductStockEntity getLockedProductStock(UUID productId) {
+        ProductStockEntity productStockEntity = productStockRepository.findAndLockProductStock(productId);
+        if (productStockEntity == null) {
+            throw new IllegalArgumentException("존재하지 않는 재고 입니다.");
+        }
+        return productStockEntity;
     }
 }
